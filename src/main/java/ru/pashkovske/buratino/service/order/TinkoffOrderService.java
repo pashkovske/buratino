@@ -1,10 +1,7 @@
 package ru.pashkovske.buratino.service.order;
 
 import lombok.AllArgsConstructor;
-import ru.tinkoff.piapi.contract.v1.OrderDirection;
-import ru.tinkoff.piapi.contract.v1.OrderType;
-import ru.tinkoff.piapi.contract.v1.Quotation;
-import ru.tinkoff.piapi.contract.v1.Share;
+import ru.tinkoff.piapi.contract.v1.*;
 import ru.tinkoff.piapi.core.MarketDataService;
 import ru.tinkoff.piapi.core.OrdersService;
 
@@ -43,7 +40,6 @@ public class TinkoffOrderService implements OrderService {
                 .build();
         processOrder(share.getFigi(), 1, price, OrderDirection.ORDER_DIRECTION_SELL);
     }
-
     @Override
     public void buyBestByOrderBook(Share share) {
         Quotation bestSellPrice = marketDataService.getOrderBookSync(share.getFigi(), 1).getBids(0).getPrice();
@@ -52,5 +48,24 @@ public class TinkoffOrderService implements OrderService {
                 .setNano(bestSellPrice.getNano() + share.getMinPriceIncrement().getNano())
                 .build();
         processOrder(share.getFigi(), 1, price, OrderDirection.ORDER_DIRECTION_BUY);
+    }
+
+    @Override
+    public void sellBestByOrderBook(Future future) {
+        Quotation bestSellPrice = marketDataService.getOrderBookSync(future.getFigi(), 1).getAsks(0).getPrice();
+        Quotation price = Quotation.newBuilder()
+                .setUnits(bestSellPrice.getUnits() - future.getMinPriceIncrement().getUnits())
+                .setNano(bestSellPrice.getNano() - future.getMinPriceIncrement().getNano())
+                .build();
+        processOrder(future.getFigi(), 1, price, OrderDirection.ORDER_DIRECTION_SELL);
+    }
+    @Override
+    public void buyBestByOrderBook(Future future) {
+        Quotation bestSellPrice = marketDataService.getOrderBookSync(future.getFigi(), 1).getBids(0).getPrice();
+        Quotation price = Quotation.newBuilder()
+                .setUnits(bestSellPrice.getUnits() + future.getMinPriceIncrement().getUnits())
+                .setNano(bestSellPrice.getNano() + future.getMinPriceIncrement().getNano())
+                .build();
+        processOrder(future.getFigi(), 1, price, OrderDirection.ORDER_DIRECTION_BUY);
     }
 }
