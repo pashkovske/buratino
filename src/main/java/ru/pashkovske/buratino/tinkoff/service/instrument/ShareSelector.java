@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.service.instrument;
+package ru.pashkovske.buratino.tinkoff.service.instrument;
 
 import ru.tinkoff.piapi.contract.v1.Share;
 

@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.service.instrument;
+package ru.pashkovske.buratino.tinkoff.service.instrument;
 
 import lombok.RequiredArgsConstructor;
 import ru.tinkoff.piapi.contract.v1.Future;
@@ -8,7 +8,7 @@ import ru.tinkoff.piapi.core.InstrumentsService;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class TinkoffFutureSelector implements FutureSelector {
+public class FutureSelectorImp implements FutureSelector {
     final InstrumentsService instrumentsService;
 
     @Override

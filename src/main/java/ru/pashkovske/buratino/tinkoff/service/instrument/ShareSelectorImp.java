@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.service.instrument;
+package ru.pashkovske.buratino.tinkoff.service.instrument;
 
 import lombok.RequiredArgsConstructor;
 import ru.tinkoff.piapi.contract.v1.InstrumentStatus;
@@ -6,7 +6,7 @@ import ru.tinkoff.piapi.contract.v1.Share;
 import ru.tinkoff.piapi.core.InstrumentsService;
 
 @RequiredArgsConstructor
-public class TinkoffShareSelector implements ShareSelector {
+public class ShareSelectorImp implements ShareSelector {
     final InstrumentsService instrumentsService;
 
     @Override

@@ -1,13 +1,13 @@
-package ru.pashkovske.buratino.service.account;
+package ru.pashkovske.buratino.tinkoff.service.account;
 
 import lombok.Getter;
 import ru.tinkoff.piapi.core.UsersService;
 
-public class TinkoffAccountResolver implements AccountResolver {
+public class AccountResolverImpl implements AccountResolver {
     @Getter
     final String brokerAccountId;
 
-    public TinkoffAccountResolver(String name, UsersService usersService) {
+    public AccountResolverImpl(String name, UsersService usersService) {
         brokerAccountId = usersService.getAccountsSync().stream()
                 .filter(account -> account.getName().equals(name))
                 .findFirst()
