@@ -42,8 +42,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void limitBuyBestByOrderBook(InstrumentHolder instrument) {
-        Quotation bestSellPrice = marketDataService.getOrderBookSync(instrument.getFigi(), 1).getBids(0).getPrice();
-        Quotation price = PriceUtils.plus(bestSellPrice, instrument.getMinPriceIncrement());
+        Quotation bestBuyPrice = marketDataService.getOrderBookSync(instrument.getFigi(), 1).getBids(0).getPrice();
+        Quotation price = PriceUtils.plus(bestBuyPrice, instrument.getMinPriceIncrement());
         processOrder(instrument.getFigi(), 1, price, OrderDirection.ORDER_DIRECTION_BUY);
     }
 }
