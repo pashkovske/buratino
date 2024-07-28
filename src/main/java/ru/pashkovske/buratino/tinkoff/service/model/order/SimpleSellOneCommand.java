@@ -7,6 +7,6 @@ import ru.tinkoff.piapi.contract.v1.OrderDirection;
 @Value
 public class SimpleSellOneCommand<T> implements OrderCommand<T> {
     InstrumentHolder<T> instrument;
-    int lotQuantity = 1;
+    long lotQuantity = 1;
     OrderDirection direction = OrderDirection.ORDER_DIRECTION_SELL;
 }

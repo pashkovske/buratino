@@ -8,15 +8,15 @@ import ru.tinkoff.piapi.contract.v1.Quotation;
 import javax.annotation.Nonnull;
 
 public interface OrderServant<T> {
-    void postOrder(
+    String postOrder(
             @Nonnull InstrumentHolder<T> instrument,
-            int lotQuantity,
+            long lotQuantity,
             @Nonnull Quotation price,
             @Nonnull OrderDirection direction,
             @Nonnull OrderType type);
     void replaceOrder(
             @Nonnull String orderId,
-            int lotQuantity,
+            long lotQuantity,
             @Nonnull Quotation price);
     void CancelOrder(@Nonnull String orderId);
 }

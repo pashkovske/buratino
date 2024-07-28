@@ -13,13 +13,13 @@ public class OrderApi<T> implements OrderServant<T> {
     final String brokerAccountId;
     final OrdersService tinkoffOrderService;
 
-    public void postOrder(
+    public String postOrder(
             @Nonnull InstrumentHolder<T> instrument,
-            int lotQuantity,
+            long lotQuantity,
             @Nonnull Quotation price,
             @Nonnull OrderDirection direction,
             @Nonnull OrderType type) {
-        tinkoffOrderService.postOrderSync(
+        PostOrderResponse response = tinkoffOrderService.postOrderSync(
                 instrument.getFigi(),
                 lotQuantity,
                 price,
@@ -28,11 +28,22 @@ public class OrderApi<T> implements OrderServant<T> {
                 type,
                 UUID.randomUUID().toString()
         );
+        return response.getOrderId();
     }
 
     @Override
-    public void replaceOrder(@Nonnull String orderId, int lotQuantity, @Nonnull Quotation price) {
-
+    public void replaceOrder(
+            @Nonnull String orderId,
+            long lotQuantity,
+            @Nonnull Quotation price) {
+        tinkoffOrderService.replaceOrder(
+                brokerAccountId,
+                lotQuantity,
+                price,
+                UUID.randomUUID().toString(),
+                orderId,
+                PriceType.PRICE_TYPE_UNSPECIFIED
+        );
     }
 
     @Override

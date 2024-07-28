@@ -14,13 +14,22 @@ public class FutureHolder implements InstrumentHolder<Future> {
     }
 
     @Override
-    public String getName() { return future.getName(); }
+    public String getName() {
+        return future.getName();
+    }
 
     @Override
-    public String getTicker() { return future.getTicker(); }
+    public String getTicker() {
+        return future.getTicker();
+    }
 
     @Override
     public Quotation getMinPriceIncrement() {
         return future.getMinPriceIncrement();
+    }
+
+    @Override
+    public int getLot() {
+        return future.getLot();
     }
 }

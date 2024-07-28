@@ -14,13 +14,22 @@ public class ShareHolder implements InstrumentHolder<Share> {
     }
 
     @Override
-    public String getName() { return share.getName(); }
+    public String getName() {
+        return share.getName();
+    }
 
     @Override
-    public String getTicker() { return share.getTicker(); }
+    public String getTicker() {
+        return share.getTicker();
+    }
 
     @Override
     public Quotation getMinPriceIncrement() {
         return share.getMinPriceIncrement();
+    }
+
+    @Override
+    public int getLot() {
+        return share.getLot();
     }
 }

@@ -7,4 +7,5 @@ public interface InstrumentHolder<T> {
     String getName();
     String getTicker();
     Quotation getMinPriceIncrement();
+    int getLot();
 }
