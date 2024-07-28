@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.tinkoff.service.model;
+package ru.pashkovske.buratino.tinkoff.service.model.instrument;
 
 import lombok.RequiredArgsConstructor;
 import ru.tinkoff.piapi.contract.v1.Future;

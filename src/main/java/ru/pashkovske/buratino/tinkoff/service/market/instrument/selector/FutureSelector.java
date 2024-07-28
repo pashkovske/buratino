@@ -1,7 +1,7 @@
-package ru.pashkovske.buratino.tinkoff.service.instrument;
+package ru.pashkovske.buratino.tinkoff.service.market.instrument.selector;
 
 import lombok.RequiredArgsConstructor;
-import ru.pashkovske.buratino.tinkoff.service.model.FutureHolder;
+import ru.pashkovske.buratino.tinkoff.service.model.instrument.FutureHolder;
 import ru.tinkoff.piapi.contract.v1.Future;
 import ru.tinkoff.piapi.contract.v1.InstrumentStatus;
 import ru.tinkoff.piapi.core.InstrumentsService;

@@ -1,12 +1,13 @@
 package ru.pashkovske.buratino;
 
 import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
-import ru.pashkovske.buratino.tinkoff.service.instrument.FutureSelector;
-import ru.pashkovske.buratino.tinkoff.service.instrument.ShareSelector;
-import ru.pashkovske.buratino.tinkoff.service.model.InstrumentHolder;
-import ru.pashkovske.buratino.tinkoff.service.order.OrderService;
-import ru.pashkovske.buratino.tinkoff.service.order.OrderServiceImpl;
-import ru.tinkoff.piapi.contract.v1.Future;
+import ru.pashkovske.buratino.tinkoff.service.market.instrument.price.CurrentMarketPriceService;
+import ru.pashkovske.buratino.tinkoff.service.market.instrument.selector.ShareSelector;
+import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
+import ru.pashkovske.buratino.tinkoff.service.model.order.SimpleSellOneCommand;
+import ru.pashkovske.buratino.tinkoff.service.order.OrderApi;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.OrderStrategy;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.StaticBestOrder;
 import ru.tinkoff.piapi.contract.v1.Share;
 import ru.tinkoff.piapi.core.*;
 
@@ -15,10 +16,10 @@ public class Main {
         String fullAccessToken = System.getenv("TINKOFF_API_TOKEN");
         InvestApi investApi = InvestApi.create(fullAccessToken);
 
-        InstrumentHolder<Share> share = new ShareSelector(investApi.getInstrumentsService()).getByTicker("UWGN");
+        InstrumentHolder<Share> share = new ShareSelector(investApi.getInstrumentsService()).getByTicker("ABRD");
         String accountId = new AccountResolverImpl("Основной брокерский счет", investApi.getUserService()).getBrokerAccountId();
-        OrderService orderService = new OrderServiceImpl(accountId, investApi.getMarketDataService(), investApi.getOrdersService());
-        orderService.limitBuyBestByOrderBook(share);
+        OrderStrategy orderMaker = new StaticBestOrder(new OrderApi(accountId, investApi.getOrdersService()), new CurrentMarketPriceService(investApi.getMarketDataService()));
+        orderMaker.postOrder(new SimpleSellOneCommand(share));
         /*
         for (Future future : futures) {
             System.out.println(future.getName() + "\t|\t" + future.getTicker());

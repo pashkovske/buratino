@@ -1,6 +1,6 @@
-package ru.pashkovske.buratino.tinkoff.service.instrument;
+package ru.pashkovske.buratino.tinkoff.service.market.instrument.selector;
 
-import ru.pashkovske.buratino.tinkoff.service.model.InstrumentHolder;
+import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package ru.pashkovske.buratino.tinkoff.service.instrument;
+package ru.pashkovske.buratino.tinkoff.service.market.instrument.selector;
 
 import lombok.RequiredArgsConstructor;
-import ru.pashkovske.buratino.tinkoff.service.model.ShareHolder;
+import ru.pashkovske.buratino.tinkoff.service.model.instrument.ShareHolder;
 import ru.tinkoff.piapi.contract.v1.InstrumentStatus;
 import ru.tinkoff.piapi.contract.v1.Share;
 import ru.tinkoff.piapi.core.InstrumentsService;
