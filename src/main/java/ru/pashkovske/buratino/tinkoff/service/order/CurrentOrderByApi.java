@@ -8,12 +8,12 @@ import ru.tinkoff.piapi.core.OrdersService;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class CurrentOrderByApi implements CurrentOrderFacade {
+public class CurrentOrderByApi<T> implements CurrentOrderFacade<T> {
     private final OrdersService ordersService;
     private final String accountId;
 
     @Override
-    public List<OrderState> getOrdersByInstrument(InstrumentHolder instrument) {
+    public List<OrderState> getOrdersByInstrument(InstrumentHolder<T> instrument) {
         return ordersService.getOrdersSync(accountId).stream()
                 .filter(order -> order.getFigi().equals(instrument.getFigi()))
                 .toList();

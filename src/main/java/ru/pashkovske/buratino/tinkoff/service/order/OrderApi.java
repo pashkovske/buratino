@@ -9,12 +9,12 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 @AllArgsConstructor
-public class OrderApi implements OrderServant {
+public class OrderApi<T> implements OrderServant<T> {
     final String brokerAccountId;
     final OrdersService tinkoffOrderService;
 
     public void postOrder(
-            @Nonnull InstrumentHolder instrument,
+            @Nonnull InstrumentHolder<T> instrument,
             int lotQuantity,
             @Nonnull Quotation price,
             @Nonnull OrderDirection direction,

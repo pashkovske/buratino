@@ -5,8 +5,8 @@ import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
 import ru.tinkoff.piapi.contract.v1.OrderDirection;
 
 @Value
-public class SimpleSellOneCommand implements OrderCommand {
-    InstrumentHolder instrument;
+public class SimpleSellOneCommand<T> implements OrderCommand<T> {
+    InstrumentHolder<T> instrument;
     int lotQuantity = 1;
     OrderDirection direction = OrderDirection.ORDER_DIRECTION_SELL;
 }

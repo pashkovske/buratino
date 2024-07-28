@@ -1,6 +1,5 @@
 package ru.pashkovske.buratino.tinkoff.service.market.instrument.price;
 
-import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
 import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
 import ru.pashkovske.buratino.tinkoff.service.utils.PriceUtils;
@@ -15,10 +14,10 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 @RequiredArgsConstructor
-public class CurrentMarketPriceService {
+public class CurrentMarketPriceService<T> {
     private final MarketDataService marketDataService;
 
-    public Quotation getBestSellPrice(InstrumentHolder instrument, List<Order> excludeOrders) {
+    public Quotation getBestSellPrice(InstrumentHolder<T> instrument, List<Order> excludeOrders) {
         List<Order> asks = marketDataService.getOrderBookSync(instrument.getFigi(), excludeOrders.size() + 1).getAsksList();
         Order minAsk = subtractOrderBooks(asks, excludeOrders).getFirst();
         if (minAsk.getQuantity() <= 0) {
@@ -27,24 +26,24 @@ public class CurrentMarketPriceService {
         return PriceUtils.minus(minAsk.getPrice(), instrument.getMinPriceIncrement());
     }
 
-    public Quotation getBestSellPrice(InstrumentHolder instrument) {
+    public Quotation getBestSellPrice(InstrumentHolder<T> instrument) {
         return this.getBestSellPrice(instrument, List.of());
     }
 
-    public Quotation getBestBuyPrice(InstrumentHolder instrument, List<Order> excludeOrders) {
+    public Quotation getBestBuyPrice(InstrumentHolder<T> instrument, List<Order> excludeOrders) {
         List<Order> bids = marketDataService.getOrderBookSync(instrument.getFigi(), excludeOrders.size() + 1).getBidsList();
-        Order minbid = subtractOrderBooks(bids, excludeOrders).getFirst();
-        if (minbid.getQuantity() <= 0) {
+        Order minBid = subtractOrderBooks(bids, excludeOrders).getFirst();
+        if (minBid.getQuantity() <= 0) {
             throw new IllegalStateException("Из стакана исключён несуществующий заказ");
         }
-        return PriceUtils.plus(minbid.getPrice(), instrument.getMinPriceIncrement());
+        return PriceUtils.plus(minBid.getPrice(), instrument.getMinPriceIncrement());
     }
 
-    public Quotation getBestBuyPrice(InstrumentHolder instrument) {
+    public Quotation getBestBuyPrice(InstrumentHolder<T> instrument) {
         return this.getBestBuyPrice(instrument, List.of());
     }
 
-    public Quotation getBestPrice(InstrumentHolder instrument, List<Order> excludeOrders, OrderDirection direction) {
+    public Quotation getBestPrice(InstrumentHolder<T> instrument, List<Order> excludeOrders, OrderDirection direction) {
         if (direction == OrderDirection.ORDER_DIRECTION_BUY) {
             return getBestBuyPrice(instrument, excludeOrders);
         } else if (direction == OrderDirection.ORDER_DIRECTION_SELL) {
@@ -55,12 +54,12 @@ public class CurrentMarketPriceService {
         }
     }
 
-    public Quotation getBestPrice(InstrumentHolder instrument, OrderDirection direction) {
+    public Quotation getBestPrice(InstrumentHolder<T> instrument, OrderDirection direction) {
         return this.getBestPrice(instrument, List.of(), direction);
     }
 
     private List<Order> subtractOrderBooks(@Nonnull List<Order> minuend, @Nonnull List<Order> subtrahend) {
-        HashMap<Quotation, Long> resultMap = new HashMap<Quotation, Long>();
+        HashMap<Quotation, Long> resultMap = new HashMap<>();
         for (Order order : minuend) {
             Long orderLots = order.getQuantity();
             resultMap.computeIfPresent(order.getPrice(), (price, lots) -> lots + orderLots);

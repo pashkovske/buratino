@@ -8,12 +8,12 @@ import ru.pashkovske.buratino.tinkoff.service.order.OrderServant;
 import ru.tinkoff.piapi.contract.v1.OrderType;
 
 @RequiredArgsConstructor
-public class StaticBestOrder implements OrderStrategy {
-    private final OrderServant orderServant;
-    private final CurrentMarketPriceService marketPriceService;
+public class StaticBestOrder<T> implements OrderStrategy<T> {
+    private final OrderServant<T> orderServant;
+    private final CurrentMarketPriceService<T> marketPriceService;
 
     @Override
-    public void postOrder(OrderCommand command) {
+    public void postOrder(OrderCommand<T> command) {
             orderServant.postOrder(
                     command.getInstrument(),
                     command.getLotQuantity(),
@@ -23,12 +23,12 @@ public class StaticBestOrder implements OrderStrategy {
     }
 
     @Override
-    public void putOrder(OrderCommand command) {
+    public void putOrder(OrderCommand<T> command) {
 
     }
 
     @Override
-    public void deleteOrder(InstrumentHolder instrument) {
+    public void deleteOrder(InstrumentHolder<T> instrument) {
 
     }
 }

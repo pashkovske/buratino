@@ -7,9 +7,9 @@ import ru.tinkoff.piapi.contract.v1.Quotation;
 
 import javax.annotation.Nonnull;
 
-public interface OrderServant {
+public interface OrderServant<T> {
     void postOrder(
-            @Nonnull InstrumentHolder instrument,
+            @Nonnull InstrumentHolder<T> instrument,
             int lotQuantity,
             @Nonnull Quotation price,
             @Nonnull OrderDirection direction,
