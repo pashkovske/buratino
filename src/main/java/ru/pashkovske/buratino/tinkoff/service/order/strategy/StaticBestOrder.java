@@ -1,29 +1,25 @@
 package ru.pashkovske.buratino.tinkoff.service.order.strategy;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import ru.pashkovske.buratino.tinkoff.service.market.instrument.price.CurrentMarketPriceService;
 import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
 import ru.pashkovske.buratino.tinkoff.service.model.order.OrderCommand;
-import ru.pashkovske.buratino.tinkoff.service.model.order.OrderData;
+import ru.pashkovske.buratino.tinkoff.service.model.order.OrderDto;
+import ru.pashkovske.buratino.tinkoff.service.order.OrderDao;
 import ru.pashkovske.buratino.tinkoff.service.order.OrderServant;
 import ru.tinkoff.piapi.contract.v1.Order;
 import ru.tinkoff.piapi.contract.v1.OrderDirection;
 import ru.tinkoff.piapi.contract.v1.OrderType;
 import ru.tinkoff.piapi.contract.v1.Quotation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
-@AllArgsConstructor
 @RequiredArgsConstructor
 public class StaticBestOrder<T> implements OrderStrategy<T> {
     private final OrderServant<T> orderServant;
     private final CurrentMarketPriceService<T> marketPriceService;
-
-    private Map<String, OrderData> myOrders = new HashMap<>();
+    private final OrderDao currentOrders;
 
     @Override
     public void postOrder(OrderCommand<T> command) {
@@ -40,49 +36,51 @@ public class StaticBestOrder<T> implements OrderStrategy<T> {
                 direction,
                 type);
 
-        OrderData orderData = OrderData.builder()
+        OrderDto orderDto = OrderDto.builder()
                 .id(orderId)
                 .instrumentId(instrument.getFigi())
                 .lotsQuantity(lots)
                 .price(price)
                 .direction(direction)
                 .type(type)
+                .updateTime(Instant.now())
                 .build();
-        myOrders.put(instrument.getFigi(), orderData);
+        currentOrders.post(orderDto);
     }
 
     @Override
     public void putOrder(OrderCommand<T> command) {
 
         InstrumentHolder<T> instrument = command.getInstrument();
-        OrderData orderMade = myOrders.get(instrument.getFigi());
-        List<Order> ordersMade = new ArrayList<>();
-        if (orderMade != null) {
-            ordersMade.add(Order.newBuilder()
-                            .setPrice(orderMade.getPrice())
-                            .setQuantity(orderMade.getLotsQuantity())
-                    .build());
-        }
-        OrderDirection direction = orderMade.getDirection();
+        List<OrderDto> ordersData = currentOrders.findByInstrumentAndDirection(instrument.getFigi(), command.getDirection());
+        assert ordersData.size() == 1;
+        OrderDto orderDto = ordersData.getFirst();
+        assert orderDto.getDirection().equals(command.getDirection());
+        List<Order> ordersMade = List.of(Order.newBuilder()
+                .setPrice(orderDto.getPrice())
+                .setQuantity(orderDto.getLotsQuantity())
+                .build());
+        OrderDirection direction = orderDto.getDirection();
         Quotation price = marketPriceService.getBestPrice(command.getInstrument(), ordersMade, direction);
         long lots = command.getLotQuantity();
         OrderType type = OrderType.ORDER_TYPE_LIMIT;
 
-        if (! price.equals(orderMade.getPrice())) {
+        if (! price.equals(orderDto.getPrice())) {
             orderServant.replaceOrder(
-                    orderMade.getId(),
+                    orderDto.getId(),
                     lots,
                     price);
 
-            OrderData orderData = OrderData.builder()
-                    .id(orderMade.getId())
+            OrderDto newOrderDto = OrderDto.builder()
+                    .id(orderDto.getId())
                     .instrumentId(instrument.getFigi())
                     .lotsQuantity(lots)
                     .price(price)
                     .direction(direction)
                     .type(type)
+                    .updateTime(Instant.now())
                     .build();
-            myOrders.put(instrument.getFigi(), orderData);
+            currentOrders.update(newOrderDto);
         }
     }
 

@@ -32,7 +32,7 @@ public class CurrentMarketPriceService<T> {
 
     public Quotation getBestBuyPrice(InstrumentHolder<T> instrument, List<Order> excludeOrders) {
         List<Order> bids = marketDataService.getOrderBookSync(instrument.getFigi(), excludeOrders.size() + 1).getBidsList();
-        Order minBid = subtractOrderBooks(bids, excludeOrders).getFirst();
+        Order minBid = subtractOrderBooks(bids, excludeOrders).reversed().getFirst();
         if (minBid.getQuantity() <= 0) {
             throw new IllegalStateException("Из стакана исключён несуществующий заказ");
         }
@@ -68,7 +68,7 @@ public class CurrentMarketPriceService<T> {
         for (Order order : subtrahend) {
             Long orderLots = order.getQuantity();
             resultMap.computeIfPresent(order.getPrice(), (price, lots) -> lots - orderLots);
-            resultMap.putIfAbsent(order.getPrice(), orderLots);
+            resultMap.putIfAbsent(order.getPrice(), -orderLots);
         }
         return resultMap.keySet().stream()
                 .sorted(PriceUtils.getPriceComparator())
