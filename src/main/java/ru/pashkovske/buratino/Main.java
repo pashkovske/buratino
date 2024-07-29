@@ -4,6 +4,7 @@ import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentOrdersByApi;
 import ru.pashkovske.buratino.tinkoff.service.market.instrument.price.CurrentMarketPriceService;
+import ru.pashkovske.buratino.tinkoff.service.market.instrument.selector.FutureSelector;
 import ru.pashkovske.buratino.tinkoff.service.market.instrument.selector.ShareSelector;
 import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
 import ru.pashkovske.buratino.tinkoff.service.model.order.OrderData;
@@ -12,6 +13,7 @@ import ru.pashkovske.buratino.tinkoff.service.model.order.SimpleSellOneCommand;
 import ru.pashkovske.buratino.tinkoff.service.order.OrderApi;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.OrderStrategy;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.StaticBestOrder;
+import ru.tinkoff.piapi.contract.v1.Future;
 import ru.tinkoff.piapi.contract.v1.Share;
 import ru.tinkoff.piapi.core.*;
 
@@ -24,8 +26,8 @@ public class Main {
         String fullAccessToken = System.getenv("TINKOFF_API_TOKEN");
         InvestApi investApi = InvestApi.create(fullAccessToken);
 
-        String ticker = "MGKL";
-        InstrumentHolder<Share> share = new ShareSelector(investApi.getInstrumentsService()).getByTicker(ticker);
+        String ticker = "HOH5";
+        InstrumentHolder<Future> share = new FutureSelector(investApi.getInstrumentsService()).getByTicker(ticker);
         String accountId = new AccountResolverImpl("Основной брокерский счет", investApi.getUserService()).getBrokerAccountId();
 
         CurrentAccountOrders currentAccountOrders = new CurrentOrdersByApi(investApi.getOrdersService(), accountId);
@@ -44,11 +46,13 @@ public class Main {
                 );
 
 
-        orderMaker.putOrder(new SimpleSellOneCommand(share));
-        /*while (true) {
-            Thread.sleep(4000);
-            System.out.println(System.currentTimeMillis());
-        }*/
+        //orderMaker.putOrder(new SimpleBuyOneCommand(share));
+        //orderMaker.putOrder(new SimpleSellOneCommand(share));
+        while (true) {
+            orderMaker.putOrder(new SimpleBuyOneCommand(share));
+            //orderMaker.putOrder(new SimpleSellOneCommand(share));
+            Thread.sleep(40000);
+        }
         /*
         for (Future future : futures) {
             System.out.println(future.getName() + "\t|\t" + future.getTicker());

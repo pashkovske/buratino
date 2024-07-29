@@ -3,7 +3,6 @@ package ru.pashkovske.buratino.tinkoff.service.account;
 import lombok.RequiredArgsConstructor;
 import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
 import ru.pashkovske.buratino.tinkoff.service.model.order.OrderData;
-import ru.pashkovske.buratino.tinkoff.service.utils.PriceUtils;
 import ru.tinkoff.piapi.contract.v1.OrderState;
 import ru.tinkoff.piapi.contract.v1.Quotation;
 import ru.tinkoff.piapi.core.OrdersService;
