@@ -3,50 +3,68 @@ package ru.pashkovske.buratino;
 import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentOrdersByApi;
-import ru.pashkovske.buratino.tinkoff.service.market.instrument.price.CurrentMarketPriceService;
-import ru.pashkovske.buratino.tinkoff.service.market.instrument.selector.FutureSelector;
-import ru.pashkovske.buratino.tinkoff.service.market.instrument.selector.ShareSelector;
-import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
-import ru.pashkovske.buratino.tinkoff.service.model.order.SimpleBuyOneCommand;
-import ru.pashkovske.buratino.tinkoff.service.model.order.SimpleSellOneCommand;
-import ru.pashkovske.buratino.tinkoff.service.order.InMemoryOrderDao;
-import ru.pashkovske.buratino.tinkoff.service.order.OrderApi;
-import ru.pashkovske.buratino.tinkoff.service.order.OrderDao;
+import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
+import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelectorImpl;
+import ru.pashkovske.buratino.tinkoff.service.order.api.OrderApi;
+import ru.pashkovske.buratino.tinkoff.service.order.api.OrderTinkoffOfficialApi;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.FollowBestPrice;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.OrderStrategy;
-import ru.pashkovske.buratino.tinkoff.service.order.strategy.StaticBestOrder;
-import ru.tinkoff.piapi.contract.v1.Future;
-import ru.tinkoff.piapi.contract.v1.Share;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment.Assignment;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.AssignmentCommand;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.FollowBestBuyPrice;
+import ru.pashkovske.buratino.tinkoff.service.price.service.CurrentMarketPriceService;
+import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
+import ru.tinkoff.piapi.contract.v1.OrderState;
 import ru.tinkoff.piapi.core.*;
+
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         String fullAccessToken = System.getenv("TINKOFF_API_TOKEN");
         InvestApi investApi = InvestApi.create(fullAccessToken);
+        OrdersService tinkoffOrderService = investApi.getOrdersService();
+        MarketDataService marketDataServiceTinkoff = investApi.getMarketDataService();
+        InstrumentsService instrumentsService = investApi.getInstrumentsService();
 
         String accountId = new AccountResolverImpl("Основной брокерский счет", investApi.getUserService()).getBrokerAccountId();
-
         CurrentAccountOrders currentAccountOrders = new CurrentOrdersByApi(investApi.getOrdersService(), accountId);
+        OrderApi orderMaker = new OrderTinkoffOfficialApi(
+                accountId,
+                tinkoffOrderService
+        );
+        MarketPriceService priceService = new CurrentMarketPriceService(marketDataServiceTinkoff);
+        InstrumentSelector selector = new InstrumentSelectorImpl(instrumentsService);
+        OrderStrategy strategy = new FollowBestPrice(
+                orderMaker,
+                priceService,
+                selector
+        );
 
-        OrderDao currentOrders = new InMemoryOrderDao();
-        currentOrders = currentAccountOrders.synchronizedOrderDaoFactory(currentOrders);
-        OrderStrategy orderMaker = new StaticBestOrder(
-                new OrderApi(
-                        accountId,
-                        investApi.getOrdersService()),
-                new CurrentMarketPriceService(investApi.getMarketDataService()),
-                currentOrders
-                );
+        List<OrderState> orders = currentAccountOrders.getAllOrders();
+        System.out.println(strategy.pull(orders));
 
-        String ticker = "HOH5";
-        InstrumentHolder<Future> inst1 = new FutureSelector(investApi.getInstrumentsService()).getByTicker(ticker);
-        SimpleBuyOneCommand command1 = new SimpleBuyOneCommand(inst1);
-        ticker = "KMM5";
-        InstrumentHolder<Future> inst2 = new FutureSelector(investApi.getInstrumentsService()).getByTicker(ticker);
-        SimpleBuyOneCommand command2 = new SimpleBuyOneCommand(inst2);
-        //orderMaker.postOrder(command);
+        List<String> bigSpreadTickers = List.of(
+                //"PMSBP", // Пермэнергосбыт
+                //"KAZTP", // КуйбышевВзот - привелегированные
+                "RBCM", // РБК
+                "LSNG", // Россети Ленэнерго
+                "KZOS" // Казанский органический синтез
+                //"SVCB" // Совкомбанк
+        );
+        AssignmentCommand command;
+        for (String ticker : bigSpreadTickers) {
+            command = new FollowBestBuyPrice(selector.getByTicker(ticker), 1);
+            strategy.post(command);
+        }
+
         while (true) {
-            orderMaker.putOrder(command1);
-            orderMaker.putOrder(command2);
+            Thread.sleep(3000);
+            List<Assignment> assignments = strategy.refreshAll();
+            System.out.println("\n\n");
+            for (Assignment assignment : assignments) {
+                System.out.println(assignment);
+            }
             Thread.sleep(40000);
         }
         /*

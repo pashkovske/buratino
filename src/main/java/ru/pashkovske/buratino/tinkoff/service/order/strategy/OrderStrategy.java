@@ -1,10 +1,16 @@
 package ru.pashkovske.buratino.tinkoff.service.order.strategy;
 
-import ru.pashkovske.buratino.tinkoff.service.model.instrument.InstrumentHolder;
-import ru.pashkovske.buratino.tinkoff.service.model.order.OrderCommand;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment.Assignment;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.AssignmentCommand;
+import ru.tinkoff.piapi.contract.v1.OrderState;
 
-public interface OrderStrategy<T> {
-    void postOrder(OrderCommand<T> command);
-    void putOrder(OrderCommand<T> command);
-    void deleteOrder(InstrumentHolder<T> instrument);
+import java.util.List;
+import java.util.UUID;
+
+public interface OrderStrategy {
+    Assignment post(AssignmentCommand command);
+    List<Assignment> pull(List<OrderState> orders);
+    Assignment refresh(UUID assignmentId);
+    List<Assignment> refreshAll();
+    void cancel(UUID assignmentId);
 }
