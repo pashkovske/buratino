@@ -13,15 +13,14 @@ import ru.pashkovske.buratino.tinkoff.service.order.api.OrderTinkoffOfficialApi;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderResponse;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.FollowBestPrice;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.OrderStrategy;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.RobotExploitSpread;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment.Assignment;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.AssignmentCommand;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.FollowBestBuyPrice;
+import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.OtherRobotExploitWithSpread;
 import ru.pashkovske.buratino.tinkoff.service.price.service.CurrentMarketPriceService;
 import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
-import ru.tinkoff.piapi.contract.v1.CandleInterval;
-import ru.tinkoff.piapi.contract.v1.GetCandlesRequest;
-import ru.tinkoff.piapi.contract.v1.OrderState;
-import ru.tinkoff.piapi.contract.v1.Trade;
+import ru.tinkoff.piapi.contract.v1.*;
 import ru.tinkoff.piapi.core.*;
 
 import java.time.Duration;
@@ -52,6 +51,11 @@ public class Main {
                 selector
         );
         SpreadAnalyzer spreadAnalyzer = new SpreadAnalyzerImpl(priceService, selector);
+        OrderStrategy exploit = new RobotExploitSpread(
+                orderMaker,
+                priceService,
+                selector
+        );
 
         List<OrderState> orders = currentAccountOrders.getAllOrders();
         System.out.println(strategy.pull(orders));
@@ -69,7 +73,18 @@ public class Main {
             command = new FollowBestBuyPrice(selector.getByTicker(ticker), 1);
             strategy.post(command);
         }*/
-
+        command = new OtherRobotExploitWithSpread(
+                selector.getByTicker("NKNCP"),
+                2,
+                Quotation.newBuilder().setUnits(69).setNano(840000000).build(),
+                Quotation.newBuilder().setUnits(69).setNano(660000000).build()
+        );
+        command = new OtherRobotExploitWithSpread(
+                selector.getByTicker("CHMK"),
+                2,
+                Quotation.newBuilder().setUnits(69).setNano(840000000).build(),
+                Quotation.newBuilder().setUnits(69).setNano(660000000).build()
+        );
         /*List<Trade> trades = marketDataServiceTinkoff.getLastTradesSync(
                 selector.getByTicker("SBER").getFigi()/*,
                         Instant.now().minus(Duration.ofHours(49L)),
@@ -85,9 +100,10 @@ public class Main {
                 CandleInterval.CANDLE_INTERVAL_4_HOUR
         ).stream().peek(System.out::println);*/
         //System.out.println(spreadAnalyzer.findBigSpreads(50,90).stream().peek(System.out::println).toList().size());
+        //exploit.post(command);
 
         while (true) {
-            Thread.sleep(3000);
+            Thread.sleep(4000);
             List<Assignment> assignments = strategy.refreshAll();
             System.out.println("\n\n");
             for (Assignment assignment : assignments) {
@@ -103,7 +119,7 @@ public class Main {
                         order.commission().getUnits() + "." + order.commission().getNano()
                 );
             }
-            Thread.sleep(40000);
+            Thread.sleep(20000);
         }
         /*
         for (Future future : futures) {
