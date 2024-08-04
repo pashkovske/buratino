@@ -54,7 +54,7 @@ public class CurrentMarketPriceService implements MarketPriceService {
             return null;
         }
         excludeBids(excludeOrders);
-        return PriceUtils.plus(bidsOrderBook.getMinPrice(), instrument.getMinPriceIncrement());
+        return PriceUtils.plus(bidsOrderBook.getMaxPrice(), instrument.getMinPriceIncrement());
     }
 
     private Quotation getBestBuyPrice(InstrumentWrapper instrument) {
