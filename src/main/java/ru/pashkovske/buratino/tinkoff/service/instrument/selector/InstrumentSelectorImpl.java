@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.ShareWrapper;
 import ru.tinkoff.piapi.contract.v1.InstrumentShort;
 import ru.tinkoff.piapi.contract.v1.InstrumentType;
+import ru.tinkoff.piapi.contract.v1.Share;
 import ru.tinkoff.piapi.core.InstrumentsService;
 
 import java.util.List;
@@ -47,7 +48,15 @@ public class InstrumentSelectorImpl implements InstrumentSelector {
     public InstrumentWrapper getById(InstrumentId id) {
         return map(findExactlyOne(id.id()));
     }
-    
+
+    @Override
+    public List<ShareWrapper> getTradableShares() {
+        return instrumentsService.getTradableSharesSync().stream()
+                .map(ShareWrapper::new)
+                .filter(share -> !share.getForQualInvestorFlag() && share.isTradableNow())
+                .toList();
+    }
+
     private List<InstrumentShort> findInstruments(String query) {
         return instrumentsService.findInstrumentSync(query)
                 .stream()
