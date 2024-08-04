@@ -9,6 +9,7 @@ import ru.tinkoff.piapi.contract.v1.Quotation;
 import java.util.List;
 
 public interface MarketPriceService {
+    long getSpreadBasisPoints(@NonNull InstrumentWrapper instrument);
     Quotation getBestPrice(
             @NonNull InstrumentWrapper instrument,
             List<Order> excludeOrders,

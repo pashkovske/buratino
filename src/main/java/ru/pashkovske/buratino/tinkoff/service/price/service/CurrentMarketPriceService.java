@@ -17,6 +17,16 @@ public class CurrentMarketPriceService implements MarketPriceService {
     private final OrderBook asksOrderBook = new OrderBookIml();
     private int requiredDepth;
 
+    @Override
+    public long getSpreadBasisPoints(@NonNull InstrumentWrapper instrument) {
+        setRequiredDepth(List.of());
+        putRawOrderBooks(instrument);
+        Quotation step = instrument.getMinPriceIncrement();
+        long bestSellPrice = PriceUtils.priceInSteps(getBestSellPrice(instrument), step);
+        long bestBuyPrice = PriceUtils.priceInSteps(getBestBuyPrice(instrument), step);
+        return ((bestSellPrice - bestBuyPrice) *20000) / (bestSellPrice + bestBuyPrice);
+    }
+
     public Quotation getBestPrice(
             @NonNull InstrumentWrapper instrument,
             List<Order> excludeOrders,

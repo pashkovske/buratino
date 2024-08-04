@@ -47,7 +47,23 @@ public class InstrumentSelectorImpl implements InstrumentSelector {
     public InstrumentWrapper getById(InstrumentId id) {
         return map(findExactlyOne(id.id()));
     }
-    
+
+    @Override
+    public List<ShareWrapper> getTradableShares() {
+        return instrumentsService.getTradableSharesSync().stream()
+                .map(ShareWrapper::new)
+                .filter(share -> !share.getForQualInvestorFlag() && share.isTradableNow())
+                .toList();
+    }
+
+    @Override
+    public List<FutureWrapper> getTradableFutures() {
+        return instrumentsService.getTradableFuturesSync().stream()
+                .map(FutureWrapper::new)
+                .filter(share -> !share.getForQualInvestorFlag() && share.isTradableNow())
+                .toList();
+    }
+
     private List<InstrumentShort> findInstruments(String query) {
         return instrumentsService.findInstrumentSync(query)
                 .stream()

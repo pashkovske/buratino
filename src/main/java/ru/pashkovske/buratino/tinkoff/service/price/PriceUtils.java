@@ -50,6 +50,13 @@ public class PriceUtils {
         BigInteger[] quotient = quotationToBigInt(dividend).divideAndRemainder(quotationToBigInt(divisor));
         return new long[]{quotient[0].longValueExact(), quotient[1].longValueExact()};
     }
+    static public long priceInSteps(Quotation price, Quotation step) {
+        long[] quotient = div(price, step);
+        if (quotient[1] != 0) {
+            throw new IllegalArgumentException("Цена:\n" + price + "Не делится нацело на шаг:\n" + step);
+        }
+        return quotient[0];
+    }
     static public Comparator<Quotation> getPriceComparator() {
         return (Quotation left, Quotation right) -> {
             Quotation diff = minus(left, right);

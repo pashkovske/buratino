@@ -1,10 +1,13 @@
 package ru.pashkovske.buratino.tinkoff.service.instrument.model;
 
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import ru.tinkoff.piapi.contract.v1.InstrumentType;
 import ru.tinkoff.piapi.contract.v1.Quotation;
+import ru.tinkoff.piapi.contract.v1.SecurityTradingStatus;
 import ru.tinkoff.piapi.contract.v1.Share;
 
+@ToString
 @RequiredArgsConstructor
 public class ShareWrapper implements InstrumentWrapper {
     final Share share;
@@ -45,5 +48,15 @@ public class ShareWrapper implements InstrumentWrapper {
     @Override
     public InstrumentType getType() {
         return InstrumentType.INSTRUMENT_TYPE_SHARE;
+    }
+
+    @Override
+    public boolean getForQualInvestorFlag() {
+        return share.getForQualInvestorFlag();
+    }
+
+    @Override
+    public SecurityTradingStatus getTradingStatus() {
+        return share.getTradingStatus();
     }
 }
