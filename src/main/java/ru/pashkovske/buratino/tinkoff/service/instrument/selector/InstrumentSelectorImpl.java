@@ -56,6 +56,14 @@ public class InstrumentSelectorImpl implements InstrumentSelector {
                 .toList();
     }
 
+    @Override
+    public List<FutureWrapper> getTradableFutures() {
+        return instrumentsService.getTradableFuturesSync().stream()
+                .map(FutureWrapper::new)
+                .filter(share -> !share.getForQualInvestorFlag() && share.isTradableNow())
+                .toList();
+    }
+
     private List<InstrumentShort> findInstruments(String query) {
         return instrumentsService.findInstrumentSync(query)
                 .stream()

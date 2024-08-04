@@ -5,6 +5,7 @@ import ru.pashkovske.buratino.tinkoff.service.analyzer.model.InstrumentSpread;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
+import ru.tinkoff.piapi.contract.v1.InstrumentType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,9 +68,9 @@ public class SpreadAnalyzerImpl implements SpreadAnalyzer {
             "KMAZ",
             "FIXP",
             "MGTSP",
+            "AGRO",
             "YDEX",
             "SVAV",
-            "AGRO",
             "SMLT",
             "BANE",
             "AFLT",
@@ -110,8 +111,21 @@ public class SpreadAnalyzerImpl implements SpreadAnalyzer {
     };
 
     @Override
-    public List<InstrumentSpread> findBigSpreads(long basicPointsThreshold, int limit) {
-        return instrumentSelector.getTradableShares().stream()
+    public List<InstrumentSpread> findBigSpreads(
+            long basicPointsThreshold,
+            int limit,
+            InstrumentType instrumentType
+    ) {
+        List<? extends InstrumentWrapper> insrumentList = List.of();
+        if (instrumentType.equals(InstrumentType.INSTRUMENT_TYPE_SHARE)){
+            insrumentList = instrumentSelector.getTradableShares();
+        } else if (instrumentType.equals(InstrumentType.INSTRUMENT_TYPE_FUTURES)) {
+            insrumentList = instrumentSelector.getTradableFutures();
+        }
+        else {
+            throw new IllegalStateException("Получение спреда по этому типу инструмента не реализовано: " + instrumentType);
+        }
+        return insrumentList.stream()
                 .filter(instrument ->
                         Arrays.stream(ALWAYS_POPULAR_TICKERS_TO_EXCLUDE).noneMatch(exclude ->
                                 exclude.equals(instrument.getTicker())
@@ -122,8 +136,7 @@ public class SpreadAnalyzerImpl implements SpreadAnalyzer {
                 .filter(spread -> spread.spreadValue() > basicPointsThreshold)
                 .sorted()
                 .toList()
-                .reversed()
-                ;
+                .reversed();
     }
 
     private boolean spreadIsAboveThreshold(InstrumentWrapper instrument, long threshold) {

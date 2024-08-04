@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.tinkoff.service.instrument.selector;
 
 import lombok.NonNull;
+import ru.pashkovske.buratino.tinkoff.service.instrument.model.FutureWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentId;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.ShareWrapper;
@@ -13,5 +14,6 @@ public interface InstrumentSelector {
     InstrumentWrapper getByTicker(String ticker);
     InstrumentWrapper getById(InstrumentId id);
     List<ShareWrapper> getTradableShares();
-    @NonNull String toString();
+    List<FutureWrapper> getTradableFutures();
+
 }

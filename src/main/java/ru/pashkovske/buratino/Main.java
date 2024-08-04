@@ -99,7 +99,10 @@ public class Main {
                 Instant.now(),
                 CandleInterval.CANDLE_INTERVAL_4_HOUR
         ).stream().peek(System.out::println);*/
-        //System.out.println(spreadAnalyzer.findBigSpreads(50,90).stream().peek(System.out::println).toList().size());
+        /*System.out.println(spreadAnalyzer.findBigSpreads(50,80).stream()
+                .peek(System.out::println)
+                .toList()
+                .size());*/
         //exploit.post(command);
 
         while (true) {
