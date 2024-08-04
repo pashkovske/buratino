@@ -47,16 +47,16 @@ public class Main {
         List<String> bigSpreadTickers = List.of(
                 //"PMSBP", // Пермэнергосбыт
                 //"KAZTP", // КуйбышевВзот - привелегированные
-                "RBCM", // РБК
-                "LSNG", // Россети Ленэнерго
-                "KZOS" // Казанский органический синтез
+                //"RBCM", // РБК
+                //"LSNG" // Россети Ленэнерго
+                //"KZOS" // Казанский органический синтез
                 //"SVCB" // Совкомбанк
         );
         AssignmentCommand command;
-        for (String ticker : bigSpreadTickers) {
+        /*for (String ticker : bigSpreadTickers) {
             command = new FollowBestBuyPrice(selector.getByTicker(ticker), 1);
             strategy.post(command);
-        }
+        }*/
 
         while (true) {
             Thread.sleep(3000);
