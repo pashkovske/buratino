@@ -7,7 +7,6 @@ import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.ShareWrapper;
 import ru.tinkoff.piapi.contract.v1.InstrumentShort;
 import ru.tinkoff.piapi.contract.v1.InstrumentType;
-import ru.tinkoff.piapi.contract.v1.Share;
 import ru.tinkoff.piapi.core.InstrumentsService;
 
 import java.util.List;
