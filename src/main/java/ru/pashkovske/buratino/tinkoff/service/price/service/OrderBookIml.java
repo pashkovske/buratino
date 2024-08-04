@@ -58,7 +58,7 @@ public class OrderBookIml implements OrderBook {
             }
         }
         else {
-            throw new NullPointerException("Попытка исключиеть заказ цены которого нет в стакане: " + price);
+            //throw new NullPointerException("Попытка исключиеть заказ цены которого нет в стакане: " + price);
         }
     }
 

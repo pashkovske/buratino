@@ -41,6 +41,7 @@ public class CurrentMarketPriceService implements MarketPriceService {
         if (asksOrderBook.getSize() < requiredDepth) {
             return null;
         }
+        excludeAsks(excludeOrders);
         return PriceUtils.minus(asksOrderBook.getMinPrice(), instrument.getMinPriceIncrement());
     }
 
@@ -52,6 +53,7 @@ public class CurrentMarketPriceService implements MarketPriceService {
         if (bidsOrderBook.getSize() < requiredDepth) {
             return null;
         }
+        excludeBids(excludeOrders);
         return PriceUtils.plus(bidsOrderBook.getMinPrice(), instrument.getMinPriceIncrement());
     }
 
