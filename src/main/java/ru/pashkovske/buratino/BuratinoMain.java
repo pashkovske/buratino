@@ -12,15 +12,24 @@ import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSele
 import ru.pashkovske.buratino.tinkoff.service.order.api.OrderApi;
 import ru.pashkovske.buratino.tinkoff.service.order.api.OrderTinkoffOfficialApi;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.FollowBestPrice;
-import ru.pashkovske.buratino.tinkoff.service.order.strategy.OrderStrategy;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.RobotExploitSpread;
 import ru.pashkovske.buratino.tinkoff.service.price.service.CurrentMarketPriceService;
 import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
 import ru.tinkoff.piapi.core.*;
 
-import java.util.List;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class Main {
+@SpringBootApplication
+public class BuratinoMain {
+
+    public static void main(String[] args) {
+        SpringApplication.run(BuratinoMain.class, args);
+    }
+
+}
+
+/*public class Main {
     public static void main(String[] args) throws InterruptedException {
         String fullAccessToken = System.getenv("TINKOFF_API_TOKEN");
         InvestApi investApi = InvestApi.create(fullAccessToken);
@@ -69,6 +78,6 @@ public class Main {
             assignmentController.pingBestPrice();
             Thread.sleep(7000);
         }
-        //*/
+        //
     }
-}
+}*/
