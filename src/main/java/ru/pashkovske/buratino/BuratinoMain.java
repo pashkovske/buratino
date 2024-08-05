@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino;
 
+import org.springframework.web.bind.annotation.PostMapping;
 import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentOrdersByApi;
@@ -19,18 +20,18 @@ import ru.tinkoff.piapi.core.*;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
+@RestController
 public class BuratinoMain {
 
     public static void main(String[] args) {
         SpringApplication.run(BuratinoMain.class, args);
     }
 
-}
-
-/*public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    @PostMapping("/start-old-flow")
+    private void startOldFlow() throws InterruptedException {
         String fullAccessToken = System.getenv("TINKOFF_API_TOKEN");
         InvestApi investApi = InvestApi.create(fullAccessToken);
         OrdersService tinkoffOrderService = investApi.getOrdersService();
@@ -78,6 +79,5 @@ public class BuratinoMain {
             assignmentController.pingBestPrice();
             Thread.sleep(7000);
         }
-        //
     }
-}*/
+}
