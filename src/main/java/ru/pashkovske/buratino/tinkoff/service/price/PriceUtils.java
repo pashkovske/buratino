@@ -31,7 +31,7 @@ public class PriceUtils {
     static public Quotation minus(Quotation minuend, Quotation subtrahend) {
         long units = minuend.getUnits() - subtrahend.getUnits();
         int nano = minuend.getNano() - subtrahend.getNano();
-        if (nano <= 0) {
+        if (nano < 0) {
             units -= 1;
             nano += MAX_NANO;
         }

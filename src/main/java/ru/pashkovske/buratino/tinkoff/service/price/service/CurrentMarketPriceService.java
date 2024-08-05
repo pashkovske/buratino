@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper;
 import ru.pashkovske.buratino.tinkoff.service.price.PriceUtils;
+import ru.pashkovske.buratino.tinkoff.service.price.mapper.PriceMapper;
 import ru.tinkoff.piapi.contract.v1.*;
 import ru.tinkoff.piapi.core.MarketDataService;
 
@@ -22,8 +23,13 @@ public class CurrentMarketPriceService implements MarketPriceService {
         setRequiredDepth(List.of());
         putRawOrderBooks(instrument);
         Quotation step = instrument.getMinPriceIncrement();
-        long bestSellPrice = PriceUtils.priceInSteps(getBestSellPrice(instrument), step);
-        long bestBuyPrice = PriceUtils.priceInSteps(getBestBuyPrice(instrument), step);
+        Quotation bestSellQuotation = getBestSellPrice(instrument);
+        Quotation bestBuyQuotation = getBestBuyPrice(instrument);
+        if (bestBuyQuotation == null || bestSellQuotation == null) {
+            return -1;
+        }
+        long bestSellPrice = PriceUtils.priceInSteps(bestSellQuotation, step);
+        long bestBuyPrice = PriceUtils.priceInSteps(bestBuyQuotation, step);
         return ((bestSellPrice - bestBuyPrice) *20000) / (bestSellPrice + bestBuyPrice);
     }
 
@@ -33,10 +39,17 @@ public class CurrentMarketPriceService implements MarketPriceService {
             @NonNull OrderDirection direction) {
         setRequiredDepth(excludeOrders);
         putRawOrderBooks(instrument);
+        List<Order> excludesInPts = excludeOrders.stream()
+                .map(order -> Order.newBuilder()
+                        .setPrice(PriceMapper.mapMoneyToPtsQuotation(order.getPrice(), instrument))
+                        .setQuantity(order.getQuantity())
+                        .build()
+                )
+                .toList();
         if (direction == OrderDirection.ORDER_DIRECTION_BUY) {
-            return getBestBuyPrice(instrument, excludeOrders);
+            return getBestBuyPrice(instrument, excludesInPts);
         } else if (direction == OrderDirection.ORDER_DIRECTION_SELL) {
-            return getBestSellPrice(instrument, excludeOrders);
+            return getBestSellPrice(instrument, excludesInPts);
         }
         else {
             throw new IllegalStateException("Определение лучшей цены не зависимо от направления сделки не реализовано");

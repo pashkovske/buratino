@@ -1,11 +1,9 @@
 package ru.pashkovske.buratino.tinkoff.service.instrument.model;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import ru.tinkoff.piapi.contract.v1.Future;
-import ru.tinkoff.piapi.contract.v1.InstrumentType;
-import ru.tinkoff.piapi.contract.v1.Quotation;
-import ru.tinkoff.piapi.contract.v1.SecurityTradingStatus;
+import ru.tinkoff.piapi.contract.v1.*;
 
 @ToString
 @RequiredArgsConstructor
@@ -58,5 +56,13 @@ public class FutureWrapper implements InstrumentWrapper {
         return future.getTradingStatus();
     }
 
-    public Quotation getMinPriceIncrementAmount() { return future.getMinPriceIncrementAmount(); }
+    @NonNull
+    public Quotation getMinPriceIncrementAmount() {
+        return future.getMinPriceIncrementAmount();
+    }
+
+    @NonNull
+    public MoneyValue getMargin() {
+        return future.getInitialMarginOnSell();
+    }
 }

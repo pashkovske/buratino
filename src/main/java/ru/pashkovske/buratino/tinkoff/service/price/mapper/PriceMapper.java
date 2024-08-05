@@ -29,4 +29,17 @@ public class PriceMapper {
             return price;
         }
     }
+
+    @NonNull
+    public static Quotation mapMoneyToPtsQuotation(@NonNull Quotation price, @NonNull InstrumentWrapper instrument) {
+        if (instrument.getType().equals(InstrumentType.INSTRUMENT_TYPE_FUTURES)) {
+            FutureWrapper future = (FutureWrapper) instrument;
+            long[] quotient = PriceUtils.div(price, future.getMinPriceIncrementAmount());
+            assert quotient[1] == 0;
+            return PriceUtils.mul(future.getMinPriceIncrement(), quotient[0]);
+        }
+        else {
+            return price;
+        }
+    }
 }

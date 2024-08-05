@@ -5,6 +5,7 @@ import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentOrdersByApi;
 import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzer;
 import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzerImpl;
+import ru.pashkovske.buratino.tinkoff.service.instrument.model.FutureWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelectorImpl;
@@ -92,17 +93,25 @@ public class Main {
                 ).stream()
                 .peek(System.out::println)
                 .toList();
-        System.out.println(trades.size());*/
-        /*marketDataServiceTinkoff.getCandlesSync(
-                selector.getByTicker("SBER").getId().id(),
-                Instant.now().minus(Duration.ofHours(36L)),
+        System.out.println(trades.size());
+        //*/
+        /*List<HistoricCandle> candles =  marketDataServiceTinkoff.getCandlesSync(
+                selector.getByTicker("CoQ4").getId().id(),
+                Instant.now().minus(Duration.ofDays(7L)),
                 Instant.now(),
                 CandleInterval.CANDLE_INTERVAL_4_HOUR
-        ).stream().peek(System.out::println);*/
-        /*System.out.println(spreadAnalyzer.findBigSpreads(50,80).stream()
+        );
+        for (HistoricCandle candle : candles) {
+            System.out.println(candle.getVolume());
+        }
+        //*/
+        /*System.out.println(spreadAnalyzer.findBigSpreads(50,80, InstrumentType.INSTRUMENT_TYPE_FUTURES).stream()
+                        .peek(spread -> {System.out.println(((FutureWrapper)spread.instrument()).getMargin());})
                 .peek(System.out::println)
                 .toList()
-                .size());*/
+                .size()
+        );
+        //*/
         //exploit.post(command);
 
         while (true) {
@@ -122,7 +131,7 @@ public class Main {
                         order.commission().getUnits() + "." + order.commission().getNano()
                 );
             }
-            Thread.sleep(20000);
+            Thread.sleep(7000);
         }
         /*
         for (Future future : futures) {

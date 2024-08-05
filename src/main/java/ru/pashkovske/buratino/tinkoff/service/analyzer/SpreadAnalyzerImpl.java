@@ -15,6 +15,7 @@ public class SpreadAnalyzerImpl implements SpreadAnalyzer {
     private final MarketPriceService priceService;
     private final InstrumentSelector instrumentSelector;
     private final String[] ALWAYS_POPULAR_TICKERS_TO_EXCLUDE = {
+            // Акции
             "UNAC",
             "VKCO",
             "TTLK",
@@ -107,7 +108,9 @@ public class SpreadAnalyzerImpl implements SpreadAnalyzer {
             "MSRS",
             "ASTR",
             "CNTLP",
-            "MTLRP"
+            "MTLRP",
+            // Фьючерсы
+            ""
     };
 
     @Override
@@ -139,15 +142,15 @@ public class SpreadAnalyzerImpl implements SpreadAnalyzer {
                 .reversed();
     }
 
-    private boolean spreadIsAboveThreshold(InstrumentWrapper instrument, long threshold) {
-        long spread = priceService.getSpreadBasisPoints(instrument);
-        boolean isAbove = spread > threshold;
-        if (isAbove) {
+    private boolean spreadIsAboveThreshold(InstrumentSpread spread, long threshold) {
+        long spreadValue = spread.spreadValue();
+        boolean isAbove = spreadValue > threshold;
+        /*if (isAbove) {
             System.out.println(instrument.getName() + ": " + spread);
-        }
-        /*if (spread * 2 < threshold) {
-            System.out.println(instrument.getTicker());
         }*/
+        if (spreadValue * 2 < threshold) {
+            System.out.println(spread.instrument().getTicker());
+        }
         return isAbove;
     }
 }
