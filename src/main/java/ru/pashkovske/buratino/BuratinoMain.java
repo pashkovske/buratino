@@ -1,6 +1,8 @@
 package ru.pashkovske.buratino;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentOrdersByApi;
@@ -23,61 +25,33 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-@RestController
 public class BuratinoMain {
 
     public static void main(String[] args) {
         SpringApplication.run(BuratinoMain.class, args);
     }
 
-    @PostMapping("/start-old-flow")
-    private void startOldFlow() throws InterruptedException {
+        //analyzerController.getBigSpreadFutures(50, 50);
+        //analyzerController.getLastTrades("SBER",1);
+        //assignmentController.postBuy(List.of("CBOM"));
+
+    @GetMapping("/big-spread-shares")
+    private void getBigSpreadFutures(@RequestParam long threshold, @RequestParam int limit) {
         String fullAccessToken = System.getenv("TINKOFF_API_TOKEN");
         InvestApi investApi = InvestApi.create(fullAccessToken);
-        OrdersService tinkoffOrderService = investApi.getOrdersService();
         MarketDataService marketDataServiceTinkoff = investApi.getMarketDataService();
         InstrumentsService instrumentsService = investApi.getInstrumentsService();
 
-        String accountId = new AccountResolverImpl("Основной брокерский счет", investApi.getUserService()).getBrokerAccountId();
-        CurrentAccountOrders currentAccountOrders = new CurrentOrdersByApi(investApi.getOrdersService(), accountId);
-        OrderApi orderMaker = new OrderTinkoffOfficialApi(
-                accountId,
-                tinkoffOrderService
-        );
         MarketPriceService priceService = new CurrentMarketPriceService(marketDataServiceTinkoff);
         InstrumentSelector selector = new InstrumentSelectorImpl(instrumentsService);
-        FollowBestPrice followBestPrice = new FollowBestPrice(
-                orderMaker,
-                priceService,
-                selector
-        );
         SpreadAnalyzer spreadAnalyzer = new SpreadAnalyzerImpl(priceService, selector);
-        RobotExploitSpread exploitStrategy = new RobotExploitSpread(
-                orderMaker,
-                priceService,
-                selector
-        );
 
         AnalyzerController analyzerController = new AnalyzerController(
                 marketDataServiceTinkoff,
                 selector,
                 spreadAnalyzer
         );
-        AssignmentController assignmentController = new AssignmentController(
-                followBestPrice,
-                exploitStrategy,
-                currentAccountOrders,
-                selector
-        );
 
-        //analyzerController.getBigSpreadFutures(50, 50);
-        //analyzerController.getLastTrades("SBER",1);
-        assignmentController.pullAllForBestPrice();
-        //assignmentController.postBuy(List.of("CBOM"));
-        while (true) {
-            Thread.sleep(4000);
-            assignmentController.pingBestPrice();
-            Thread.sleep(7000);
-        }
+        analyzerController.getBigSpreadFutures(threshold, limit);
     }
 }
