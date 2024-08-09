@@ -17,6 +17,7 @@ import ru.tinkoff.piapi.contract.v1.Quotation;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @RestController
 @RequiredArgsConstructor
 public class AssignmentController {

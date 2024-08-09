@@ -16,6 +16,7 @@ import ru.pashkovske.buratino.tinkoff.service.price.service.CurrentMarketPriceSe
 import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
 import ru.tinkoff.piapi.core.*;
 
+@SuppressWarnings("unused")
 @Configuration
 public class BuratinoServiceConfiguration {
 
