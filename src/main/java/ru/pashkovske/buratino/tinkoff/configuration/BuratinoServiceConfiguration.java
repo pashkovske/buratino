@@ -7,6 +7,8 @@ import ru.pashkovske.buratino.tinkoff.service.account.AccountResolver;
 import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentOrdersByApi;
+import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzer;
+import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzerImpl;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelectorImpl;
 import ru.pashkovske.buratino.tinkoff.service.order.api.OrderApi;
@@ -19,6 +21,17 @@ import ru.tinkoff.piapi.core.*;
 @SuppressWarnings("unused")
 @Configuration
 public class BuratinoServiceConfiguration {
+
+    @Bean
+    public SpreadAnalyzer spreadAnalyzer(
+            MarketPriceService priceService,
+            InstrumentSelector selector
+    ) {
+        return new SpreadAnalyzerImpl(
+                priceService,
+                selector
+        );
+    }
 
     @Bean
     public CurrentAccountOrders currentAccountOrders(
