@@ -1,6 +1,8 @@
 package ru.pashkovske.buratino.tinkoff.service.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderResponse;
@@ -15,13 +17,27 @@ import ru.tinkoff.piapi.contract.v1.Quotation;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
+@RestController
 @RequiredArgsConstructor
 public class AssignmentController {
     private final FollowBestPrice followBestStrategy;
-    private final RobotExploitSpread exploitStrategy;
+    private final RobotExploitSpread exploitStrategy = null;
     private final CurrentAccountOrders currentAccountOrders;
     private final InstrumentSelector selector;
 
+    @Deprecated
+    @PostMapping("/start-old-flow")
+    private void startOldFlow() throws InterruptedException {
+        pullAllForBestPrice();
+        while (true) {
+            Thread.sleep(4000);
+            pingBestPrice();
+            Thread.sleep(7000);
+        }
+    }
+
+    @PostMapping("/assign/strategy/follow-best-price/pull")
     public void pullAllForBestPrice() {
         List<OrderState> orders = currentAccountOrders.getAllOrders();
         System.out.println(followBestStrategy.pull(orders));
