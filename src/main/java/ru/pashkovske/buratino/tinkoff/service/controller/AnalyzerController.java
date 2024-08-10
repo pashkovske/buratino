@@ -75,9 +75,7 @@ public class AnalyzerController {
                                 InstrumentType.INSTRUMENT_TYPE_SHARE
                         )
                         .stream()
-                        .peek(spread -> System.out.println(
-                                ((ShareWrapper) spread.instrument()).getLot()
-                        ))
+                        .peek(spread -> System.out.println(spread.instrument().getLot()))
                         .peek(System.out::println)
                         .toList()
                         .size()
