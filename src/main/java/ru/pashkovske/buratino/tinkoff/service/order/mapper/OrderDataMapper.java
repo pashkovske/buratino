@@ -1,9 +1,11 @@
 package ru.pashkovske.buratino.tinkoff.service.order.mapper;
 
 import com.google.protobuf.Timestamp;
+import ru.pashkovske.buratino.tinkoff.service.order.model.OrderDto;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderHolder;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderResponse;
 import ru.pashkovske.buratino.tinkoff.service.price.PriceUtils;
+import ru.pashkovske.buratino.tinkoff.service.price.mapper.PriceMapper;
 import ru.tinkoff.piapi.contract.v1.Order;
 import ru.tinkoff.piapi.contract.v1.PostOrderResponse;
 
@@ -29,6 +31,16 @@ public class OrderDataMapper {
                 postOrderResponse.getLotsRequested(),
                 postOrderResponse.getOrderType(),
                 postOrderResponse.getOrderRequestId()
+        );
+    }
+
+    public static OrderDto mapResponse(OrderHolder orderHolder) {
+        OrderResponse response = orderHolder.getOrderResponse();
+        return new OrderDto(
+                response.id(),
+                PriceMapper.map(response.price()),
+                response.lotsQuantity(),
+                response.direction()
         );
     }
 }

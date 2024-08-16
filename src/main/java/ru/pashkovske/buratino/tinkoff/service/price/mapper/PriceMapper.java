@@ -4,6 +4,7 @@ import lombok.NonNull;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.FutureWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper;
 import ru.pashkovske.buratino.tinkoff.service.price.PriceUtils;
+import ru.pashkovske.buratino.tinkoff.service.price.model.QuotationDto;
 import ru.tinkoff.piapi.contract.v1.*;
 
 public class PriceMapper {
@@ -41,5 +42,21 @@ public class PriceMapper {
         else {
             return price;
         }
+    }
+
+    @NonNull
+    public static QuotationDto map(Quotation quotation) {
+        return new QuotationDto(
+                quotation.getUnits(),
+                quotation.getNano()
+        );
+    }
+
+    @NonNull
+    public static QuotationDto map(MoneyValue moneyValue) {
+        return new QuotationDto(
+                moneyValue.getUnits(),
+                moneyValue.getNano()
+        );
     }
 }

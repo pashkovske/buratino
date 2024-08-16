@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.tinkoff.service.order.strategy;
 
-import ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment.Assignment;
+import ru.pashkovske.buratino.tinkoff.service.assignment.Assignment;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.AssignmentCommand;
 import ru.tinkoff.piapi.contract.v1.OrderState;
 
