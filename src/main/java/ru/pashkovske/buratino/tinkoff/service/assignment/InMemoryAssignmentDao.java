@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment;
+package ru.pashkovske.buratino.tinkoff.service.assignment;
 
 import lombok.NonNull;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentId;
@@ -16,7 +16,7 @@ public class InMemoryAssignmentDao implements AssignmentDao {
     @Override
     public void post(@NonNull Assignment assignment) {
         if (assignments.containsKey(assignment.getId())) {
-            throw new IllegalArgumentException("Попытка загрузить заявку с тем же id: " + assignment.getId().toString());
+            throw new IllegalArgumentException("Попытка загрузить заявку с тем же id: " + assignment.getId());
         }
         assignments.put(assignment.getId(), assignment);
     }

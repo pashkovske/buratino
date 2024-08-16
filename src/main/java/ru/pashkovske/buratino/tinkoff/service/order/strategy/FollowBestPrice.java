@@ -6,9 +6,8 @@ import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSele
 import ru.pashkovske.buratino.tinkoff.service.order.mapper.OrderDataMapper;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderHolder;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderRequest;
-import ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment.Assignment;
-import ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment.AssignmentDao;
-import ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment.FollowPriceAssignment;
+import ru.pashkovske.buratino.tinkoff.service.assignment.Assignment;
+import ru.pashkovske.buratino.tinkoff.service.assignment.FollowPriceAssignment;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.AssignmentCommand;
 import ru.pashkovske.buratino.tinkoff.service.order.api.OrderApi;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.FollowBestBuyPrice;

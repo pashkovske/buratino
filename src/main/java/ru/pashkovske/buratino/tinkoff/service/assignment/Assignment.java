@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment;
+package ru.pashkovske.buratino.tinkoff.service.assignment;
 
 import lombok.NonNull;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderHolder;

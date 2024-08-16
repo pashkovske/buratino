@@ -1,21 +1,18 @@
-package ru.pashkovske.buratino.tinkoff.service.order.strategy.assignment;
+package ru.pashkovske.buratino.tinkoff.service.assignment;
 
 import lombok.Data;
 import lombok.NonNull;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderHolder;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.AssignmentCommand;
-import ru.tinkoff.piapi.contract.v1.OrderDirection;
 
 import java.util.List;
 import java.util.UUID;
 
 @Data
-public class ExploitRobotSpreadAssignment implements Assignment {
+public class FollowPriceAssignment implements Assignment {
     @NonNull UUID id;
     @NonNull OrderHolder order;
     @NonNull AssignmentCommand command;
-    @NonNull OrderDirection lastDirection;
-    @NonNull OrderDirection invertedLastDirection;
 
     @Override
     public List<OrderHolder> getOrders() {
