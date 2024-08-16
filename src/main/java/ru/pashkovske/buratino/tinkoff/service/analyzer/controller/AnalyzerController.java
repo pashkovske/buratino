@@ -13,7 +13,6 @@ import ru.pashkovske.buratino.tinkoff.service.analyzer.model.TradeDto;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.tinkoff.piapi.contract.v1.CandleInterval;
 import ru.tinkoff.piapi.contract.v1.InstrumentType;
-import ru.tinkoff.piapi.contract.v1.Trade;
 import ru.tinkoff.piapi.core.MarketDataService;
 
 import java.time.Duration;

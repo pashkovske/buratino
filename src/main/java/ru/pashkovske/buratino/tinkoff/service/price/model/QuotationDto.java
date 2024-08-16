@@ -6,6 +6,6 @@ public record QuotationDto(
 ) {
     @Override
     public String toString() {
-        return Long.toString(units) + "." + Integer.toString(nanos);
+        return units + "." + nanos;
     }
 }
