@@ -65,4 +65,9 @@ public class OrderTinkoffOfficialApi implements OrderApi {
     public void cancelOrder(@Nonnull String orderId) {
         tinkoffOrderService.cancelOrderSync(brokerAccountId, orderId);
     }
+
+    @Override
+    public @NonNull OrderResponse getOrder(@NonNull String orderId) {
+        return OrderDataMapper.map(tinkoffOrderService.getOrderStateSync(brokerAccountId, orderId));
+    }
 }

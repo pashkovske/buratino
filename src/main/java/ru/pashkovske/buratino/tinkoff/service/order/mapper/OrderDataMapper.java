@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.tinkoff.service.order.model.OrderResponse;
 import ru.pashkovske.buratino.tinkoff.service.price.PriceUtils;
 import ru.pashkovske.buratino.tinkoff.service.price.mapper.PriceMapper;
 import ru.tinkoff.piapi.contract.v1.Order;
+import ru.tinkoff.piapi.contract.v1.OrderState;
 import ru.tinkoff.piapi.contract.v1.PostOrderResponse;
 
 import java.time.Instant;
@@ -30,7 +31,23 @@ public class OrderDataMapper {
                 postOrderResponse.getDirection(),
                 postOrderResponse.getLotsRequested(),
                 postOrderResponse.getOrderType(),
-                postOrderResponse.getOrderRequestId()
+                postOrderResponse.getOrderRequestId(),
+                postOrderResponse.getExecutionReportStatus()
+        );
+    }
+    public static OrderResponse map(OrderState orderState) {
+        Timestamp ts = orderState.getOrderDate();
+        return new OrderResponse(
+                orderState.getOrderId(),
+                orderState.getInstrumentUid(),
+                orderState.getInitialSecurityPrice(),
+                orderState.getExecutedCommission(),
+                Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos()),
+                orderState.getDirection(),
+                orderState.getLotsRequested(),
+                orderState.getOrderType(),
+                orderState.getOrderRequestId(),
+                orderState.getExecutionReportStatus()
         );
     }
 

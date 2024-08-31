@@ -3,6 +3,8 @@ package ru.pashkovske.buratino.tinkoff.configuration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.pashkovske.buratino.tinkoff.service.account.AccountResolver;
 import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
@@ -45,15 +47,22 @@ public class BuratinoServiceConfiguration {
     }
 
     @Bean
+    public TaskScheduler taskScheduler() {
+        return new ThreadPoolTaskScheduler();
+    }
+
+    @Bean
     public FollowBestPrice followBestPrice(
             OrderApi orderApi,
             MarketPriceService priceService,
-            InstrumentSelector selector
+            InstrumentSelector selector,
+            TaskScheduler taskScheduler
     ) {
         return new FollowBestPrice(
                 orderApi,
                 priceService,
-                selector
+                selector,
+                taskScheduler
         );
     }
 
