@@ -10,7 +10,10 @@ import java.util.UUID;
 public interface OrderStrategy {
     Assignment post(AssignmentCommand command);
     List<Assignment> pull(List<OrderState> orders);
+    List<Assignment> pullAndSchedule(List<OrderState> orders);
+    void scheduleRefresh(UUID assignmentId);
     Assignment refresh(UUID assignmentId) throws InterruptedException;
     List<Assignment> refreshAll() throws InterruptedException;
     void cancel(UUID assignmentId);
+    List<Assignment> getAll();
 }

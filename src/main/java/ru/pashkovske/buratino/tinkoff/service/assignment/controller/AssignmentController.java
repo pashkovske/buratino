@@ -1,10 +1,7 @@
 package ru.pashkovske.buratino.tinkoff.service.assignment.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
 import ru.pashkovske.buratino.tinkoff.service.assignment.mapper.AssignmentMapper;
 import ru.pashkovske.buratino.tinkoff.service.assignment.model.AssignmentStateDto;
@@ -20,6 +17,7 @@ import ru.tinkoff.piapi.contract.v1.OrderState;
 import ru.tinkoff.piapi.contract.v1.Quotation;
 
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 @RestController
@@ -30,21 +28,18 @@ public class AssignmentController {
     private final CurrentAccountOrders currentAccountOrders;
     private final InstrumentSelector selector;
 
-    @Deprecated
-    @PostMapping("/start-old-flow")
-    private void startOldFlow() throws InterruptedException {
-        pullAllForBestPrice();
-        while (true) {
-            Thread.sleep(4000);
-            System.out.println(pingAllBestPrice().stream().peek(System.out::println).toList());
-            Thread.sleep(7000);
-        }
-    }
-
     @PostMapping("/strategy/follow-best-price/pull")
     public List<AssignmentStateDto> pullAllForBestPrice() {
         List<OrderState> orders = currentAccountOrders.getAllOrders();
         return followBestStrategy.pull(orders).stream()
+                .map(AssignmentMapper::mapBestPrice)
+                .toList();
+    }
+
+    @PostMapping("/schedule-api/strategy/follow-best-price/pull")
+    public List<AssignmentStateDto> pullAndScheduleAllForBestPrice() {
+        List<OrderState> orders = currentAccountOrders.getAllOrders();
+        return followBestStrategy.pullAndSchedule(orders).stream()
                 .map(AssignmentMapper::mapBestPrice)
                 .toList();
     }
@@ -71,6 +66,36 @@ public class AssignmentController {
         command = new FollowBestSellPrice(selector.getByTicker(ticker), 1);
         Assignment assignment = followBestStrategy.post(command);
         return AssignmentMapper.mapBestPrice(assignment);
+    }
+
+    @PostMapping("/schedule-api/instrument/{ticker}/assignment/follow-best-price/buy")
+    public AssignmentStateDto scheduleBuy(@PathVariable String ticker) {
+        AssignmentCommand command = new FollowBestBuyPrice(selector.getByTicker(ticker), 1);
+        Assignment assignment = followBestStrategy.post(command);
+        followBestStrategy.scheduleRefresh(assignment.getId());
+        return AssignmentMapper.mapBestPrice(assignment);
+    }
+
+    @PostMapping("/schedule-api/instrument/{ticker}/assignment/follow-best-price/sell")
+    public AssignmentStateDto scheduleSell(@PathVariable String ticker) {
+        AssignmentCommand command;
+        command = new FollowBestSellPrice(selector.getByTicker(ticker), 1);
+        Assignment assignment = followBestStrategy.post(command);
+        followBestStrategy.scheduleRefresh(assignment.getId());
+        return AssignmentMapper.mapBestPrice(assignment);
+    }
+
+    @DeleteMapping("/schedule-api/instrument/assignments/{assignmentId}")
+    public void cancel(@PathVariable UUID assignmentId) {
+        followBestStrategy.cancel(assignmentId);
+    }
+
+    @GetMapping("/instrument/assignments")
+    public List<AssignmentStateDto> getAllAssignments() {
+        return followBestStrategy.getAll()
+                .stream()
+                .map(AssignmentMapper::mapBestPrice)
+                .toList();
     }
 
     public void postBuyList(List<String> tickers) {

@@ -8,4 +8,5 @@ public interface OrderApi {
     @NonNull OrderResponse post(@NonNull OrderRequest order);
     @NonNull OrderResponse replaceOrder(@NonNull String orderId, @NonNull OrderRequest order);
     void cancelOrder(@NonNull String orderId);
+    @NonNull OrderResponse getOrder(@NonNull String orderId);
 }
