@@ -18,10 +18,7 @@ import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
 import ru.tinkoff.piapi.contract.v1.*;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 
 @RequiredArgsConstructor
@@ -103,7 +100,6 @@ public class FollowBestPrice implements OrderStrategy {
         FollowBestPriceRefresher follower = new FollowBestPriceRefresher(
                 orderApi,
                 marketPriceService,
-                instrumentSelector,
                 assignment
         );
         assignment.setScheduledFuture(taskScheduler.scheduleWithFixedDelay(follower, DEFAULT_DELAY));
@@ -123,7 +119,6 @@ public class FollowBestPrice implements OrderStrategy {
             FollowBestPriceRefresher follower = new FollowBestPriceRefresher(
                     orderApi,
                     marketPriceService,
-                    instrumentSelector,
                     assignment
             );
             follower.run();
@@ -141,10 +136,11 @@ public class FollowBestPrice implements OrderStrategy {
 
     @Override
     public List<Assignment> refreshAll() {
+        List<Assignment> assignmentList = new ArrayList<>();
         for (UUID assignmentId : assignments.keySet()) {
-            refresh(assignmentId);
+            assignmentList.add(refresh(assignmentId));
         }
-        return assignments.values().stream().toList();
+        return assignmentList;
     }
 
     @Override

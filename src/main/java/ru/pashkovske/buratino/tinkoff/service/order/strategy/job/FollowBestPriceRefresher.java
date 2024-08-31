@@ -2,7 +2,6 @@ package ru.pashkovske.buratino.tinkoff.service.order.strategy.job;
 
 import lombok.RequiredArgsConstructor;
 import ru.pashkovske.buratino.tinkoff.service.assignment.Assignment;
-import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.pashkovske.buratino.tinkoff.service.order.api.OrderApi;
 import ru.pashkovske.buratino.tinkoff.service.order.mapper.OrderDataMapper;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderHolder;
@@ -20,7 +19,6 @@ import java.util.List;
 public class FollowBestPriceRefresher implements Runnable {
     private final OrderApi orderApi;
     private final MarketPriceService marketPriceService;
-    private final InstrumentSelector instrumentSelector;
     private final Assignment assignment;
 
     @Override
