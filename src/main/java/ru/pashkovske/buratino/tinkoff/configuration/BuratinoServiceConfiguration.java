@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import ru.pashkovske.buratino.tinkoff.service.account.AccountResolver;
-import ru.pashkovske.buratino.tinkoff.service.account.AccountResolverImpl;
-import ru.pashkovske.buratino.tinkoff.service.account.CurrentAccountOrders;
-import ru.pashkovske.buratino.tinkoff.service.account.CurrentOrdersByApi;
+import ru.pashkovske.buratino.tinkoff.service.account.*;
 import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzer;
 import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzerImpl;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
@@ -84,8 +81,7 @@ public class BuratinoServiceConfiguration {
 
     @Bean
     public AccountResolver accountResolver(UsersService tinkoffUserService) {
-        //#TODO
-        String name = "Основной брокерский счет";
+        String name ="Основной брокерский счет";
         return new AccountResolverImpl(
                 name,
                 tinkoffUserService
@@ -98,9 +94,8 @@ public class BuratinoServiceConfiguration {
     }
 
     @Bean
-    public InvestApi investApi() {
-        //#TODO
-        String fullAccessToken = System.getenv("TINKOFF_API_TOKEN");
+    public InvestApi investApi(TinkoffCustomerConfig tinkoffCustomerConfig) {
+        String fullAccessToken = System.getenv(tinkoffCustomerConfig.getTinkoffAccessToken());
         return InvestApi.create(fullAccessToken);
     }
 
