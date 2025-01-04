@@ -13,19 +13,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ru.pashkovske.buratino.tinkoff.configuration.AppTestConfiguration;
 import ru.pashkovske.buratino.tinkoff.service.assignment.controller.AssignmentController;
 
-import ru.tinkoff.piapi.contract.v1.InstrumentShort;
-import ru.tinkoff.piapi.core.InstrumentsService;
-
-import java.util.List;
-
 @Import(AppTestConfiguration.class)
 @WebMvcTest(AssignmentController.class)
 public class BestPriceFastAssignmentTest {
     @Autowired
     MockMvc mvc;
-
-    @Autowired
-    InstrumentsService instrumentService;
 
     @Test
     void newBuyAssignment() throws Exception {
