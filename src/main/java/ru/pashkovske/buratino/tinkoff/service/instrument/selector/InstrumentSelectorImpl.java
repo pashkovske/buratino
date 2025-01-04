@@ -34,7 +34,7 @@ public class InstrumentSelectorImpl implements InstrumentSelector {
                 .filter(instrument -> instrument.getTicker().equals(ticker))
                 .toList();
         if (instruments.size() != 1) {
-            throw new IllegalStateException("Найден не 1 инструмент\n" +
+            throw new IllegalStateException("По тикеру " + ticker + " найдено " + instruments.size() + " инструментов вместо 1-го:\n" +
                     instruments.stream()
                             .map(Objects::toString)
                             .collect(Collectors.joining())

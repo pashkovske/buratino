@@ -32,19 +32,22 @@ public class GetBestPriceTest {
     @Autowired
     private MarketPriceService marketPriceService;
 
+    @Autowired
+    private Deserializer deserializer;
+
     @Test
     void noExcludeOrders() {
-        InstrumentWrapper instrument = Deserializer.deserialize("stub/tinkoff/instrument/arenadat-group", ShareWrapper.class);
-        GetOrderBookResponse orderBookResponse = Deserializer.deserialize("stub/tinkoff/order-book/arenadat-group/1-depth-deep", GetOrderBookResponse.class);
+        InstrumentWrapper instrument = deserializer.deserialize("stub/buratino/instrument/wrapper/share/arenadat-group", ShareWrapper.class);
+        GetOrderBookResponse orderBookResponse = deserializer.deserialize("stub/tinkoff/order-book/has-spread/1st-deep/arenadat-group", GetOrderBookResponse.class);
 
         when(marketDataService.getOrderBookSync(instrument.getId().id(), 1)).thenReturn(orderBookResponse);
 
         Quotation bestBuyPriceRetrieved = marketPriceService.getBestPrice(instrument, OrderDirection.ORDER_DIRECTION_BUY);
-        Quotation bestBuyPriceExpected = Deserializer.deserialize("response/price/best-fastest/arenadat-group/buy", Quotation.class);
+        Quotation bestBuyPriceExpected = deserializer.deserialize("response/price/best-fastest/arenadat-group/buy", Quotation.class);
         assertEquals(bestBuyPriceExpected, bestBuyPriceRetrieved);
 
         Quotation bestSellPrice = marketPriceService.getBestPrice(instrument, OrderDirection.ORDER_DIRECTION_SELL);
-        Quotation bestSellPriceExpected = Deserializer.deserialize("response/price/best-fastest/arenadat-group/sell", Quotation.class);
+        Quotation bestSellPriceExpected = deserializer.deserialize("response/price/best-fastest/arenadat-group/sell", Quotation.class);
         assertEquals(bestSellPriceExpected, bestSellPrice);
     }
 }
