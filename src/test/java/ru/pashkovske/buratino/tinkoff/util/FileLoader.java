@@ -1,13 +1,16 @@
 package ru.pashkovske.buratino.tinkoff.util;
 
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@RequiredArgsConstructor
 public class FileLoader {
-    private static final String basePath = "src/test/resources/";
+    private final String basePath;
 
-    public static String loadJson(String path) {
+    public String loadJson(String path) {
         try {
             return new String(Files.readAllBytes(Paths.get(basePath + path + ".json")));
         }

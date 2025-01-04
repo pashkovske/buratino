@@ -1,0 +1,15 @@
+{
+    "id_": "2139818801",
+    "type_": 1,
+    "name_": "Основной брокерский счет",
+    "status_": 2,
+    "openedDate_": {
+        "seconds_": 1709078400,
+        "nanos_": 0
+    },
+    "closedDate_": {
+        "seconds_": 0,
+        "nanos_": 0
+    },
+    "accessLevel_": 1
+}
