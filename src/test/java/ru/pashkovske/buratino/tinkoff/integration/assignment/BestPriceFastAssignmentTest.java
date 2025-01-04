@@ -31,8 +31,6 @@ public class BestPriceFastAssignmentTest {
     void newBuyAssignment() throws Exception {
         String ticker = "DATA";
 
-        List<InstrumentShort> instrument = instrumentService.findInstrumentSync(ticker);
-
         mvc.perform(post("/instrument/" + ticker + "/assignment/follow-best-price/buy")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
