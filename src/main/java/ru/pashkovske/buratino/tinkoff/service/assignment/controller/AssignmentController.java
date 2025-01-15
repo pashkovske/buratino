@@ -60,6 +60,15 @@ public class AssignmentController {
         return AssignmentMapper.mapBestPrice(assignment);
     }
 
+    @PostMapping("/assignment/single-proposal/instrument/{ticker}/best-price/buy")
+    public AssignmentStateDto postBuyBest(@PathVariable String ticker) {
+
+        AssignmentCommand command;
+        command = new FollowBestBuyPrice(selector.getByTicker(ticker), 1);
+        Assignment assignment = followBestStrategy.post(command);
+        return AssignmentMapper.mapBestPrice(assignment);
+    }
+
     @PostMapping("/instrument/{ticker}/assignment/follow-best-price/sell")
     public AssignmentStateDto postSell(@PathVariable String ticker) {
         AssignmentCommand command;
