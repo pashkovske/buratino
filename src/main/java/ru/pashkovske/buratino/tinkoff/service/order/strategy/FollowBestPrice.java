@@ -13,12 +13,17 @@ import ru.pashkovske.buratino.tinkoff.service.order.api.OrderApi;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.FollowBestBuyPrice;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.command.FollowBestSellPrice;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.job.FollowBestPriceRefresher;
+import ru.pashkovske.buratino.tinkoff.service.price.PriceUtils;
 import ru.pashkovske.buratino.tinkoff.service.price.mapper.PriceMapper;
 import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
 import ru.tinkoff.piapi.contract.v1.*;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 
 @RequiredArgsConstructor
@@ -41,10 +46,18 @@ public class FollowBestPrice implements OrderStrategy {
                 command
         );
         assignments.put(assignmentId, assignment);
-        MoneyValue price = PriceMapper.map(
-                marketPriceService.getBestPrice(command.getInstrument(), command.getDirection()),
-                command.getInstrument()
-        );
+        
+        Quotation bestPrice = marketPriceService.getBestPrice(command.getInstrument(), command.getDirection());
+        // Применяем инкремент в зависимости от направления заявки
+        if (bestPrice != null) {
+            if (command.getDirection() == OrderDirection.ORDER_DIRECTION_BUY) {
+                bestPrice = PriceUtils.plus(bestPrice, command.getInstrument().getMinPriceIncrement());
+            } else {
+                bestPrice = PriceUtils.minus(bestPrice, command.getInstrument().getMinPriceIncrement());
+            }
+        }
+        
+        MoneyValue price = PriceMapper.map(bestPrice, command.getInstrument());
         OrderRequest orderRequest = new OrderRequest(
                 command.getInstrument().getId().id(),
                 price,

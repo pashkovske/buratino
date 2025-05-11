@@ -65,19 +65,19 @@ public class CurrentMarketPriceService implements MarketPriceService {
             return null;
         }
         excludeAsks(excludeOrders);
-        return PriceUtils.minus(asksOrderBook.getMinPrice(), instrument.getMinPriceIncrement());
+        return asksOrderBook.getMinPrice();
     }
-
+    
     private Quotation getBestSellPrice(InstrumentWrapper instrument) {
         return this.getBestSellPrice(instrument, List.of());
     }
-
+    
     private Quotation getBestBuyPrice(InstrumentWrapper instrument, List<Order> excludeOrders) {
         if (bidsOrderBook.getSize() < requiredDepth) {
             return null;
         }
         excludeBids(excludeOrders);
-        return PriceUtils.plus(bidsOrderBook.getMaxPrice(), instrument.getMinPriceIncrement());
+        return bidsOrderBook.getMaxPrice();
     }
 
     private Quotation getBestBuyPrice(InstrumentWrapper instrument) {
