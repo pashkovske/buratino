@@ -15,11 +15,23 @@ import ru.pashkovske.buratino.tinkoff.service.order.api.OrderTinkoffOfficialApi;
 import ru.pashkovske.buratino.tinkoff.service.order.strategy.FollowBestPrice;
 import ru.pashkovske.buratino.tinkoff.service.price.service.CurrentMarketPriceService;
 import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
+import ru.pashkovske.buratino.tinkoff.service.price.service.PriceChangesBroker;
+import ru.pashkovske.buratino.tinkoff.service.price.service.PriceChangesBrokerImpl;
 import ru.tinkoff.piapi.core.*;
+import ru.ttech.piapi.core.connector.streaming.StreamServiceStubFactory;
 
 @SuppressWarnings("unused")
 @Configuration
 public class BuratinoServiceConfiguration {
+
+    @Bean
+    public PriceChangesBroker priceChangesBroker(
+            StreamServiceStubFactory serviceStubFactory
+    ) {
+        return new PriceChangesBrokerImpl(
+                serviceStubFactory
+        );
+    }
 
     @Bean
     public SpreadAnalyzer spreadAnalyzer(
@@ -81,7 +93,7 @@ public class BuratinoServiceConfiguration {
 
     @Bean
     public AccountResolver accountResolver(UsersService tinkoffUserService) {
-        String name ="Основной брокерский счет";
+        String name ="ИИС";
         return new AccountResolverImpl(
                 name,
                 tinkoffUserService
