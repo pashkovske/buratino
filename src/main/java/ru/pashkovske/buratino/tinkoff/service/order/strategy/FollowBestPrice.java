@@ -3,6 +3,7 @@ package ru.pashkovske.buratino.tinkoff.service.order.strategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.TaskScheduler;
 import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentId;
+import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderHolder;
 import ru.pashkovske.buratino.tinkoff.service.order.model.OrderRequest;
@@ -37,6 +38,47 @@ public class FollowBestPrice implements OrderStrategy {
 
     private final Duration DEFAULT_DELAY = Duration.ofSeconds(25);
 
+    /**
+     * Вычисляет лучшую цену для заданного инструмента и направления, 
+     * применяя соответствующий инкремент к базовой цене.
+     * @param marketPriceService сервис для получения рыночных цен
+     * @param instrument инструмент для расчета цены
+     * @param excludeOrders список заявок, которые следует исключить из расчета
+     * @param direction направление заявки (покупка/продажа)
+     * @return рассчитанная цена с примененным инкрементом
+     * @throws IllegalStateException если не удалось определить базовую цену
+     */
+    public static Quotation calculateBestPrice(
+            MarketPriceService marketPriceService,
+            InstrumentWrapper instrument,
+            List<Order> excludeOrders,
+            OrderDirection direction) {
+        
+        Quotation bestPrice = marketPriceService.getBestPrice(instrument, excludeOrders, direction);
+        if (bestPrice == null) {
+            throw new IllegalStateException("Не удалось определить лучшую цену для инструмента: " + instrument.getTicker());
+        }
+        
+        // Применяем инкремент в зависимости от направления заявки
+        if (direction == OrderDirection.ORDER_DIRECTION_BUY) {
+            bestPrice = PriceUtils.plus(bestPrice, instrument.getMinPriceIncrement());
+        } else if (direction == OrderDirection.ORDER_DIRECTION_SELL) {
+            bestPrice = PriceUtils.minus(bestPrice, instrument.getMinPriceIncrement());
+        }
+        
+        return bestPrice;
+    }
+    
+    /**
+     * Вычисляет лучшую цену для заданного инструмента и направления без исключений
+     */
+    public static Quotation calculateBestPrice(
+            MarketPriceService marketPriceService,
+            InstrumentWrapper instrument,
+            OrderDirection direction) {
+        return calculateBestPrice(marketPriceService, instrument, List.of(), direction);
+    }
+
     @Override
     public Assignment post(AssignmentCommand command) {
         UUID assignmentId = UUID.randomUUID();
@@ -47,16 +89,7 @@ public class FollowBestPrice implements OrderStrategy {
         );
         assignments.put(assignmentId, assignment);
         
-        Quotation bestPrice = marketPriceService.getBestPrice(command.getInstrument(), command.getDirection());
-        // Применяем инкремент в зависимости от направления заявки
-        if (bestPrice != null) {
-            if (command.getDirection() == OrderDirection.ORDER_DIRECTION_BUY) {
-                bestPrice = PriceUtils.plus(bestPrice, command.getInstrument().getMinPriceIncrement());
-            } else {
-                bestPrice = PriceUtils.minus(bestPrice, command.getInstrument().getMinPriceIncrement());
-            }
-        }
-        
+        Quotation bestPrice = calculateBestPrice(marketPriceService, command.getInstrument(), command.getDirection());
         MoneyValue price = PriceMapper.map(bestPrice, command.getInstrument());
         OrderRequest orderRequest = new OrderRequest(
                 command.getInstrument().getId().id(),

@@ -23,8 +23,8 @@ public class CurrentMarketPriceService implements MarketPriceService {
         setRequiredDepth(List.of());
         putRawOrderBooks(instrument);
         Quotation step = instrument.getMinPriceIncrement();
-        Quotation bestSellQuotation = getBestSellPrice(instrument);
-        Quotation bestBuyQuotation = getBestBuyPrice(instrument);
+        Quotation bestSellQuotation = getBestSellPrice();
+        Quotation bestBuyQuotation = getBestBuyPrice();
         if (bestBuyQuotation == null || bestSellQuotation == null) {
             return -1;
         }
@@ -47,9 +47,9 @@ public class CurrentMarketPriceService implements MarketPriceService {
                 )
                 .toList();
         if (direction == OrderDirection.ORDER_DIRECTION_BUY) {
-            return getBestBuyPrice(instrument, excludesInPts);
+            return getBestBuyPrice(excludesInPts);
         } else if (direction == OrderDirection.ORDER_DIRECTION_SELL) {
-            return getBestSellPrice(instrument, excludesInPts);
+            return getBestSellPrice(excludesInPts);
         }
         else {
             throw new IllegalStateException("Определение лучшей цены не зависимо от направления сделки не реализовано");
@@ -60,7 +60,7 @@ public class CurrentMarketPriceService implements MarketPriceService {
         return this.getBestPrice(instrument, List.of(), direction);
     }
 
-    private Quotation getBestSellPrice(InstrumentWrapper instrument, List<Order> excludeOrders) {
+    private Quotation getBestSellPrice(List<Order> excludeOrders) {
         if (asksOrderBook.getSize() < requiredDepth) {
             return null;
         }
@@ -68,11 +68,11 @@ public class CurrentMarketPriceService implements MarketPriceService {
         return asksOrderBook.getMinPrice();
     }
     
-    private Quotation getBestSellPrice(InstrumentWrapper instrument) {
-        return this.getBestSellPrice(instrument, List.of());
+    private Quotation getBestSellPrice() {
+        return this.getBestSellPrice(List.of());
     }
     
-    private Quotation getBestBuyPrice(InstrumentWrapper instrument, List<Order> excludeOrders) {
+    private Quotation getBestBuyPrice(List<Order> excludeOrders) {
         if (bidsOrderBook.getSize() < requiredDepth) {
             return null;
         }
@@ -80,8 +80,8 @@ public class CurrentMarketPriceService implements MarketPriceService {
         return bidsOrderBook.getMaxPrice();
     }
 
-    private Quotation getBestBuyPrice(InstrumentWrapper instrument) {
-        return this.getBestBuyPrice(instrument, List.of());
+    private Quotation getBestBuyPrice() {
+        return this.getBestBuyPrice(List.of());
     }
 
     private void putRawOrderBooks(InstrumentWrapper instrument) {
