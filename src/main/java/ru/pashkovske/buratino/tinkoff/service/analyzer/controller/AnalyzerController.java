@@ -10,6 +10,8 @@ import ru.pashkovske.buratino.tinkoff.service.analyzer.mapper.AnalysedInstrument
 import ru.pashkovske.buratino.tinkoff.service.analyzer.model.CandleDto;
 import ru.pashkovske.buratino.tinkoff.service.analyzer.model.InstrumentWithSpreadDto;
 import ru.pashkovske.buratino.tinkoff.service.analyzer.model.TradeDto;
+import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentId;
+import ru.pashkovske.buratino.tinkoff.service.instrument.model.ShareWrapper;
 import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
 import ru.tinkoff.piapi.contract.v1.CandleInterval;
 import ru.tinkoff.piapi.contract.v1.InstrumentType;
@@ -26,6 +28,11 @@ public class AnalyzerController {
     private final MarketDataService marketDataServiceTinkoff;
     private final InstrumentSelector selector;
     private final SpreadAnalyzer spreadAnalyzer;
+
+    @GetMapping("/share/instrument/{ticker}")
+    public InstrumentId getInstrument(@PathVariable String ticker) {
+        return (selector.getByTicker(ticker)).getId();
+    }
 
     @GetMapping("/instrument/{ticker}/trades")
     public List<TradeDto> getLastTrades(@PathVariable String ticker, @RequestParam long lastHours) {
