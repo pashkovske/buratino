@@ -6,8 +6,7 @@ import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
 @ComponentScan(basePackages = [
-    "ru.pashkovske.buratino.tinkoff.service.price",
-    "ru.pashkovske.buratino.tinkoff.service.instrument.selector"
+    "ru.pashkovske.buratino"
 ])
 class BuratinoSpreadApplication
 

@@ -14,9 +14,9 @@ import ru.tinkoff.piapi.contract.v1.OrderDirection;
 import ru.tinkoff.piapi.contract.v1.Quotation;
 import ru.tinkoff.piapi.core.MarketDataService;
 
-import ru.pashkovske.buratino.tinkoff.service.instrument.model.ShareWrapper;
-import ru.pashkovske.buratino.tinkoff.service.instrument.model.InstrumentWrapper;
-import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
+import ru.pashkovske.buratino.instrument.model.Share;
+import ru.pashkovske.buratino.instrument.model.Instrument;
+import ru.pashkovske.buratino.price.price.service.MarketPriceService;
 import ru.pashkovske.buratino.tinkoff.util.Deserializer;
 
 @SpringBootTest(
@@ -37,10 +37,10 @@ public class GetBestPriceTest {
 
     @Test
     void noExcludeOrders() {
-        InstrumentWrapper instrument = deserializer.deserialize("stub/buratino/instrument/wrapper/share/arenadat-group", ShareWrapper.class);
+        Instrument instrument = deserializer.deserialize("stub/buratino/instrument/wrapper/share/arenadat-group", Share.class);
         GetOrderBookResponse orderBookResponse = deserializer.deserialize("stub/tinkoff/order-book/has-spread/1st-deep/arenadat-group", GetOrderBookResponse.class);
 
-        when(marketDataService.getOrderBookSync(instrument.getId().id(), 1)).thenReturn(orderBookResponse);
+        when(marketDataService.getOrderBookSync(instrument.id.id, 1)).thenReturn(orderBookResponse);
 
         Quotation bestBuyPriceRetrieved = marketPriceService.getBestPrice(instrument, OrderDirection.ORDER_DIRECTION_BUY);
         Quotation bestBuyPriceExpected = deserializer.deserialize("response/price/best-fastest/arenadat-group/buy", Quotation.class);

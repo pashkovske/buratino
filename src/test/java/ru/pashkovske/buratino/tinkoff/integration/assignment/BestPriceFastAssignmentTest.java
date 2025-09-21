@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ru.pashkovske.buratino.tinkoff.configuration.AppTestConfiguration;
-import ru.pashkovske.buratino.tinkoff.service.assignment.controller.AssignmentController;
+import ru.pashkovske.buratino.assignment.controller.AssignmentController;
 
 @Import(AppTestConfiguration.class)
 @WebMvcTest(AssignmentController.class)

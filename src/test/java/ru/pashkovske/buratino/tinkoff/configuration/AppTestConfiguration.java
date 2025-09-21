@@ -7,17 +7,20 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import ru.pashkovske.buratino.account.AccountResolver;
+import ru.pashkovske.buratino.account.AccountResolverImpl;
+import ru.pashkovske.buratino.account.CurrentAccountOrders;
+import ru.pashkovske.buratino.account.CurrentOrdersByApi;
 import ru.pashkovske.buratino.tinkoff.init.SharedMockTinkoffService;
-import ru.pashkovske.buratino.tinkoff.service.account.*;
-import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzer;
-import ru.pashkovske.buratino.tinkoff.service.analyzer.SpreadAnalyzerImpl;
-import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelector;
-import ru.pashkovske.buratino.tinkoff.service.instrument.selector.InstrumentSelectorImpl;
-import ru.pashkovske.buratino.tinkoff.service.order.api.OrderApi;
-import ru.pashkovske.buratino.tinkoff.service.order.api.OrderTinkoffOfficialApi;
-import ru.pashkovske.buratino.tinkoff.service.order.strategy.FollowBestPrice;
-import ru.pashkovske.buratino.tinkoff.service.price.service.CurrentMarketPriceService;
-import ru.pashkovske.buratino.tinkoff.service.price.service.MarketPriceService;
+import ru.pashkovske.buratino.analyzer.SpreadAnalyzer;
+import ru.pashkovske.buratino.analyzer.SpreadAnalyzerImpl;
+import ru.pashkovske.buratino.instrument.service.InstrumentService;
+import ru.pashkovske.buratino.instrument.adapter.tinkoff.TinkoffInstrumentService;
+import ru.pashkovske.buratino.order.service.OrderService;
+import ru.pashkovske.buratino.order.adapter.tinkoff.TinkoffOrderApi;
+import ru.pashkovske.buratino.order.strategy.FollowBestPrice;
+import ru.pashkovske.buratino.price.price.service.CurrentMarketPriceService;
+import ru.pashkovske.buratino.price.price.service.MarketPriceService;
 import ru.pashkovske.buratino.tinkoff.util.Deserializer;
 import ru.pashkovske.buratino.tinkoff.util.FileLoader;
 import ru.tinkoff.piapi.core.*;
@@ -29,7 +32,7 @@ public class AppTestConfiguration {
     @Bean
     public SpreadAnalyzer spreadAnalyzer(
             MarketPriceService priceService,
-            InstrumentSelector selector
+            InstrumentService selector
     ) {
         return new SpreadAnalyzerImpl(
                 priceService,
@@ -55,9 +58,9 @@ public class AppTestConfiguration {
 
     @Bean
     public FollowBestPrice followBestPrice(
-            OrderApi orderApi,
+            OrderService orderApi,
             MarketPriceService priceService,
-            InstrumentSelector selector,
+            InstrumentService selector,
             TaskScheduler taskScheduler
     ) {
         return new FollowBestPrice(
@@ -69,11 +72,11 @@ public class AppTestConfiguration {
     }
 
     @Bean
-    public OrderApi orderApi(
+    public OrderService orderApi(
             @Qualifier("brokerAccountId") String brokerAccountId,
             OrdersService tinkoffOrderService
     ) {
-        return new OrderTinkoffOfficialApi(
+        return new TinkoffOrderApi(
                 brokerAccountId,
                 tinkoffOrderService
         );
@@ -81,7 +84,7 @@ public class AppTestConfiguration {
 
     @Bean("brokerAccountId")
     public String brokerAccountId(AccountResolver accountResolver) {
-        return accountResolver.getBrokerAccountId();
+        return accountResolver.brokerAccountId;
     }
 
     @Bean
@@ -99,8 +102,8 @@ public class AppTestConfiguration {
     }
 
     @Bean
-    public InstrumentSelector selector(InstrumentsService tinkoffInstrumentsService) {
-        return new InstrumentSelectorImpl(tinkoffInstrumentsService);
+    public InstrumentService selector(InstrumentsService tinkoffInstrumentsService) {
+        return new TinkoffInstrumentService(tinkoffInstrumentsService);
     }
 
     @Bean
