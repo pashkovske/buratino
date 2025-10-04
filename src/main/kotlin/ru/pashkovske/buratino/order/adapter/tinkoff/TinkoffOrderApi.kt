@@ -24,7 +24,7 @@ class TinkoffOrderApi(
     private val priceMapper = TinkoffPriceMapper
     private val orderMapper = TinkoffOrderMapper
 
-    override fun post(orderRequest: LimitOrderRequest): Order {
+    override fun createOrder(orderRequest: LimitOrderRequest): Order {
         val response: PostOrderResponse = tinkoffOrderService.postLimitOrderSync(
             orderRequest.iid.id,
             orderRequest.lots,

@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan
 @ComponentScan(basePackages = [
     "ru.pashkovske.buratino"
 ])
-class BuratinoSpreadApplication
+class BuratinoApplication
 
 fun main(args: Array<String>) {
-    runApplication<BuratinoSpreadApplication>(*args)
+    runApplication<BuratinoApplication>(*args)
 }

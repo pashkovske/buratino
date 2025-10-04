@@ -2,6 +2,7 @@ package ru.pashkovske.buratino.price.configuration
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffOfferBookService
 import ru.pashkovske.buratino.price.offer.repository.OfferBookRepo
 import ru.pashkovske.buratino.price.offer.repository.OfferBookRepoInMemory
@@ -45,11 +46,13 @@ class PriceConfiguration {
     @Bean
     fun offerBookService(
         tinkoffMarketDataService: MarketDataService,
-        tinkoffOrderService: OrdersService
+        tinkoffOrderService: OrdersService,
+        account: Account
     ): OfferBookService {
         return TinkoffOfferBookService(
             tinkoffMarketDataService = tinkoffMarketDataService,
-            tinkoffOrderService = tinkoffOrderService
+            tinkoffOrderService = tinkoffOrderService,
+            account = account
         )
     }
 

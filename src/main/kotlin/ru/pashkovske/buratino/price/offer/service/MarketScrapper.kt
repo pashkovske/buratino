@@ -1,7 +1,6 @@
 package ru.pashkovske.buratino.price.offer.service
 
 import org.springframework.stereotype.Component
-import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.price.offer.repository.OfferBookRepo
 
@@ -12,10 +11,9 @@ class MarketScrapper(
 ) {
     fun updateOfferBook(
         iid: InstrumentId,
-        depth: Int,
-        account: Account
+        depth: Int
     ) {
-        val offerBook = offerBookService.getOfferBook(iid, depth, account)
+        val offerBook = offerBookService.getOfferBook(iid, depth)
         offerBookRepo.update(iid, offerBook)
     }
 }

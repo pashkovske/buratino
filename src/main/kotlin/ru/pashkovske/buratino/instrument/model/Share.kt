@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.instrument.model
 
+import ru.pashkovske.buratino.price.price.model.Currency
 import ru.pashkovske.buratino.price.price.model.MoneyPrice
 
 data class Share(
@@ -9,7 +10,8 @@ data class Share(
     override val lot: Int,
     override val isTradable: Boolean,
     override val forQualifiedInvestorOnly: Boolean,
-    override val minPriceIncrement: MoneyPrice
+    override val minPriceIncrement: MoneyPrice,
+    override val currency: Currency
 ) : Instrument(
     iid = iid,
     name = name,
@@ -18,5 +20,6 @@ data class Share(
     lot = lot,
     isTradable = isTradable,
     forQualifiedInvestorOnly = forQualifiedInvestorOnly,
+    currency = currency,
     type = InstrumentType.SHARE
 )

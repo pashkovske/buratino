@@ -4,6 +4,7 @@ import ru.pashkovske.buratino.instrument.model.Future
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Share
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffPriceMapper
+import ru.pashkovske.buratino.price.price.model.Currency
 import ru.tinkoff.piapi.contract.v1.SecurityTradingStatus
 
 object TinkoffInstrumentMapper {
@@ -29,6 +30,7 @@ object TinkoffInstrumentMapper {
             ),
             lot = tinkoffShare.lot,
             isTradable = isTradableNow(tinkoffShare.tradingStatus),
+            currency = Currency.fromStr(tinkoffShare.currency),
             forQualifiedInvestorOnly = tinkoffShare.forQualInvestorFlag,
         )
     }
@@ -45,6 +47,7 @@ object TinkoffInstrumentMapper {
             lot = tinkoffFuture.lot,
             isTradable = isTradableNow(tinkoffFuture.tradingStatus),
             forQualifiedInvestorOnly = tinkoffFuture.forQualInvestorFlag,
+            currency = Currency.fromStr(tinkoffFuture.currency),
             minPriceIncrementPts = priceMapper.mapToPoints(tinkoffFuture.minPriceIncrementAmount)
         )
     }

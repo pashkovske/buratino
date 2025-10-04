@@ -21,6 +21,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.9.24</kotlin.version>
+        <tinkoff.sdk.version>1.31</tinkoff.sdk.version>
     </properties>
 
     <dependencies>
@@ -49,19 +50,12 @@
         <dependency>
             <groupId>ru.tinkoff.piapi</groupId>
             <artifactId>java-sdk-core</artifactId>
-            <version>1.31</version>
+            <version>${tinkoff.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.tinkoff.piapi</groupId>
             <artifactId>java-sdk-spring-boot-starter</artifactId>
-            <version>1.31</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
-            <scope>provided</scope>
+            <version>${tinkoff.sdk.version}</version>
         </dependency>
 
         <!-- Kotlin dependencies -->

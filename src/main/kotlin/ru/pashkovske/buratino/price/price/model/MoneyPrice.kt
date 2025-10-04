@@ -1,9 +1,16 @@
 package ru.pashkovske.buratino.price.price.model
 
-import ru.tinkoff.piapi.contract.v1.MoneyValue
-
 data class MoneyPrice(
     override val units: Long,
     override val nano: Int,
     val currency: Currency,
-) : Quotation(units, nano)
+) : Quotation(units, nano) {
+    constructor(
+        quotation: Quotation,
+        currency: Currency
+    ): this(
+        units =quotation.units,
+        nano = quotation.nano,
+        currency = currency
+    )
+}

@@ -18,12 +18,12 @@ import java.time.Instant
 @Component
 class TinkoffOfferBookService(
     private val tinkoffMarketDataService: MarketDataService,
-    private val tinkoffOrderService: OrdersService
+    private val tinkoffOrderService: OrdersService,
+    private val account: Account
 ) : OfferBookService {
     override fun getOfferBook(
         iid: InstrumentId,
-        depth: Int,
-        account: Account
+        depth: Int
     ): OfferBook {
         val tinkoffOrderBook = tinkoffMarketDataService.getOrderBookSync(iid.id, depth)
         val tinkoffOwnedOrdes = tinkoffOrderService.getOrdersSync(account.id)

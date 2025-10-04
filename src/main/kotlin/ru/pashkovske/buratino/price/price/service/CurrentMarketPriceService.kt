@@ -1,6 +1,5 @@
 package ru.pashkovske.buratino.price.price.service
 
-import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -17,19 +16,16 @@ class CurrentMarketPriceService(
 ) : MarketPriceService {
 
     override fun getSpreadBasisPoints(
-        instrument: Instrument,
-        account: Account
+        instrument: Instrument
     ): Long? {
         val step = instrument.minPriceIncrement
-        val bestSellQuotation: Quotation? = getBestOfBook(
+        val bestSellQuotation: Quotation? = getTopOfBook(
             instrument = instrument,
-            direction = OrderDirection.SELL,
-            account = account
+            direction = OrderDirection.SELL
         )
-        val bestBuyQuotation: Quotation? = getBestOfBook(
+        val bestBuyQuotation: Quotation? = getTopOfBook(
             instrument = instrument,
-            direction = OrderDirection.BUY,
-            account = account
+            direction = OrderDirection.BUY
         )
         if (bestBuyQuotation == null || bestSellQuotation == null) {
             return null
@@ -45,32 +41,30 @@ class CurrentMarketPriceService(
         return ((bestSellPrice - bestBuyPrice) * 20000) / (bestSellPrice + bestBuyPrice)
     }
 
-    override fun getBestOfBook(
+    override fun getTopOfBook(
         instrument: Instrument,
-        direction: OrderDirection,
-        account: Account
+        direction: OrderDirection
     ): Quotation? {
         val iid: InstrumentId = instrument.iid
         marketScrapper.updateOfferBook(
             iid = iid,
-            depth = DEPTH_CHECK,
-            account = account
+            depth = DEPTH_CHECK
         )
         val offerBook: OfferBook = offerBookRepo.read(iid)!!
         return when (direction) {
-            OrderDirection.BUY -> getBestOfBookBuyPrice(offerBook)
-            OrderDirection.SELL -> getBestOfBookSellPrice(offerBook)
+            OrderDirection.BUY -> getTopOfBookBuyPrice(offerBook)
+            OrderDirection.SELL -> getTopOfBookSellPrice(offerBook)
             else -> throw IllegalArgumentException("Определение лучшей цены не зависимо от направления сделки не реализовано")
         }
     }
 
-    private fun getBestOfBookSellPrice(offerBook: OfferBook): Quotation? {
+    private fun getTopOfBookSellPrice(offerBook: OfferBook): Quotation? {
         return offerBook.asks.keys
             .sorted()
             .firstOrNull { offerBook.asks[it]!!.alienAffiliated != null }
     }
 
-    private fun getBestOfBookBuyPrice(offerBook: OfferBook): Quotation? {
+    private fun getTopOfBookBuyPrice(offerBook: OfferBook): Quotation? {
         return offerBook.bids.keys
             .sortedDescending()
             .firstOrNull { offerBook.bids[it]!!.alienAffiliated != null }
