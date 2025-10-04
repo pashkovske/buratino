@@ -38,6 +38,10 @@ class TopPriceAssignmentExecutor(
     override fun refresh(id: UUID) {
         logger.info("Refreshing assignment: $id")
         val assignment = assignmentRepo.get(id)
+        if (assignment.status == AssignmentStatus.COMPLETED) {
+            logger.info("Assignment is already completed: ${assignment.id}, skipping refresh")
+            return
+        }
         val order = getOrder(assignment)
         orderService.refreshOrder(order)
         if (order.currentInfo.state == OrderState.COMPLETED) {
@@ -58,6 +62,10 @@ class TopPriceAssignmentExecutor(
     override fun cancel(id: UUID) {
         logger.info("Cancelling assignment: $id")
         val assignment = assignmentRepo.get(id)
+        if (assignment.status == AssignmentStatus.COMPLETED) {
+            logger.info("Assignment is already completed: ${assignment.id}, skipping cancel")
+            return
+        }
         val order = getOrder(assignment)
         orderService.refreshOrder(order)
         if (order.currentInfo.state != OrderState.COMPLETED) {
