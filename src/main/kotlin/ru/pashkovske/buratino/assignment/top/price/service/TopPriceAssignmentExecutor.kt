@@ -2,6 +2,7 @@ package ru.pashkovske.buratino.assignment.top.price.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.service.AssignmentExecutor
 import ru.pashkovske.buratino.assignment.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.instrument.model.Instrument
@@ -18,7 +19,8 @@ import java.util.UUID
 class TopPriceAssignmentExecutor(
     val marketDataService: MarketPriceService,
     val orderService: OrderService,
-    val instrumentService: InstrumentService
+    val instrumentService: InstrumentService,
+    val assignmentRepo: AssignmentRepo<TopPriceAssignment>
 ) : AssignmentExecutor<TopPriceAssignment> {
     override fun run(assignment: TopPriceAssignment) {
         val instrument: Instrument = instrumentService.get(assignment.iid)
@@ -41,5 +43,6 @@ class TopPriceAssignmentExecutor(
         )
         assignment.info.order = order
         assignment.status = AssignmentStatus.IN_PROGRESS
+        assignmentRepo.create(assignment)
     }
 }

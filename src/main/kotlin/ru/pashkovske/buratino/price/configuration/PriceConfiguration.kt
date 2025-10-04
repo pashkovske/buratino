@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffOfferBookService
-import ru.pashkovske.buratino.price.offer.repository.OfferBookRepo
-import ru.pashkovske.buratino.price.offer.repository.OfferBookRepoInMemory
+import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
+import ru.pashkovske.buratino.price.offer.repo.OfferBookRepoInMemory
 import ru.pashkovske.buratino.price.offer.service.MarketScrapper
 import ru.pashkovske.buratino.price.offer.service.OfferBookService
 import ru.pashkovske.buratino.price.price.service.CurrentMarketPriceService

@@ -5,7 +5,7 @@ import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.price.price.model.Quotation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
-import ru.pashkovske.buratino.price.offer.repository.OfferBookRepo
+import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
 import ru.pashkovske.buratino.price.offer.service.MarketScrapper
 
 private const val DEPTH_CHECK = 5

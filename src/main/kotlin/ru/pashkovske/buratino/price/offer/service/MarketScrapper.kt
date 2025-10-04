@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.price.offer.service
 
 import org.springframework.stereotype.Component
 import ru.pashkovske.buratino.instrument.model.InstrumentId
-import ru.pashkovske.buratino.price.offer.repository.OfferBookRepo
+import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
 
 @Component
 class MarketScrapper(

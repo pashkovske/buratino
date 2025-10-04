@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.price.offer.repository
+package ru.pashkovske.buratino.price.offer.repo
 
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.price.offer.model.OfferBook
