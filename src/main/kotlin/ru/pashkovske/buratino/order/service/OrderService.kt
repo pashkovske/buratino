@@ -9,5 +9,6 @@ interface OrderService {
         order: Order,
         newOrderRequest: LimitOrderRequest
     ): Order
+    fun refreshOrder(order: Order)
     fun cancelOrder(order: Order)
 }

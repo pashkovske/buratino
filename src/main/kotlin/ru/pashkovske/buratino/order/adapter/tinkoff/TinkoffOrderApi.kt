@@ -8,10 +8,12 @@ import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffPriceMapper
 import ru.pashkovske.buratino.price.price.model.Quotation
+import ru.tinkoff.piapi.contract.v1.OrderState
 import ru.tinkoff.piapi.contract.v1.PostOrderResponse
 import ru.tinkoff.piapi.contract.v1.PriceType
 import ru.tinkoff.piapi.contract.v1.TimeInForceType
 import ru.tinkoff.piapi.core.OrdersService
+import java.time.Instant
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
@@ -77,6 +79,17 @@ class TinkoffOrderApi(
         return orderMapper.map(
             tinkoffOrderResponse = response,
             orderRequest = newOrderRequest
+        )
+    }
+
+    override fun refreshOrder(order: Order) {
+        val tinkoffOrderState: OrderState = tinkoffOrderService.getOrderStateSync(
+            account.id,
+            order.id
+        )
+        order.currentInfo = orderMapper.map(
+            tinkoffOrderState = tinkoffOrderState,
+            time = Instant.now()
         )
     }
 

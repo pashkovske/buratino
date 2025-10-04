@@ -1,6 +1,8 @@
 package ru.pashkovske.buratino.assignment.top.price.controller
 
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -10,6 +12,7 @@ import ru.pashkovske.buratino.assignment.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.top.price.service.TopPriceAssignmentExecutor
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
+import java.util.UUID
 
 @Suppress("unused")
 @RestController
@@ -18,24 +21,30 @@ class TopPriceAssignmentController(
     private val assignmentExecutor: TopPriceAssignmentExecutor,
     private val assignmentRepo: AssignmentRepo<TopPriceAssignment>
 ) {
-    @PostMapping("/{instrumentId}/buy/start")
-    fun buy(@PathVariable instrumentId: String): TopPriceAssignment {
+    @PostMapping("/{instrumentId}/start/{direction}")
+    fun start(
+        @PathVariable instrumentId: String,
+        @PathVariable direction: String
+    ): TopPriceAssignment {
         val assignment = TopPriceAssignment(
             iid = InstrumentId(id = instrumentId),
-            direction = OrderDirection.BUY
+            direction = OrderDirection.fromString(direction)
         )
-        assignmentExecutor.run(assignment)
+        assignmentExecutor.start(assignment)
         return assignment
     }
 
-    @PostMapping("/{instrumentId}/sell/start")
-    fun sell(@PathVariable instrumentId: String): TopPriceAssignment {
-        val assignment = TopPriceAssignment(
-            iid = InstrumentId(id = instrumentId),
-            direction = OrderDirection.SELL
-        )
-        assignmentExecutor.run(assignment)
-        return assignment}
+    @PatchMapping("/{id}/refresh")
+    fun refresh(@PathVariable id: UUID): TopPriceAssignment {
+        assignmentExecutor.refresh(id)
+        return assignmentRepo.get(id)
+    }
+
+    @DeleteMapping("/{id}")
+    fun cancel(@PathVariable id: UUID): TopPriceAssignment {
+        assignmentExecutor.cancel(id)
+        return assignmentRepo.get(id)
+    }
 
     @GetMapping("/")
     fun getAll(): List<TopPriceAssignment> {

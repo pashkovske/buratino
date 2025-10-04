@@ -9,6 +9,7 @@ import ru.pashkovske.buratino.order.model.OrderInstantInfo
 import ru.pashkovske.buratino.order.model.OrderRequest
 import ru.pashkovske.buratino.order.model.OrderState
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffPriceMapper
+import java.time.Instant
 
 object TinkoffOrderMapper {
     private val priceMapper = TinkoffPriceMapper
@@ -51,7 +52,17 @@ object TinkoffOrderMapper {
             time = TimeUtils.tsToInstant(tinkoffOrderResponse.responseMetadata.serverTime)
         )
     }
-}
+
+    fun map(
+        tinkoffOrderState: ru.tinkoff.piapi.contract.v1.OrderState,
+        time: Instant
+    ): OrderInstantInfo {
+        return OrderInstantInfo(
+            state = map(tinkoffOrderState.executionReportStatus),
+            remainingLots = tinkoffOrderState.lotsRequested - tinkoffOrderState.lotsExecuted,
+            time = time
+        )
+    }
 
     fun map(tinkoffOrderExecutionStatus: ru.tinkoff.piapi.contract.v1.OrderExecutionReportStatus): OrderState {
         return when (tinkoffOrderExecutionStatus) {
@@ -61,5 +72,6 @@ object TinkoffOrderMapper {
             ru.tinkoff.piapi.contract.v1.OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_PARTIALLYFILL -> OrderState.ACTIVE
             ru.tinkoff.piapi.contract.v1.OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_FILL -> OrderState.COMPLETED
             else -> throw IllegalArgumentException("Unknown execution status: $tinkoffOrderExecutionStatus")
+        }
     }
 }
