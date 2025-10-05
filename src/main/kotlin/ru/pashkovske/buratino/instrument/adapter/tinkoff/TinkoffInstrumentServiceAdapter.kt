@@ -1,19 +1,21 @@
 package ru.pashkovske.buratino.instrument.adapter.tinkoff
 
+import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.instrument.model.Future
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.model.Share
-import ru.pashkovske.buratino.instrument.service.InstrumentService
+import ru.pashkovske.buratino.instrument.adapter.InstrumentServiceAdapter
 import ru.tinkoff.piapi.contract.v1.InstrumentShort
 import ru.tinkoff.piapi.contract.v1.InstrumentType
 import ru.tinkoff.piapi.core.InstrumentsService
 import java.util.Objects
 import kotlin.collections.map
 
-class TinkoffInstrumentService(
+@Service
+class TinkoffInstrumentServiceAdapter(
     private val instrumentsService: InstrumentsService
-) : InstrumentService {
+) : InstrumentServiceAdapter {
     private val mapper = TinkoffInstrumentMapper
 
     override fun getByName(name: String): Instrument {

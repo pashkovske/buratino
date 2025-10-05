@@ -14,8 +14,8 @@ import ru.pashkovske.buratino.account.CurrentOrdersByApi;
 import ru.pashkovske.buratino.tinkoff.init.SharedMockTinkoffService;
 import ru.pashkovske.buratino.analyzer.SpreadAnalyzer;
 import ru.pashkovske.buratino.analyzer.SpreadAnalyzerImpl;
-import ru.pashkovske.buratino.instrument.service.InstrumentService;
-import ru.pashkovske.buratino.instrument.adapter.tinkoff.TinkoffInstrumentService;
+import ru.pashkovske.buratino.instrument.adapter.InstrumentServiceAdapter;
+import ru.pashkovske.buratino.instrument.adapter.tinkoff.TinkoffInstrumentServiceAdapter;
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter;
 import ru.pashkovske.buratino.order.adapter.tinkoff.TinkoffOrderApi;
 import ru.pashkovske.buratino.order.strategy.FollowBestPrice;
@@ -32,7 +32,7 @@ public class AppTestConfiguration {
     @Bean
     public SpreadAnalyzer spreadAnalyzer(
             MarketPriceService priceService,
-            InstrumentService selector
+            InstrumentServiceAdapter selector
     ) {
         return new SpreadAnalyzerImpl(
                 priceService,
@@ -60,7 +60,7 @@ public class AppTestConfiguration {
     public FollowBestPrice followBestPrice(
             ExtOrderServiceAdapter orderApi,
             MarketPriceService priceService,
-            InstrumentService selector,
+            InstrumentServiceAdapter selector,
             TaskScheduler taskScheduler
     ) {
         return new FollowBestPrice(
@@ -102,8 +102,8 @@ public class AppTestConfiguration {
     }
 
     @Bean
-    public InstrumentService selector(InstrumentsService tinkoffInstrumentsService) {
-        return new TinkoffInstrumentService(tinkoffInstrumentsService);
+    public InstrumentServiceAdapter selector(InstrumentsService tinkoffInstrumentsService) {
+        return new TinkoffInstrumentServiceAdapter(tinkoffInstrumentsService);
     }
 
     @Bean
