@@ -2,7 +2,9 @@ package ru.pashkovske.buratino.price.offer.adapter.tinkoff
 
 import org.springframework.stereotype.Component
 import ru.pashkovske.buratino.account.model.Account
+import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.model.InstrumentId
+import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.price.offer.service.OfferBookService
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
@@ -19,6 +21,7 @@ import java.time.Instant
 class TinkoffOfferBookService(
     private val tinkoffMarketDataService: MarketDataService,
     private val tinkoffOrderService: OrdersService,
+    private val instrumentService: InstrumentService,
     private val account: Account
 ) : OfferBookService {
     override fun getOfferBook(
@@ -27,12 +30,14 @@ class TinkoffOfferBookService(
     ): OfferBook {
         val tinkoffOrderBook = tinkoffMarketDataService.getOrderBookSync(iid.id, depth)
         val tinkoffOwnedOrdes = tinkoffOrderService.getOrdersSync(account.id)
+        val instrument: Instrument = instrumentService.get(iid)
 
         val selfOffersList: List<Offer> = tinkoffOwnedOrdes
             .filter { it.instrumentUid == iid.id }
             .map { orderState ->
                 TinkoffOfferMapper.map(
                     tinkoffOrder = orderState,
+                    instrument = instrument,
                     affiliation = OfferAffiliation.SELF
                 )
             }

@@ -8,6 +8,7 @@ import ru.pashkovske.buratino.assignment.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.Order
+import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.price.model.MoneyPrice
@@ -86,10 +87,18 @@ class TopPriceAssignmentExecutor(
             instrument = instrument,
             direction = assignment.direction
         )
-        return MoneyPrice(
+        var moneyTopPrice = MoneyPrice(
             quotation = topBuyPrice!!,
             currency = instrument.currency
         )
+        if (assignment.oneStepOver) {
+            if (assignment.direction == OrderDirection.BUY) {
+                moneyTopPrice += instrument.minPriceIncrement
+            } else {
+                moneyTopPrice -= instrument.minPriceIncrement
+            }
+        }
+        return moneyTopPrice
     }
 
     private fun buildLimitReq(assignment: TopPriceAssignment): LimitOrderRequest {

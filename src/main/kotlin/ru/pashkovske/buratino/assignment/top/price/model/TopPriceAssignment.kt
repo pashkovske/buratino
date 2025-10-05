@@ -7,5 +7,6 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 data class TopPriceAssignment(
     override val iid: InstrumentId,
     val direction: OrderDirection,
+    val oneStepOver: Boolean = false,
     val info: TopPriceAssignmentInfo = TopPriceAssignmentInfo()
 ) : InstrumentAssignment(iid = iid)

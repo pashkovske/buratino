@@ -1,8 +1,10 @@
 package ru.pashkovske.buratino.price.offer.adapter.tinkoff
 
+import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
+import ru.pashkovske.buratino.price.price.model.Quotation
 import ru.tinkoff.piapi.contract.v1.Order
 import ru.tinkoff.piapi.contract.v1.OrderDirection
 import ru.tinkoff.piapi.contract.v1.OrderState
@@ -32,10 +34,21 @@ object TinkoffOfferMapper {
 
     fun map(
         tinkoffOrder: OrderState,
+        instrument: Instrument,
         affiliation: OfferAffiliation
     ): Offer {
+        val lotPrice: Quotation = TinkoffPriceMapper.map(tinkoffOrder.initialOrderPrice)
+        if (lotPrice % instrument.lot.toLong() != Quotation.ZERO) {
+            throw IllegalArgumentException("""
+                Цена заказа не делится на количество бумаг в 1 лоте инструмента:
+                    instrument.lot = ${instrument.lot}
+                    lotPrice = $lotPrice
+                    lotPrice % instrument.lot = ${lotPrice % instrument.lot.toLong()}
+                """.trimIndent()
+            )
+        }
         return Offer(
-            price = TinkoffPriceMapper.map(tinkoffOrder.initialOrderPrice),
+            price = lotPrice / instrument.lot.toLong(),
             lots = tinkoffOrder.lotsRequested - tinkoffOrder.lotsExecuted,
             direction = map(tinkoffOrder.direction),
             affiliation = affiliation

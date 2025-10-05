@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.price.price.service
 
+import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -10,6 +11,7 @@ import ru.pashkovske.buratino.price.offer.service.MarketScrapper
 
 private const val DEPTH_CHECK = 5
 
+@Service
 class CurrentMarketPriceService(
     private val marketScrapper: MarketScrapper,
     private val offerBookRepo: OfferBookRepo

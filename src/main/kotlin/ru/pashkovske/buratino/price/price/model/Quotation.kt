@@ -8,6 +8,7 @@ open class Quotation(
 ): Comparable<Quotation> {
     companion object {
         private const val MAX_NANO = 1_000_000_000
+        val ZERO = Quotation(0, 0)
     }
 
     override fun toString(): String {
@@ -51,6 +52,13 @@ open class Quotation(
         return quotient[0].toLong()
     }
 
+    operator fun div(other: Long): Quotation {
+        val dividend = toBigInt(this)
+        val divisor = BigInteger.valueOf(other)
+        val quotient = dividend.divideAndRemainder(divisor)
+        return fromBigInt(quotient[0])
+    }
+
     operator fun rem(other: Quotation): Long {
         val dividend = toBigInt(this)
         val divisor = toBigInt(other)
@@ -58,11 +66,24 @@ open class Quotation(
         return quotient[1].toLong()
     }
 
+    operator fun rem(other: Long): Quotation {
+        val dividend = toBigInt(this)
+        val divisor = BigInteger.valueOf(other)
+        val quotient = dividend.divideAndRemainder(divisor)
+        return fromBigInt(quotient[1])
+    }
+
     override operator fun compareTo(other: Quotation): Int {
         if (this.units != other.units) {
             return this.units.compareTo(other.units)
         }
         return this.nano.compareTo(other.nano)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Quotation) return false
+        return units == other.units && nano == other.nano
     }
 
     private fun toBigInt(price: Quotation): BigInteger {
@@ -74,5 +95,11 @@ open class Quotation(
     private fun fromBigInt(bigInt: BigInteger): Quotation {
         val quotient = bigInt.divideAndRemainder(BigInteger.valueOf(MAX_NANO.toLong()))
         return Quotation(quotient[0]!!.longValueExact(), quotient[1]!!.intValueExact())
+    }
+
+    override fun hashCode(): Int {
+        var result = units.hashCode()
+        result = 31 * result + nano.hashCode()
+        return result
     }
 }

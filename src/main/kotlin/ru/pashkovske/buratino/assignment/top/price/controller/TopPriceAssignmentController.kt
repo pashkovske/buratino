@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.top.price.model.TopPriceAssignment
@@ -24,11 +25,13 @@ class TopPriceAssignmentController(
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
         @PathVariable instrumentId: String,
-        @PathVariable direction: String
+        @PathVariable direction: String,
+        @RequestParam oneStepOver: Boolean?
     ): TopPriceAssignment {
         val assignment = TopPriceAssignment(
             iid = InstrumentId(id = instrumentId),
-            direction = OrderDirection.fromString(direction)
+            direction = OrderDirection.fromString(direction),
+            oneStepOver = oneStepOver ?: false
         )
         assignmentExecutor.start(assignment)
         return assignment
