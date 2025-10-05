@@ -29,6 +29,10 @@ class OrderServiceImpl(
     ): Order {
         logger.info("Replacing order $orderId with $newOrderRequest")
         val order = orderRepo.get(orderId)
+        if (order.request == newOrderRequest) {
+            logger.info("Skipping replacing order $orderId - new order is identical")
+            return order
+        }
         val newOrder = extOrderService.replaceOrder(
             orderId = order.id,
             newOrderRequest = newOrderRequest

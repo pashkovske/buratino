@@ -17,4 +17,17 @@ data class LimitOrderRequest(
     direction = direction,
     lots = lots,
     idempotencyToken = idempotencyToken
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LimitOrderRequest) return false
+        return super.equals(other)
+            && price == other.price
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + price.hashCode()
+        return result
+    }
+}
