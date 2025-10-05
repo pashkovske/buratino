@@ -16,7 +16,7 @@ import ru.pashkovske.buratino.analyzer.SpreadAnalyzer;
 import ru.pashkovske.buratino.analyzer.SpreadAnalyzerImpl;
 import ru.pashkovske.buratino.instrument.service.InstrumentService;
 import ru.pashkovske.buratino.instrument.adapter.tinkoff.TinkoffInstrumentService;
-import ru.pashkovske.buratino.order.service.OrderService;
+import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter;
 import ru.pashkovske.buratino.order.adapter.tinkoff.TinkoffOrderApi;
 import ru.pashkovske.buratino.order.strategy.FollowBestPrice;
 import ru.pashkovske.buratino.price.price.service.CurrentMarketPriceService;
@@ -58,7 +58,7 @@ public class AppTestConfiguration {
 
     @Bean
     public FollowBestPrice followBestPrice(
-            OrderService orderApi,
+            ExtOrderServiceAdapter orderApi,
             MarketPriceService priceService,
             InstrumentService selector,
             TaskScheduler taskScheduler
@@ -72,7 +72,7 @@ public class AppTestConfiguration {
     }
 
     @Bean
-    public OrderService orderApi(
+    public ExtOrderServiceAdapter orderApi(
             @Qualifier("brokerAccountId") String brokerAccountId,
             OrdersService tinkoffOrderService
     ) {

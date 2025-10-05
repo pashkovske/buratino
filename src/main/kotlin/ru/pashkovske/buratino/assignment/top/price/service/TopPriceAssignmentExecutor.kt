@@ -8,7 +8,6 @@ import ru.pashkovske.buratino.assignment.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.Order
-import ru.pashkovske.buratino.order.model.OrderState
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.price.model.MoneyPrice
@@ -25,56 +24,60 @@ class TopPriceAssignmentExecutor(
     val instrumentService: InstrumentService,
     val assignmentRepo: AssignmentRepo<TopPriceAssignment>
 ) : AssignmentExecutor<TopPriceAssignment> {
-    override fun start(assignment: TopPriceAssignment) {
+    override fun start(assignment: TopPriceAssignment): TopPriceAssignment {
         logger.info("Starting assignment: $assignment")
         val order: Order = orderService.createOrder(
             orderRequest = buildLimitReq(assignment)
         )
-        assignment.info.order = order
+        assignment.info.orderId = order.id
         assignment.status = AssignmentStatus.IN_PROGRESS
         assignmentRepo.create(assignment)
+        return assignment
     }
 
-    override fun refresh(id: UUID) {
+    override fun refresh(id: UUID): TopPriceAssignment {
         logger.info("Refreshing assignment: $id")
         val assignment = assignmentRepo.get(id)
         if (assignment.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment is already completed: ${assignment.id}, skipping refresh")
-            return
+            logger.info("Assignment ${assignment.id} is already completed, skipping refresh")
+            return assignment
         }
-        val order = getOrder(assignment)
-        orderService.refreshOrder(order)
-        if (order.currentInfo.state == OrderState.COMPLETED) {
+        val orderId: String = getOrderId(assignment)
+        if (orderService.isOrderCompleted(orderId)) {
+            logger.info("Order of assignment ${assignment.id} is already completed, skipping refresh")
             assignment.status = AssignmentStatus.COMPLETED
         }
         else {
-            logger.info("Refreshed order: $order")
-            val order: Order = orderService.replaceOrder(
-                order = order,
+            val newOrder: Order = orderService.replaceOrder(
+                orderId = orderId,
                 newOrderRequest = buildLimitReq(assignment)
             )
-            assignment.info.order = order
+            logger.info("Refreshed order: $orderId")
             assignment.status = AssignmentStatus.IN_PROGRESS
+            assignment.info.orderId = newOrder.id
         }
         assignmentRepo.update(assignment)
+        return assignment
     }
 
-    override fun cancel(id: UUID) {
+    override fun cancel(id: UUID): TopPriceAssignment {
         logger.info("Cancelling assignment: $id")
         val assignment = assignmentRepo.get(id)
         if (assignment.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment is already completed: ${assignment.id}, skipping cancel")
-            return
+            logger.info("Assignment ${assignment.id} is already completed, skipping cancel")
+            return assignment
         }
-        val order = getOrder(assignment)
-        orderService.refreshOrder(order)
-        if (order.currentInfo.state != OrderState.COMPLETED) {
-            orderService.cancelOrder(order)
-            logger.info("Canceled order: $order")
-            orderService.refreshOrder(order)
+        val orderId: String = getOrderId(assignment)
+        if (orderService.isOrderCompleted(orderId)) {
+            logger.info("Order of assignment ${assignment.id} is already completed, skipping cancel")
+        }
+        else {
+            orderService.cancelOrder(orderId)
+            logger.info("Canceled order: $orderId")
         }
         assignment.status = AssignmentStatus.COMPLETED
         assignmentRepo.update(assignment)
+        return assignment
     }
 
     private fun getTopPrice(assignment: TopPriceAssignment): MoneyPrice {
@@ -99,8 +102,8 @@ class TopPriceAssignmentExecutor(
         )
     }
 
-    private fun getOrder(assignment: TopPriceAssignment): Order {
-        return assignment.info.order
+    private fun getOrderId(assignment: TopPriceAssignment): String {
+        return assignment.info.orderId
             ?: throw IllegalArgumentException("No order found in assignment ${assignment.id}. Probably it was not started or already canceled")
     }
 }

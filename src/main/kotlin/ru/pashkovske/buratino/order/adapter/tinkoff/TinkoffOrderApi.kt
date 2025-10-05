@@ -3,8 +3,9 @@ package ru.pashkovske.buratino.order.adapter.tinkoff
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.account.model.Account
-import ru.pashkovske.buratino.order.service.OrderService
+import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.Order
+import ru.pashkovske.buratino.order.model.OrderInstantInfo
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffPriceMapper
 import ru.pashkovske.buratino.price.price.model.Quotation
@@ -22,7 +23,7 @@ private val logger = KotlinLogging.logger {}
 class TinkoffOrderApi(
        private val tinkoffOrderService: OrdersService,
        private val account: Account
-): OrderService {
+): ExtOrderServiceAdapter {
     private val priceMapper = TinkoffPriceMapper
     private val orderMapper = TinkoffOrderMapper
 
@@ -54,15 +55,15 @@ class TinkoffOrderApi(
     }
 
     override fun replaceOrder(
-        order: Order,
+        orderId: String,
         newOrderRequest: LimitOrderRequest
     ): Order {
         val response = tinkoffOrderService.replaceOrderSync(
-            newOrderRequest.iid.id,
+            account.id,
             newOrderRequest.lots,
             priceMapper.map(newOrderRequest.price as Quotation),
             newOrderRequest.idempotencyToken?.toString() ?: UUID.randomUUID().toString(),
-            order.id,
+            orderId,
             PriceType.PRICE_TYPE_CURRENCY
         )
         logger.info(
@@ -70,7 +71,7 @@ class TinkoffOrderApi(
                 Replaced order:
                     account = ${account.name};
                     iid = ${response.instrumentUid};
-                    old_order_id = ${order.id};
+                    old_order_id = $orderId;
                     order_id = ${response.orderId};
                     price_units = ${response.initialOrderPrice.units};
                     price_nanos = ${response.initialSecurityPrice.nano};
@@ -82,28 +83,27 @@ class TinkoffOrderApi(
         )
     }
 
-    override fun refreshOrder(order: Order) {
+    override fun getOrderActualInfo(orderId: String): OrderInstantInfo {
         val tinkoffOrderState: OrderState = tinkoffOrderService.getOrderStateSync(
             account.id,
-            order.id
+            orderId
         )
-        order.currentInfo = orderMapper.map(
+        return orderMapper.map(
             tinkoffOrderState = tinkoffOrderState,
             time = Instant.now()
         )
     }
 
-    override fun cancelOrder(order: Order) {
+    override fun cancelOrder(orderId: String) {
         tinkoffOrderService.cancelOrderSync(
             account.id,
-            order.id
+            orderId
         )
         logger.info(
             """
                 Canceled order:
                     account = ${account.name};
-                    iid = ${order.iid.id};
-                    order_id = ${order.id}
+                    order_id = $orderId
             """.trimIndent()
         )
     }
