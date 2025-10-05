@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import ru.pashkovske.buratino.assignment.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.model.InstrumentAssignment
 import ru.pashkovske.buratino.assignment.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.top.price.service.TopPriceAssignmentExecutor
@@ -52,5 +54,15 @@ class TopPriceAssignmentController(
     @GetMapping("/")
     fun getAll(): List<TopPriceAssignment> {
         return assignmentRepo.getAll()
+    }
+
+    @PatchMapping("/refresh-all")
+    fun refreshAll(): List<TopPriceAssignment> {
+        val activeAssignments: List<TopPriceAssignment> = assignmentRepo.getAll()
+            .filter { it.status == AssignmentStatus.IN_PROGRESS }
+        activeAssignments
+            .map(InstrumentAssignment::id)
+            .forEach(assignmentExecutor::refresh)
+        return activeAssignments
     }
 }

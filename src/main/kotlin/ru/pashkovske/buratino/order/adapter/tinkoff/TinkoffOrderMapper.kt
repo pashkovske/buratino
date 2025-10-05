@@ -38,7 +38,7 @@ object TinkoffOrderMapper {
             iid = InstrumentId(tinkoffOrderResponse.instrumentUid),
             request = orderRequest,
             commitResult = OrderCommitResult(
-                commission = priceMapper.map(tinkoffOrderResponse.initialCommission),
+                commission = priceMapper.map(tinkoffOrderResponse.executedCommission),
                 time = TimeUtils.tsToInstant(tinkoffOrderResponse.responseMetadata.serverTime)
             ),
             currentInfo = map(tinkoffOrderResponse)
