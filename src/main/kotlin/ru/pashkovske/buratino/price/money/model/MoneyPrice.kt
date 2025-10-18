@@ -38,6 +38,26 @@ data class MoneyPrice(
         )
     }
 
+    override operator fun times(multiplier: Int): MoneyPrice {
+        val result: Quotation = super.times(multiplier)
+        return MoneyPrice(
+            quotation = result,
+            currency = currency
+        )
+    }
+
+    override operator fun times(multiplier: Double): MoneyPrice {
+        val result: Quotation = super.times(multiplier)
+        return MoneyPrice(
+            quotation = result,
+            currency = currency
+        )
+    }
+
+    operator fun div(other: MoneyPrice): Long {
+        return super.div(other)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is MoneyPrice) return false

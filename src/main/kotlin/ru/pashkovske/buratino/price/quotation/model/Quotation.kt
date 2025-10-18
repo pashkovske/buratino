@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.price.quotation.model
 
+import java.math.BigDecimal
 import java.math.BigInteger
 
 open class Quotation(
@@ -37,12 +38,20 @@ open class Quotation(
         return Quotation(units, nano)
     }
 
-    operator fun times(multiplier: Int): Quotation {
+    open operator fun times(multiplier: Int): Quotation {
         var units = this.units * multiplier
         var nano = this.nano * multiplier
         units += nano / MAX_NANO
         nano %= MAX_NANO
         return Quotation(units, nano)
+    }
+
+    open operator fun times(multiplier: Double): Quotation {
+        val roundedResult: BigDecimal = toBigInt(this)
+            .toBigDecimal()
+            .multiply(multiplier.toBigDecimal())
+            .setScale(0)
+        return fromBigInt(roundedResult.toBigInteger())
     }
 
     operator fun div(other: Quotation): Long {

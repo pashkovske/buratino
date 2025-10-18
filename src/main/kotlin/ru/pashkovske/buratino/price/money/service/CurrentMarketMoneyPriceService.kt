@@ -32,6 +32,30 @@ class CurrentMarketMoneyPriceService(
         }
     }
 
+    override fun getOneStepOverTopOfBook(
+        iid: InstrumentId,
+        direction: OrderDirection
+    ): MoneyPrice? {
+        val instrument: Instrument = instrumentService.get(iid)
+        var topPrice: MoneyPrice = getTopOfBook(
+            iid = iid,
+            direction = direction
+        )!!
+        @Suppress("REDUNDANT_ELSE_IN_WHEN")
+        when (direction) {
+            OrderDirection.BUY -> {
+                topPrice += instrument.minPriceIncrement
+            }
+            OrderDirection.SELL -> {
+                topPrice -= instrument.minPriceIncrement
+            }
+            else -> {
+                throw IllegalArgumentException("Unsupported direction: $direction")
+            }
+        }
+        return topPrice
+    }
+
     override fun getSpread(iid: InstrumentId): MoneySpread {
         val instrument: Instrument = instrumentService.get(iid)
         return MoneySpread(

@@ -11,6 +11,11 @@ interface MarketMoneyPriceService {
         direction: OrderDirection
     ): MoneyPrice?
 
+    fun getOneStepOverTopOfBook(
+        iid: InstrumentId,
+        direction: OrderDirection
+    ): MoneyPrice?
+
     fun getSpread(
         iid: InstrumentId
     ): MoneySpread
