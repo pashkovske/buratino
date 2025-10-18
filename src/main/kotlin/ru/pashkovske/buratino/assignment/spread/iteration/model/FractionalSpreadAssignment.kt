@@ -1,14 +1,14 @@
-package ru.pashkovske.buratino.assignment.top.price.model
+package ru.pashkovske.buratino.assignment.spread.iteration.model
 
 import ru.pashkovske.buratino.assignment.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 
-data class TopPriceAssignment(
+data class FractionalSpreadAssignment(
     override val iid: InstrumentId,
     override val direction: OrderDirection,
-    val oneStepOver: Boolean = false
-) :  LimitedOrderAssignment(
+    val rate: Double
+): LimitedOrderAssignment(
     iid = iid,
     direction = direction
 )

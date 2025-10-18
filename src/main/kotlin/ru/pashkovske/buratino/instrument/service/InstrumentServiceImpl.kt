@@ -7,6 +7,8 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.repo.InstrumentRepo
 import java.time.Instant
 
+private val CACHE_TTL_SECONDS = 300L
+
 @Service
 class InstrumentServiceImpl(
     private val instrumentServiceAdapter: InstrumentServiceAdapter,
@@ -21,7 +23,7 @@ class InstrumentServiceImpl(
         if (lastUpdate == null) {
             instrumentRepo.create(instrumentServiceAdapter.get(iid))
         }
-        else if (lastUpdate.plusSeconds(5).isBefore(Instant.now())) {
+        else if (lastUpdate.plusSeconds(CACHE_TTL_SECONDS).isBefore(Instant.now())) {
             instrumentRepo.update(instrumentServiceAdapter.get(iid))
         }
         return instrumentRepo.get(iid)

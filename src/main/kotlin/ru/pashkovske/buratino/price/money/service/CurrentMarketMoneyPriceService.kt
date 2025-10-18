@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.money.model.MoneySpread
 import ru.pashkovske.buratino.price.quotation.service.MarketPriceService
 
 @Service
@@ -29,5 +30,13 @@ class CurrentMarketMoneyPriceService(
                 currency = instrument.currency
             )
         }
+    }
+
+    override fun getSpread(iid: InstrumentId): MoneySpread {
+        val instrument: Instrument = instrumentService.get(iid)
+        return MoneySpread(
+            spread = quotationMarketPriceService.getSpread(iid),
+            currency = instrument.currency
+        )
     }
 }

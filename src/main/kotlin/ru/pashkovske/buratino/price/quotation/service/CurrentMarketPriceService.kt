@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
 import ru.pashkovske.buratino.price.offer.service.MarketScrapper
+import ru.pashkovske.buratino.price.quotation.model.Spread
 
 private const val DEPTH_CHECK = 5
 
@@ -15,32 +16,22 @@ class CurrentMarketPriceService(
     private val marketScrapper: MarketScrapper,
     private val offerBookRepo: OfferBookRepo
 ) : MarketPriceService {
-/*
-    override fun getSpreadBasisPoints(
-        instrument: Instrument
-    ): Long? {
-        val step = instrument.minPriceIncrement
-        val bestSellQuotation: Quotation? = getTopOfBookQuotation(
-            instrument = instrument,
+    override fun getSpread(
+        iid: InstrumentId
+    ): Spread {
+        val topSell: Quotation? = getTopOfBook(
+            iid = iid,
             direction = OrderDirection.SELL
         )
-        val bestBuyQuotation: Quotation? = getTopOfBookQuotation(
-            instrument = instrument,
+        val topBuy: Quotation? = getTopOfBook(
+            iid = iid,
             direction = OrderDirection.BUY
         )
-        if (bestBuyQuotation == null || bestSellQuotation == null) {
-            return null
-        }
-        if (bestSellQuotation % step != 0L) {
-            throw IllegalArgumentException("Best sell price is not divisible by step: $instrument")
-        }
-        if (bestBuyQuotation % step != 0L) {
-            throw IllegalArgumentException("Best buy price is not divisible by step: $instrument")
-        }
-        val bestSellPrice: Long = bestSellQuotation / step
-        val bestBuyPrice: Long = bestBuyQuotation / step
-        return ((bestSellPrice - bestBuyPrice) * 20000) / (bestSellPrice + bestBuyPrice)
-    }*/
+        return Spread(
+            bid = topBuy,
+            ask = topSell
+        )
+    }
 
     override fun getTopOfBook(
         iid: InstrumentId,
@@ -51,6 +42,7 @@ class CurrentMarketPriceService(
             depth = DEPTH_CHECK
         )
         val offerBook: OfferBook = offerBookRepo.read(iid)!!
+        @Suppress("REDUNDANT_ELSE_IN_WHEN")
         return when (direction) {
             OrderDirection.BUY -> getTopOfBookBuyPrice(offerBook)
             OrderDirection.SELL -> getTopOfBookSellPrice(offerBook)

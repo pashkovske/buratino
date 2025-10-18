@@ -9,4 +9,11 @@ enum class OrderDirection {
             return valueOf(value.uppercase())
         }
     }
+
+    fun getOpposite(): OrderDirection {
+        return when (this) {
+            BUY -> SELL
+            SELL -> BUY
+        }
+    }
 }
