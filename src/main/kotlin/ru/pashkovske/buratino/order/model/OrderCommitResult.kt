@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.order.model
 
-import ru.pashkovske.buratino.price.price.model.MoneyPrice
+import ru.pashkovske.buratino.price.money.model.MoneyPrice
 import java.time.Instant
 
 data class OrderCommitResult(

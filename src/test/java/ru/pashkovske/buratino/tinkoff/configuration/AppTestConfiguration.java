@@ -19,8 +19,8 @@ import ru.pashkovske.buratino.instrument.adapter.tinkoff.TinkoffInstrumentServic
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter;
 import ru.pashkovske.buratino.order.adapter.tinkoff.TinkoffOrderApi;
 import ru.pashkovske.buratino.order.strategy.FollowBestPrice;
-import ru.pashkovske.buratino.price.price.service.CurrentMarketPriceService;
-import ru.pashkovske.buratino.price.price.service.MarketPriceService;
+import ru.pashkovske.buratino.price.quotation.service.CurrentMarketPriceService;
+import ru.pashkovske.buratino.price.quotation.service.MarketPriceService;
 import ru.pashkovske.buratino.tinkoff.util.Deserializer;
 import ru.pashkovske.buratino.tinkoff.util.FileLoader;
 import ru.tinkoff.piapi.core.*;

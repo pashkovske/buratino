@@ -1,23 +1,19 @@
-package ru.pashkovske.buratino.price.price.service
+package ru.pashkovske.buratino.price.quotation.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.instrument.model.InstrumentId
-import ru.pashkovske.buratino.instrument.model.Instrument
-import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.OrderDirection
-import ru.pashkovske.buratino.price.price.model.Quotation
+import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
 import ru.pashkovske.buratino.price.offer.service.MarketScrapper
-import ru.pashkovske.buratino.price.price.model.MoneyPrice
 
 private const val DEPTH_CHECK = 5
 
 @Service
 class CurrentMarketPriceService(
     private val marketScrapper: MarketScrapper,
-    private val offerBookRepo: OfferBookRepo,
-    private val instrumentService: InstrumentService
+    private val offerBookRepo: OfferBookRepo
 ) : MarketPriceService {
 /*
     override fun getSpreadBasisPoints(
@@ -46,7 +42,7 @@ class CurrentMarketPriceService(
         return ((bestSellPrice - bestBuyPrice) * 20000) / (bestSellPrice + bestBuyPrice)
     }*/
 
-    override fun getTopOfBookQuotation(
+    override fun getTopOfBook(
         iid: InstrumentId,
         direction: OrderDirection
     ): Quotation? {
@@ -59,25 +55,6 @@ class CurrentMarketPriceService(
             OrderDirection.BUY -> getTopOfBookBuyPrice(offerBook)
             OrderDirection.SELL -> getTopOfBookSellPrice(offerBook)
             else -> throw IllegalArgumentException("Определение лучшей цены не зависимо от направления сделки не реализовано")
-        }
-    }
-
-    override fun getTopOfBookMoney(
-        iid: InstrumentId,
-        direction: OrderDirection
-    ): MoneyPrice? {
-        val instrument: Instrument = instrumentService.get(iid)
-        val quotationPrice: Quotation? = getTopOfBookQuotation(
-            iid = iid,
-            direction = direction
-        )
-        return if (quotationPrice == null) {
-            null
-        } else {
-            MoneyPrice(
-                quotation = quotationPrice,
-                currency = instrument.currency
-            )
         }
     }
 

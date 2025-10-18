@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.price.offer.model
 
-import ru.pashkovske.buratino.price.price.model.Quotation
+import ru.pashkovske.buratino.price.quotation.model.Quotation
 import java.time.Instant
 
 data class OfferBook(

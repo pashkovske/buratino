@@ -1,8 +1,8 @@
 package ru.pashkovske.buratino.instrument.model
 
-import ru.pashkovske.buratino.price.price.model.Currency
-import ru.pashkovske.buratino.price.price.model.MoneyPrice
-import ru.pashkovske.buratino.price.price.model.PtsPrice
+import ru.pashkovske.buratino.price.money.model.Currency
+import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.model.PtsPrice
 
 data class Future(
     override val iid: InstrumentId,

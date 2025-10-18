@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.price.price.model
+package ru.pashkovske.buratino.price.quotation.model
 
 open class PtsPrice(
     override val units: Long,

@@ -11,16 +11,15 @@ import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
-import ru.pashkovske.buratino.price.price.model.MoneyPrice
-import ru.pashkovske.buratino.price.price.model.Quotation
-import ru.pashkovske.buratino.price.price.service.MarketPriceService
+import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.money.service.MarketMoneyPriceService
 import java.util.UUID
 
 private val logger = mu.KotlinLogging.logger {}
 
 @Service
 class TopPriceAssignmentExecutor(
-    val marketDataService: MarketPriceService,
+    val marketDataService: MarketMoneyPriceService,
     val orderService: OrderService,
     val instrumentService: InstrumentService,
     val assignmentRepo: AssignmentRepo<TopPriceAssignment>
@@ -83,7 +82,7 @@ class TopPriceAssignmentExecutor(
 
     private fun getTopPrice(assignment: TopPriceAssignment): MoneyPrice {
         val instrument: Instrument = instrumentService.get(assignment.iid)
-        var moneyTopPrice: MoneyPrice = marketDataService.getTopOfBookMoney(
+        var moneyTopPrice: MoneyPrice = marketDataService.getTopOfBook(
             iid = assignment.iid,
             direction = assignment.direction
         )!!

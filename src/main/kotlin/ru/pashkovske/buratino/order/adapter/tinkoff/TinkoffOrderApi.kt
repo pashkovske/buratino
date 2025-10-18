@@ -8,7 +8,7 @@ import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.OrderInstantInfo
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffPriceMapper
-import ru.pashkovske.buratino.price.price.model.Quotation
+import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.tinkoff.piapi.contract.v1.OrderState
 import ru.tinkoff.piapi.contract.v1.PostOrderResponse
 import ru.tinkoff.piapi.contract.v1.PriceType

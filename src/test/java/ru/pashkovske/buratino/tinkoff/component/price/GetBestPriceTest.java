@@ -16,7 +16,7 @@ import ru.tinkoff.piapi.core.MarketDataService;
 
 import ru.pashkovske.buratino.instrument.model.Share;
 import ru.pashkovske.buratino.instrument.model.Instrument;
-import ru.pashkovske.buratino.price.price.service.MarketPriceService;
+import ru.pashkovske.buratino.price.quotation.service.MarketPriceService;
 import ru.pashkovske.buratino.tinkoff.util.Deserializer;
 
 @SpringBootTest(

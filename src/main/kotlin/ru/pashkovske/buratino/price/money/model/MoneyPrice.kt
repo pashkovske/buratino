@@ -1,4 +1,6 @@
-package ru.pashkovske.buratino.price.price.model
+package ru.pashkovske.buratino.price.money.model
+
+import ru.pashkovske.buratino.price.quotation.model.Quotation
 
 data class MoneyPrice(
     override val units: Long,

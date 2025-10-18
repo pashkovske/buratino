@@ -11,7 +11,7 @@ import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
 import ru.pashkovske.buratino.price.offer.model.QuotationLevelOffers
-import ru.pashkovske.buratino.price.price.model.Quotation
+import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.tinkoff.piapi.contract.v1.Order
 import ru.tinkoff.piapi.core.MarketDataService
 import ru.tinkoff.piapi.core.OrdersService
