@@ -9,10 +9,11 @@ data class MoneyPrice(
         quotation: Quotation,
         currency: Currency
     ): this(
-        units =quotation.units,
+        units = quotation.units,
         nano = quotation.nano,
         currency = currency
     )
+
     operator fun plus(other: MoneyPrice): MoneyPrice {
         if (currency != other.currency) {
             throw IllegalArgumentException("Currencies must be the same")

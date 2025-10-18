@@ -83,14 +83,10 @@ class TopPriceAssignmentExecutor(
 
     private fun getTopPrice(assignment: TopPriceAssignment): MoneyPrice {
         val instrument: Instrument = instrumentService.get(assignment.iid)
-        val topBuyPrice: Quotation? = marketDataService.getTopOfBook(
-            instrument = instrument,
+        var moneyTopPrice: MoneyPrice = marketDataService.getTopOfBookMoney(
+            iid = assignment.iid,
             direction = assignment.direction
-        )
-        var moneyTopPrice = MoneyPrice(
-            quotation = topBuyPrice!!,
-            currency = instrument.currency
-        )
+        )!!
         if (assignment.oneStepOver) {
             if (assignment.direction == OrderDirection.BUY) {
                 moneyTopPrice += instrument.minPriceIncrement
