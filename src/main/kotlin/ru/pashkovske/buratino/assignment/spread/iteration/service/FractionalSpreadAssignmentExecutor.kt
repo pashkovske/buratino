@@ -11,6 +11,8 @@ import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.money.model.MoneyPrice
 import ru.pashkovske.buratino.price.money.service.MarketMoneyPriceService
 
+private val logger = mu.KotlinLogging.logger {}
+
 @Service
 class FractionalSpreadAssignmentExecutor(
     orderService: OrderService,
@@ -43,6 +45,9 @@ class FractionalSpreadAssignmentExecutor(
         } else {
             oppositeTopPrice + adjustedMinSpreadDelta
         }
+        logger.info { "topSpreadPrice: $topSpreadPrice" }
+        logger.info { "directTopPrice: $directTopPrice" }
+        logger.info { "adjustedMinSpreadDelta: $adjustedMinSpreadDelta" }
         return if (assignment.direction == OrderDirection.BUY) {
             minOf(topSpreadPrice, directTopPrice)
         } else {
