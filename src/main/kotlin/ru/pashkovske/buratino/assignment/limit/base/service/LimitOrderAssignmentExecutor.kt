@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExecutor
+import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExecutor
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
@@ -15,26 +15,18 @@ private val logger = KotlinLogging.logger {}
 
 abstract class LimitOrderAssignmentExecutor<T : LimitedOrderAssignment>(
     val orderService: OrderService,
-    val assignmentRepo: AssignmentRepo<T>
-): AssignmentExecutor<T> {
-    override fun start(assignment: T): T {
-        logger.info("Starting assignment: $assignment")
+    override val assignmentRepo: AssignmentRepo<T>
+): BasicAssignmentExecutor<T>(
+    assignmentRepo = assignmentRepo
+) {
+    override fun doStart(assignment: T) {
         val order: Order = orderService.createOrder(
             orderRequest = buildLimitReq(assignment)
         )
         assignment.info.orderId = order.id
-        assignment.status = AssignmentStatus.IN_PROGRESS
-        assignmentRepo.create(assignment)
-        return assignment
     }
 
-    override fun refresh(id: UUID): T {
-        logger.info("Refreshing assignment: $id")
-        val assignment = assignmentRepo.get(id)
-        if (assignment.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment ${assignment.id} is already completed, skipping refresh")
-            return assignment
-        }
+    override fun doRefresh(assignment: T) {
         val orderId: String = getOrderId(assignment)
         if (orderService.isOrderCompleted(orderId)) {
             logger.info("Order of assignment ${assignment.id} is already completed, skipping refresh")
@@ -49,17 +41,9 @@ abstract class LimitOrderAssignmentExecutor<T : LimitedOrderAssignment>(
             assignment.status = AssignmentStatus.IN_PROGRESS
             assignment.info.orderId = newOrder.id
         }
-        assignmentRepo.update(assignment)
-        return assignment
     }
 
-    override fun cancel(id: UUID): T {
-        logger.info("Cancelling assignment: $id")
-        val assignment = assignmentRepo.get(id)
-        if (assignment.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment ${assignment.id} is already completed, skipping cancel")
-            return assignment
-        }
+    override fun doCancel(assignment: T) {
         val orderId: String = getOrderId(assignment)
         if (orderService.isOrderCompleted(orderId)) {
             logger.info("Order of assignment ${assignment.id} is already completed, skipping cancel")
@@ -68,9 +52,6 @@ abstract class LimitOrderAssignmentExecutor<T : LimitedOrderAssignment>(
             orderService.cancelOrder(orderId)
             logger.info("Canceled order: $orderId")
         }
-        assignment.status = AssignmentStatus.COMPLETED
-        assignmentRepo.update(assignment)
-        return assignment
     }
 
     protected abstract fun getPrice(assignment: T): MoneyPrice
