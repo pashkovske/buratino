@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.continuous.spread.fraction.controller
+package ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.controller
 
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.ExeChain
-import ru.pashkovske.buratino.assignment.continuous.spread.fraction.model.ContinuousSpreadFractionAssignment
-import ru.pashkovske.buratino.assignment.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExe
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousSpreadFractionAssignment
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.controller.dto.StartFractionalSpredAssignmentDto
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -43,7 +43,7 @@ class ContinuousSpreadFractionAssignmentController(
         )
         val assignment = ContinuousSpreadFractionAssignment(
             iid = iid,
-            currentAssignment = nestedAssignment
+            nested = nestedAssignment
         )
         return doStart(assignment)
     }

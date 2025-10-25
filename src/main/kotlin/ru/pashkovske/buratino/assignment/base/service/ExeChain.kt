@@ -2,8 +2,8 @@ package ru.pashkovske.buratino.assignment.base.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.continuous.base.model.ContinuousAssignment
-import ru.pashkovske.buratino.assignment.continuous.base.service.ContinuousAssignmentExe
+import ru.pashkovske.buratino.assignment.nested.continuous.base.model.ContinuousAssignment
+import ru.pashkovske.buratino.assignment.nested.continuous.base.service.ContinuousAssignmentExe
 import java.util.UUID
 
 @Service
