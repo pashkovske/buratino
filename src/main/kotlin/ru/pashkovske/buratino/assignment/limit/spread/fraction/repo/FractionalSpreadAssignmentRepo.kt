@@ -5,5 +5,4 @@ import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepoInMemory
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 
 @Repository
-class FractionalSpreadAssignmentRepo: AssignmentRepoInMemory<FractionalSpreadAssignment>() {
-}
+class FractionalSpreadAssignmentRepo: AssignmentRepoInMemory<FractionalSpreadAssignment>()

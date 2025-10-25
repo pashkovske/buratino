@@ -1,16 +1,14 @@
 package ru.pashkovske.buratino.assignment.continuous.spread.fraction.controller
 
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.service.ExeChain
 import ru.pashkovske.buratino.assignment.continuous.spread.fraction.model.ContinuousSpreadFractionAssignment
 import ru.pashkovske.buratino.assignment.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
@@ -23,8 +21,13 @@ import java.util.UUID
 @RestController
 @RequestMapping("/assignment/continuous/fractional-spread")
 class ContinuousSpreadFractionAssignmentController(
-    val assignmentRepo: AssignmentRepo<ContinuousSpreadFractionAssignment>,
-    val assignmentExecutor: ContinuousSpreadFractionAssignmentExe
+    repo: AssignmentRepo<ContinuousSpreadFractionAssignment>,
+    override val exe: ContinuousSpreadFractionAssignmentExe,
+    chain: ExeChain
+): BasicAssignmentController<ContinuousSpreadFractionAssignment>(
+    repo = repo,
+    exe = exe,
+    chain = chain
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
@@ -42,40 +45,14 @@ class ContinuousSpreadFractionAssignmentController(
             iid = iid,
             currentAssignment = nestedAssignment
         )
-        assignmentExecutor.start(assignment)
-        return assignment
-    }
-
-    @PatchMapping("/{id}/refresh")
-    fun refresh(@PathVariable id: UUID): ContinuousSpreadFractionAssignment {
-        assignmentExecutor.refresh(id)
-        return assignmentRepo.get(id)
+        return doStart(assignment)
     }
 
     @PatchMapping("/{id}/continue")
     fun continueAssignment(@PathVariable id: UUID): ContinuousSpreadFractionAssignment {
-        assignmentExecutor.continueAssignment(id)
-        return assignmentRepo.get(id)
-    }
-
-    @DeleteMapping("/{id}")
-    fun cancel(@PathVariable id: UUID): ContinuousSpreadFractionAssignment {
-        assignmentExecutor.cancel(id)
-        return assignmentRepo.get(id)
-    }
-
-    @GetMapping("/")
-    fun getAll(): List<ContinuousSpreadFractionAssignment> {
-        return assignmentRepo.getAll()
-    }
-
-    @PatchMapping("/refresh-all")
-    fun refreshAll(): List<ContinuousSpreadFractionAssignment> {
-        val activeAssignments: List<ContinuousSpreadFractionAssignment> = assignmentRepo.getAll()
-            .filter { it.status == AssignmentStatus.IN_PROGRESS }
-        activeAssignments
-            .map(Assignment::id)
-            .forEach(assignmentExecutor::refresh)
-        return activeAssignments
+        return chain.continueAssignment(
+            id = id,
+            exe = exe
+        )
     }
 }
