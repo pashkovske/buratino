@@ -27,6 +27,10 @@ abstract class BasicContinuousAssignmentExe<
     override fun continueAssignment(id: UUID): T {
         val assignment = assignmentRepo.get(id)
         logger.info("Continuing assignment: $assignment")
+        if (assignment.status == AssignmentStatus.COMPLETED) {
+            logger.info("Assignment ${assignment.id} is already completed, skipping continuation")
+            return assignment
+        }
         if (assignment.nested.status == AssignmentStatus.COMPLETED) {
             logger.info("Assignment ${assignment.nested.id} is completed, replacing with next one")
             assignment.nested = doContinue(assignment.nested)
