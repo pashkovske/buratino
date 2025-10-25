@@ -8,39 +8,25 @@ import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
-import ru.pashkovske.buratino.assignment.base.service.ExeChain
 import java.util.UUID
 
 @Suppress("unused")
 abstract class BasicAssignmentController<A: Assignment>(
     open val repo: AssignmentRepo<A>,
-    open val exe: AssignmentExe<A>,
-    val chain: ExeChain
+    open val exe: AssignmentExe<A>
 ) {
     protected fun doStart(assignment: A): A {
-        chain.start(
-            assignment = assignment,
-            exe = exe
-        )
-        return assignment
+        return exe.start(assignment)
     }
 
     @PatchMapping("/{id}/refresh")
     fun refresh(@PathVariable id: UUID): A {
-        chain.refresh(
-            id = id,
-            exe = exe
-        )
-        return repo.get(id)
+        return exe.refresh(id)
     }
 
     @DeleteMapping("/{id}")
     fun cancel(@PathVariable id: UUID): A {
-        chain.cancel(
-            id = id,
-            exe = exe
-        )
-        return repo.get(id)
+        return exe.cancel(id)
     }
 
     @GetMapping("/")

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.ExeChain
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousSpreadFractionAssignment
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
@@ -22,12 +21,10 @@ import java.util.UUID
 @RequestMapping("/assignment/continuous/fractional-spread")
 class ContinuousSpreadFractionAssignmentController(
     repo: AssignmentRepo<ContinuousSpreadFractionAssignment>,
-    override val exe: ContinuousSpreadFractionAssignmentExe,
-    chain: ExeChain
+    override val exe: ContinuousSpreadFractionAssignmentExe
 ): BasicAssignmentController<ContinuousSpreadFractionAssignment>(
     repo = repo,
-    exe = exe,
-    chain = chain
+    exe = exe
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
@@ -45,14 +42,11 @@ class ContinuousSpreadFractionAssignmentController(
             iid = iid,
             nested = nestedAssignment
         )
-        return doStart(assignment)
+        return exe.start(assignment)
     }
 
     @PatchMapping("/{id}/continue")
     fun continueAssignment(@PathVariable id: UUID): ContinuousSpreadFractionAssignment {
-        return chain.continueAssignment(
-            id = id,
-            exe = exe
-        )
+        return exe.continueAssignment(id)
     }
 }

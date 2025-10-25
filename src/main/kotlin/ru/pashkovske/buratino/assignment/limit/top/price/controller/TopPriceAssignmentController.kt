@@ -9,7 +9,6 @@ import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentControll
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.ExeChain
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 
@@ -18,12 +17,10 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 @RequestMapping("/assignment/top-price")
 class TopPriceAssignmentController(
     repo: AssignmentRepo<TopPriceAssignment>,
-    exe: TopPriceAssignmentExe,
-    chain: ExeChain
+    exe: TopPriceAssignmentExe
 ): BasicAssignmentController<TopPriceAssignment>(
     repo = repo,
-    exe = exe,
-    chain = chain
+    exe = exe
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
