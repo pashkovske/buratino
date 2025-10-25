@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.model.InstrumentAssignment
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.continuous.spread.fraction.model.ContinuousSpreadFractionAssignment
-import ru.pashkovske.buratino.assignment.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExecutor
+import ru.pashkovske.buratino.assignment.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.controller.dto.StartFractionalSpredAssignmentDto
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -24,7 +24,7 @@ import java.util.UUID
 @RequestMapping("/assignment/continuous/fractional-spread")
 class ContinuousSpreadFractionAssignmentController(
     val assignmentRepo: AssignmentRepo<ContinuousSpreadFractionAssignment>,
-    val assignmentExecutor: ContinuousSpreadFractionAssignmentExecutor
+    val assignmentExecutor: ContinuousSpreadFractionAssignmentExe
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
@@ -74,7 +74,7 @@ class ContinuousSpreadFractionAssignmentController(
         val activeAssignments: List<ContinuousSpreadFractionAssignment> = assignmentRepo.getAll()
             .filter { it.status == AssignmentStatus.IN_PROGRESS }
         activeAssignments
-            .map(InstrumentAssignment::id)
+            .map(Assignment::id)
             .forEach(assignmentExecutor::refresh)
         return activeAssignments
     }

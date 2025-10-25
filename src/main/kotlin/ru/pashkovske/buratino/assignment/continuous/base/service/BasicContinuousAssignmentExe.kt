@@ -2,24 +2,24 @@ package ru.pashkovske.buratino.assignment.continuous.base.service
 
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.model.InstrumentAssignment
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExecutor
-import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExecutor
+import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.continuous.base.model.ContinuousAssignment
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
-abstract class BasicContinuousAssignmentExecutor<
+abstract class BasicContinuousAssignmentExe<
     T : ContinuousAssignment<NestedAssignment>,
-    NestedAssignment : InstrumentAssignment
+    NestedAssignment : Assignment
     >(
     override val assignmentRepo: AssignmentRepo<T>,
-    protected open val nestedAssignmentExecutor: AssignmentExecutor<NestedAssignment>
+    protected open val nestedAssignmentExe: AssignmentExe<NestedAssignment>
 ):
-    BasicAssignmentExecutor<T>(assignmentRepo = assignmentRepo),
-    ContinuousAssignmentExecutor<T>
+    BasicAssignmentExe<T>(assignmentRepo = assignmentRepo),
+    ContinuousAssignmentExe<T>
 {
     override fun continueAssignment(id: UUID): T {
         val assignment = assignmentRepo.get(id)
@@ -40,7 +40,7 @@ abstract class BasicContinuousAssignmentExecutor<
     override fun doStart(assignment: T) {
         if (assignment.currentAssignment.status == AssignmentStatus.QUEUED) {
             logger.info("Starting nested assignment: $assignment")
-            assignment.currentAssignment = nestedAssignmentExecutor.start(assignment.currentAssignment)
+            assignment.currentAssignment = nestedAssignmentExe.start(assignment.currentAssignment)
         } else {
             logger.warn("Nested assignment ${assignment.currentAssignment.id} is in ${assignment.currentAssignment.status} status, skipping start")
         }
@@ -50,7 +50,7 @@ abstract class BasicContinuousAssignmentExecutor<
         logger.info("Refreshing nested assignment: ${assignment.currentAssignment.id}")
         when (assignment.currentAssignment.status) {
             AssignmentStatus.IN_PROGRESS -> {
-                assignment.currentAssignment = nestedAssignmentExecutor.refresh(assignment.currentAssignment.id)
+                assignment.currentAssignment = nestedAssignmentExe.refresh(assignment.currentAssignment.id)
                 logger.info("Nested assignment ${assignment.currentAssignment.id} refreshed")
             }
             AssignmentStatus.COMPLETED -> logger.info(
@@ -66,7 +66,7 @@ abstract class BasicContinuousAssignmentExecutor<
         logger.info("Cancelling nested assignment: ${assignment.currentAssignment.id}")
         when (assignment.currentAssignment.status) {
             AssignmentStatus.IN_PROGRESS -> {
-                assignment.currentAssignment = nestedAssignmentExecutor.cancel(assignment.currentAssignment.id)
+                assignment.currentAssignment = nestedAssignmentExe.cancel(assignment.currentAssignment.id)
                 logger.info("Nested assignment ${assignment.currentAssignment.id} cancelled")
             }
             AssignmentStatus.COMPLETED -> logger.info(

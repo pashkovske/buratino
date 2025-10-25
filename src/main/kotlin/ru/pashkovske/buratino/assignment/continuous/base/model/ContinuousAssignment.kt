@@ -1,11 +1,11 @@
 package ru.pashkovske.buratino.assignment.continuous.base.model
 
-import ru.pashkovske.buratino.assignment.base.model.InstrumentAssignment
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 
-abstract class ContinuousAssignment<T: InstrumentAssignment>(
+abstract class ContinuousAssignment<T: Assignment>(
     override val iid: InstrumentId,
     open var currentAssignment: T
-): InstrumentAssignment(
+): Assignment(
     iid = iid
 )

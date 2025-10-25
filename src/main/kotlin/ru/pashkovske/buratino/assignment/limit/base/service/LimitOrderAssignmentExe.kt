@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExecutor
+import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
@@ -13,10 +13,10 @@ import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
-abstract class LimitOrderAssignmentExecutor<T : LimitedOrderAssignment>(
+abstract class LimitOrderAssignmentExe<T : LimitedOrderAssignment>(
     val orderService: OrderService,
     override val assignmentRepo: AssignmentRepo<T>
-): BasicAssignmentExecutor<T>(
+): BasicAssignmentExe<T>(
     assignmentRepo = assignmentRepo
 ) {
     override fun doStart(assignment: T) {

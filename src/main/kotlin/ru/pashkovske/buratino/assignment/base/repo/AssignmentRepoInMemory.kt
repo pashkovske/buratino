@@ -1,9 +1,9 @@
 package ru.pashkovske.buratino.assignment.base.repo
 
-import ru.pashkovske.buratino.assignment.base.model.InstrumentAssignment
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 import java.util.UUID
 
-abstract class AssignmentRepoInMemory<A : InstrumentAssignment> : AssignmentRepo<A> {
+abstract class AssignmentRepoInMemory<A : Assignment> : AssignmentRepo<A> {
     private val assignments: MutableMap<UUID, A> = mutableMapOf()
 
     override fun getAll(): List<A> {

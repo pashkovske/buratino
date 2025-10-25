@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.model.InstrumentAssignment
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExecutor
+import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -21,7 +21,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/assignment/top-price")
 class TopPriceAssignmentController(
-    private val assignmentExecutor: TopPriceAssignmentExecutor,
+    private val assignmentExecutor: TopPriceAssignmentExe,
     private val assignmentRepo: AssignmentRepo<TopPriceAssignment>
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")
@@ -61,7 +61,7 @@ class TopPriceAssignmentController(
         val activeAssignments: List<TopPriceAssignment> = assignmentRepo.getAll()
             .filter { it.status == AssignmentStatus.IN_PROGRESS }
         activeAssignments
-            .map(InstrumentAssignment::id)
+            .map(Assignment::id)
             .forEach(assignmentExecutor::refresh)
         return activeAssignments
     }

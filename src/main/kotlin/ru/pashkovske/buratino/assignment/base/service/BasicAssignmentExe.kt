@@ -2,15 +2,15 @@ package ru.pashkovske.buratino.assignment.base.service
 
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.model.InstrumentAssignment
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
-abstract class BasicAssignmentExecutor<T: InstrumentAssignment>(
+abstract class BasicAssignmentExe<T: Assignment>(
     protected open val assignmentRepo: AssignmentRepo<T>
-): AssignmentExecutor<T> {
+): AssignmentExe<T> {
     override fun start(assignment: T): T {
         logger.info("Starting assignment: $assignment")
 
