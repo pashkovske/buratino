@@ -13,20 +13,20 @@ import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
-abstract class LimitOrderAssignmentExe<T : LimitedOrderAssignment>(
+abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
     val orderService: OrderService,
-    override val assignmentRepo: AssignmentRepo<T>
-): BasicAssignmentExe<T>(
+    override val assignmentRepo: AssignmentRepo<LA>
+): BasicAssignmentExe<LA>(
     assignmentRepo = assignmentRepo
 ) {
-    override fun doStart(assignment: T) {
+    override fun doStart(assignment: LA) {
         val order: Order = orderService.createOrder(
             orderRequest = buildLimitReq(assignment)
         )
         assignment.info.orderId = order.id
     }
 
-    override fun doRefresh(assignment: T) {
+    override fun doRefresh(assignment: LA) {
         val orderId: String = getOrderId(assignment)
         if (orderService.isOrderCompleted(orderId)) {
             logger.info("Order of assignment ${assignment.id} is already completed, skipping refresh")
@@ -43,7 +43,7 @@ abstract class LimitOrderAssignmentExe<T : LimitedOrderAssignment>(
         }
     }
 
-    override fun doCancel(assignment: T) {
+    override fun doCancel(assignment: LA) {
         val orderId: String = getOrderId(assignment)
         if (orderService.isOrderCompleted(orderId)) {
             logger.info("Order of assignment ${assignment.id} is already completed, skipping cancel")
@@ -54,9 +54,9 @@ abstract class LimitOrderAssignmentExe<T : LimitedOrderAssignment>(
         }
     }
 
-    protected abstract fun getPrice(assignment: T): MoneyPrice
+    protected abstract fun getPrice(assignment: LA): MoneyPrice
 
-    private fun buildLimitReq(assignment: T): LimitOrderRequest {
+    private fun buildLimitReq(assignment: LA): LimitOrderRequest {
         return LimitOrderRequest(
             iid = assignment.iid,
             direction = assignment.direction,
@@ -66,7 +66,7 @@ abstract class LimitOrderAssignmentExe<T : LimitedOrderAssignment>(
         )
     }
 
-    private fun getOrderId(assignment: T): String {
+    private fun getOrderId(assignment: LA): String {
         return assignment.info.orderId
             ?: throw IllegalArgumentException("No order found in assignment ${assignment.id}. Probably it was not started or already canceled")
     }

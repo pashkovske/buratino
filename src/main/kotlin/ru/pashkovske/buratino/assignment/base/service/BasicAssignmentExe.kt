@@ -8,10 +8,10 @@ import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
-abstract class BasicAssignmentExe<T: Assignment>(
-    protected open val assignmentRepo: AssignmentRepo<T>
-): AssignmentExe<T> {
-    override fun start(assignment: T): T {
+abstract class BasicAssignmentExe<A: Assignment>(
+    protected open val assignmentRepo: AssignmentRepo<A>
+): AssignmentExe<A> {
+    override fun start(assignment: A): A {
         logger.info("Starting assignment: $assignment")
 
         doStart(assignment)
@@ -21,7 +21,7 @@ abstract class BasicAssignmentExe<T: Assignment>(
         return assignment
     }
 
-    override fun refresh(id: UUID): T {
+    override fun refresh(id: UUID): A {
         logger.info("Refreshing assignment: $id")
         val assignment = assignmentRepo.get(id)
         if (assignment.status == AssignmentStatus.COMPLETED) {
@@ -35,7 +35,7 @@ abstract class BasicAssignmentExe<T: Assignment>(
         return assignment
     }
 
-    override fun cancel(id: UUID): T {
+    override fun cancel(id: UUID): A {
         logger.info("Cancelling assignment: $id")
         val assignment = assignmentRepo.get(id)
         if (assignment.status == AssignmentStatus.COMPLETED) {
@@ -50,9 +50,9 @@ abstract class BasicAssignmentExe<T: Assignment>(
         return assignment
     }
 
-    protected abstract fun doStart(assignment: T)
+    protected abstract fun doStart(assignment: A)
 
-    protected abstract fun doRefresh(assignment: T)
+    protected abstract fun doRefresh(assignment: A)
 
-    protected abstract fun doCancel(assignment: T)
+    protected abstract fun doCancel(assignment: A)
 }

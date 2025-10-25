@@ -12,19 +12,19 @@ import java.util.UUID
 private val logger = KotlinLogging.logger {}
 
 abstract class BasicContinuousAssignmentExe<
-    T : ContinuousAssignment<NestedAssignment>,
-    NestedAssignment : Assignment
+    CA : ContinuousAssignment<Nested>,
+    Nested : Assignment
     >(
-    override val assignmentRepo: AssignmentRepo<T>,
-    nestedAssignmentExe: AssignmentExe<NestedAssignment>
+    override val assignmentRepo: AssignmentRepo<CA>,
+    nestedAssignmentExe: AssignmentExe<Nested>
 ):
-    BasicSuperAssignmentExe<T, NestedAssignment>(
+    BasicSuperAssignmentExe<CA, Nested>(
         assignmentRepo = assignmentRepo,
         nestedAssignmentExe = nestedAssignmentExe
     ),
-    ContinuousAssignmentExe<T>
+    ContinuousAssignmentExe<CA>
 {
-    override fun continueAssignment(id: UUID): T {
+    override fun continueAssignment(id: UUID): CA {
         val assignment = assignmentRepo.get(id)
         logger.info("Continuing assignment: $assignment")
         if (assignment.status == AssignmentStatus.COMPLETED) {
@@ -42,5 +42,5 @@ abstract class BasicContinuousAssignmentExe<
         return assignment
     }
 
-    protected abstract fun doContinue(assignment: NestedAssignment): NestedAssignment
+    protected abstract fun doContinue(assignment: Nested): Nested
 }

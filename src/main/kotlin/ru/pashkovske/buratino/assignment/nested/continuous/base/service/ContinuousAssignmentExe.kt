@@ -5,6 +5,6 @@ import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.base.model.ContinuousAssignment
 import java.util.UUID
 
-interface ContinuousAssignmentExe<T : ContinuousAssignment<out Assignment>>: AssignmentExe<T> {
-    fun continueAssignment(id: UUID): T
+interface ContinuousAssignmentExe<CA : ContinuousAssignment<out Assignment>>: AssignmentExe<CA> {
+    fun continueAssignment(id: UUID): CA
 }
