@@ -6,11 +6,11 @@ import ru.pashkovske.buratino.order.model.OrderRequest
 import ru.pashkovske.buratino.price.money.model.MoneyPrice
 import java.util.UUID
 
-data class LimitOrderRequest(
-    override val iid: InstrumentId,
-    override val direction: OrderDirection,
-    override val lots: Long,
-    override val idempotencyToken: UUID?,
+class LimitOrderRequest(
+    iid: InstrumentId,
+    direction: OrderDirection,
+    lots: Long,
+    idempotencyToken: UUID?,
     val price: MoneyPrice
 ) : OrderRequest(
     iid = iid,

@@ -1,0 +1,17 @@
+{
+    "iid": {
+        "id": "a6121478-943f-4eae-bc2a-bab5c771dd4a"
+    },
+    "name": "Казаньоргсинтез - акции обыкновенные",
+    "ticker": "KZOS",
+    "lot": 10,
+    "forQualifiedInvestorOnly": false,
+    "minPriceIncrement": {
+        "units": 0,
+        "nano": 100000000,
+        "currency": "RUB"
+    },
+    "currency": "RUB",
+    "type": "SHARE",
+    "tradable": true
+}

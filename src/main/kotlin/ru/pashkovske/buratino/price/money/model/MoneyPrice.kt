@@ -2,9 +2,9 @@ package ru.pashkovske.buratino.price.money.model
 
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 
-data class MoneyPrice(
-    override val units: Long,
-    override val nano: Int,
+class MoneyPrice(
+    units: Long,
+    nano: Int,
     val currency: Currency,
 ) : Quotation(units, nano) {
     constructor(

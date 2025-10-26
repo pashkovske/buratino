@@ -4,10 +4,10 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
 
 abstract class OrderRequest(
-    open val iid: InstrumentId,
-    open val direction: OrderDirection,
-    open val lots: Long,
-    open val idempotencyToken: UUID?
+    val iid: InstrumentId,
+    val direction: OrderDirection,
+    val lots: Long,
+    val idempotencyToken: UUID?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

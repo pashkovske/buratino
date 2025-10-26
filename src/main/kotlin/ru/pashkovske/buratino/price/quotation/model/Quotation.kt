@@ -4,8 +4,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 open class Quotation(
-    open val units: Long,
-    open val nano: Int
+    val units: Long,
+    val nano: Int
 ): Comparable<Quotation> {
     companion object {
         private const val MAX_NANO = 1_000_000_000
