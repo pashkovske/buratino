@@ -1,12 +1,13 @@
 package ru.pashkovske.buratino.integration.assignment
 
-import org.junit.jupiter.api.BeforeEach
+import com.jayway.jsonpath.JsonPath
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -23,19 +24,15 @@ class TopPriceAssignmentTest {
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
 
-    private lateinit var iid: InstrumentId
-
-    @BeforeEach
-    fun setup() {
-        iid = bootstrapper.prepareKZOSData()
-    }
 
     @Test
-    fun `should create top price assignment for sell direction with oneStepOver`() {
+    fun `should create, skip refresh sell`() {
+        // Create
+        val iid: InstrumentId = bootstrapper.prepareKZOSCreateTopSell()
         val direction = "sell"
         val oneStepOver = true
 
-        mockMvc.perform(
+        val result: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
                     "/assignment/top-price/{instrumentId}/start/{direction}",
@@ -43,6 +40,29 @@ class TopPriceAssignmentTest {
                     direction
                 )
                 .param("oneStepOver", oneStepOver.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.iid.id").value(iid.id))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("SELL"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("IN_PROGRESS"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.info.orderId").isString())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.info.lastUpdate").exists())
+            .andReturn()
+
+        val assignmentId: String = JsonPath.parse(result.response.contentAsString).read("$.id")
+
+        // Refresh
+        bootstrapper.prepareKZOSRefreshTopSell()
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .patch(
+                    "/assignment/top-price/{assignmentId}/refresh",
+                    assignmentId
+                )
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)

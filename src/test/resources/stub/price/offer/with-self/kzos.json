@@ -1,0 +1,96 @@
+{
+  "ts": "${now}",
+  "asks": {
+    "66.1": {
+      "selfAffiliated": {
+        "price": "66.1",
+        "lots": 1,
+        "direction": "SELL",
+        "affiliation": "SELF"
+      }
+    },
+    "66.2": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "66.2",
+        "lots": 23,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    },
+    "66.3": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "66.3",
+        "lots": 10,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    },
+    "66.8": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "66.8",
+        "lots": 6,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    },
+    "66.9": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "66.9",
+        "lots": 74,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    }
+  },
+  "bids": {
+    "65.5": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "65.5",
+        "lots": 3,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "65.4": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "65.4",
+        "lots": 5,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "65.3": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "65.3",
+        "lots": 7,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "65": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "65",
+        "lots": 1,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "64.2": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "64.2",
+        "lots": 8,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    }
+  }
+}
