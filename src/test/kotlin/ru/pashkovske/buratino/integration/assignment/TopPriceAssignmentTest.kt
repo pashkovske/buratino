@@ -8,10 +8,11 @@ import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
@@ -24,6 +25,7 @@ import java.util.UUID
 
 @WebMvcTest
 @Import(IntegrationStubsConfiguration::class)
+@DirtiesContext
 class TopPriceAssignmentTest(
     @Autowired mockMvc: MockMvc
 ): BasicAssignmentTest(
@@ -49,7 +51,10 @@ class TopPriceAssignmentTest(
             content = null,
             params = mapOf("oneStepOver" to oneStepOver.toString())
         )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(jsonPath("$.direction").value(direction.toString()))
+            .andExpect(jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
             .andReturn()
 
         verify(extOrderServiceAdapter).createOrder(any())
@@ -78,9 +83,10 @@ class TopPriceAssignmentTest(
         performAndCheckRefresh(
             path = "/assignment/top-price/{assignmentId}/refresh",
             assignmentId = assignmentId,
-            iid = iid,
-            direction = direction
+            iid = iid
         )
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
@@ -88,10 +94,10 @@ class TopPriceAssignmentTest(
         performAndCheckCancel(
             path = "/assignment/top-price/{assignmentId}",
             assignmentId = assignmentId,
-            iid = iid,
-            direction = direction,
-            orderId = orderId
+            iid = iid
         )
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter).cancelOrder(orderId)
 

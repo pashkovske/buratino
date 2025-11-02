@@ -96,18 +96,14 @@ abstract class BasicAssignmentTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$.iid.id").value(iid.id))
-            .andExpect(jsonPath("$.direction").value(direction.toString()))
             .andExpect(jsonPath("$.id").isString())
             .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
-            .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
     }
 
     protected fun performAndCheckRefresh(
         path: String,
         assignmentId: UUID,
-        iid: InstrumentId,
-        direction: OrderDirection
+        iid: InstrumentId
     ): ResultActions {
         return mockMvc.perform(
             MockMvcRequestBuilders
@@ -119,19 +115,14 @@ abstract class BasicAssignmentTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$.iid.id").value(iid.id))
-            .andExpect(jsonPath("$.direction").value(direction.toString()))
             .andExpect(jsonPath("$.id").value(assignmentId.toString()))
             .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
-            .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
     }
 
     protected fun performAndCheckCancel(
         path: String,
         assignmentId: UUID,
-        iid: InstrumentId,
-        direction: OrderDirection,
-        orderId: String
+        iid: InstrumentId
     ): ResultActions {
         return mockMvc.perform(
             MockMvcRequestBuilders
@@ -143,10 +134,26 @@ abstract class BasicAssignmentTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$.iid.id").value(iid.id))
-            .andExpect(jsonPath("$.direction").value(direction.toString()))
             .andExpect(jsonPath("$.id").value(assignmentId.toString()))
             .andExpect(jsonPath("$.status").value("COMPLETED"))
-            .andExpect(jsonPath("$.info.orderId").value(orderId))
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
+    }
+
+    protected fun performAndCheckContinue(
+        path: String,
+        assignmentId: UUID,
+        iid: InstrumentId
+    ): ResultActions {
+        return mockMvc.perform(
+            MockMvcRequestBuilders
+                .patch(
+                    path,
+                    assignmentId
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(jsonPath("$.iid.id").value(iid.id))
+            .andExpect(jsonPath("$.id").isString())
+            .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
     }
 }

@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import com.jayway.jsonpath.JsonPath
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
@@ -26,7 +27,7 @@ import java.util.UUID
 @WebMvcTest
 @Import(IntegrationStubsConfiguration::class)
 @DirtiesContext
-class FractionalSpreadAssignmentTest(
+class ContinuousFractionalSpreadAssignmentTest(
     @Autowired mockMvc: MockMvc
 ): BasicAssignmentTest(
     mockMvc = mockMvc
@@ -39,29 +40,30 @@ class FractionalSpreadAssignmentTest(
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @Test
-    fun `create, skip refresh and cancel buy`() {
+    fun `create, skip refresh, cancel nested, continue and cancel buy`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.BUY
         val rate = 0.007
 
         // Create
-        val result: MvcResult = performAndCheckCreate(
-            path = "/assignment/fractional-spread/{instrumentId}/start/{direction}",
+        val createResult: MvcResult = performAndCheckCreate(
+            path = "/assignment/continuous/fractional-spread/{instrumentId}/start/{direction}",
             iid = iid,
             direction = direction,
             content = "{\"rate\": $rate}",
             params = null
         )
-            .andExpect(jsonPath("$.direction").value(direction.toString()))
-            .andExpect(jsonPath("$.rate").value(rate))
-            .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
+            .andExpect(jsonPath("$.nested.direction").value(direction.toString()))
+            .andExpect(jsonPath("$.nested.rate").value(rate))
+            .andExpect(jsonPath("$.nested.info.orderId").isString())
+            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
             .andReturn()
 
         verify(extOrderServiceAdapter).createOrder(any())
 
-        val assignmentId: UUID = UUID.fromString(JsonPath.parse(result.response.contentAsString).read("$.id"))
-        val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
+        val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
+        val nestedAssignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.nested.id"))
+        val createdOrderId: String = JsonPath.parse(createResult.response.contentAsString).read("$.nested.info.orderId")
 
         val expectedPrice = MoneyPrice(
             units = 65,
@@ -76,36 +78,66 @@ class FractionalSpreadAssignmentTest(
             price = expectedPrice
         )
         expectOrderOnLimitedRequest(
-            orderId = orderId,
+            orderId = createdOrderId,
             expectedLimitedRequest = expectedOrderRequest
         )
 
         // Refresh
         performAndCheckRefresh(
-            path = "/assignment/fractional-spread/{assignmentId}/refresh",
+            path = "/assignment/continuous/fractional-spread/{assignmentId}/refresh",
             assignmentId = assignmentId,
             iid = iid
         )
-            .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
+            .andExpect(jsonPath("$.nested.status").value("IN_PROGRESS"))
+            .andExpect(jsonPath("$.nested.info.orderId").isString())
+            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
-        // Cancel
+        // Cancel nested
         performAndCheckCancel(
             path = "/assignment/fractional-spread/{assignmentId}",
-            assignmentId = assignmentId,
+            assignmentId = nestedAssignmentId,
             iid = iid
         )
             .andExpect(jsonPath("$.info.orderId").isString())
             .andExpect(jsonPath("$.info.lastUpdate").exists())
 
-        verify(extOrderServiceAdapter).cancelOrder(orderId)
+        verify(extOrderServiceAdapter).cancelOrder(createdOrderId)
+
+        // Continue
+        val continueResult: MvcResult = performAndCheckContinue(
+            path = "/assignment/continuous/fractional-spread/{assignmentId}/continue",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+            .andExpect(jsonPath("$.nested.direction").value(direction.getOpposite().toString()))
+            .andExpect(jsonPath("$.nested.rate").value(rate))
+            .andExpect(jsonPath("$.nested.info.orderId").isString())
+            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
+            .andReturn()
+
+        val continuedOrderId: String = JsonPath.parse(continueResult.response.contentAsString).read("$.nested.info.orderId")
+
+        assertNotEquals(continuedOrderId, createdOrderId)
+
+        // Cancel
+        performAndCheckCancel(
+            path = "/assignment/continuous/fractional-spread/{assignmentId}",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+            .andExpect(jsonPath("$.nested.info.orderId").value(continuedOrderId))
+            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
 
         assertAllAssignmentsCancelled(
-            path = "/assignment/fractional-spread/",
+            path = "/assignment/continuous/fractional-spread/",
             expectedCount = 1
         )
-        assertAllOrdersCancelled(1)
+        assertAllAssignmentsCancelled(
+            path = "/assignment/fractional-spread/",
+            expectedCount = 2
+        )
+        assertAllOrdersCancelled(2)
     }
 }
