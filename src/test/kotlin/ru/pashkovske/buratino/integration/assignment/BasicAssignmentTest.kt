@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import org.hamcrest.Matchers.everyItem
+import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -10,7 +11,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 abstract class BasicAssignmentTest {
     protected fun assertAllCancelled(
         path: String,
-        mockMvc: MockMvc
+        mockMvc: MockMvc,
+        expectedCount: Int
     ) {
         mockMvc.perform(
             MockMvcRequestBuilders
@@ -18,6 +20,7 @@ abstract class BasicAssignmentTest {
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize<Any>(expectedCount)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[*].status",
                 everyItem(`is`("COMPLETED"))))
     }

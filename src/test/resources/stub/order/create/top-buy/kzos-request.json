@@ -1,0 +1,13 @@
+{
+  "iid": {
+    "id": "a6121478-943f-4eae-bc2a-bab5c771dd4a"
+  },
+  "direction": "BUY",
+  "lots": 1,
+  "idempotencyToken": "ccff5799-6b6d-4344-a8d8-8401a9c51510",
+  "price": {
+    "units": 64,
+    "nano": 300000000,
+    "currency": "RUB"
+  }
+}

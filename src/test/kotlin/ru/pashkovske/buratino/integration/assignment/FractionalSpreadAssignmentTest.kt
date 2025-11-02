@@ -14,15 +14,15 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.FractionalSpreadAssignmentController
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
-import ru.pashkovske.buratino.assignment.limit.top.price.controller.TopPriceAssignmentController
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 
-@WebMvcTest(TopPriceAssignmentController::class)
+@WebMvcTest(FractionalSpreadAssignmentController::class)
 @Import(IntegrationStubsConfiguration::class)
-class TopPriceAssignmentTest: BasicAssignmentTest() {
+class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -33,26 +33,26 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @Test
-    fun `should create, skip refresh and cancel sell`() {
+    fun `create, skip refresh and cancel buy`() {
         // Create
-        val iid: InstrumentId = bootstrapper.prepareKZOSCreateTopSell()
-        val direction = "sell"
-        val oneStepOver = true
+        val iid: InstrumentId = bootstrapper.prepareKZOSCreateFractionalSpreadBuy()
+        val direction = "buy"
+        val rate = 0.007
 
         val result: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
-                    "/assignment/top-price/{instrumentId}/start/{direction}",
+                    "/assignment/fractional-spread/{instrumentId}/start/{direction}",
                     iid.id,
                     direction
                 )
-                .param("oneStepOver", oneStepOver.toString())
+                .content("{\"rate\": $rate}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.iid.id").value(iid.id))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("SELL"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("BUY"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.rate").value(rate))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
             .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("IN_PROGRESS"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.info.orderId").isString())
@@ -65,20 +65,20 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         // Refresh
-        bootstrapper.prepareKZOSRefreshTopSell()
+        bootstrapper.prepareKZOSRefreshFractionalSpreadBuy()
 
         mockMvc.perform(
             MockMvcRequestBuilders
                 .patch(
-                    "/assignment/top-price/{assignmentId}/refresh",
+                    "/assignment/fractional-spread/{assignmentId}/refresh",
                     assignmentId
                 )
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.iid.id").value(iid.id))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("SELL"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("BUY"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.rate").value(rate))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(assignmentId))
             .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("IN_PROGRESS"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.info.orderId").isString())
@@ -87,20 +87,20 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
         // Cancel
-        bootstrapper.prepareKZOSRefreshTopSell()
+        bootstrapper.prepareKZOSRefreshFractionalSpreadBuy()
 
         mockMvc.perform(
             MockMvcRequestBuilders
                 .delete(
-                    "/assignment/top-price/{assignmentId}",
+                    "/assignment/fractional-spread/{assignmentId}",
                     assignmentId
                 )
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.iid.id").value(iid.id))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("SELL"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("BUY"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.rate").value(rate))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(assignmentId))
             .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("COMPLETED"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.info.orderId").isString())
@@ -109,7 +109,7 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
         verify(extOrderServiceAdapter).cancelOrder(orderId)
 
         assertAllCancelled(
-            path = "/assignment/top-price/",
+            path = "/assignment/fractional-spread/",
             mockMvc = mockMvc,
             expectedCount = 1
         )
