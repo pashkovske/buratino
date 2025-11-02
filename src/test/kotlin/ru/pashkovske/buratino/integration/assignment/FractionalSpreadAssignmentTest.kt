@@ -19,12 +19,19 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
+import ru.pashkovske.buratino.order.model.OrderDirection
+import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
+import ru.pashkovske.buratino.price.money.model.Currency
+import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import java.util.Locale.getDefault
 
 @WebMvcTest(FractionalSpreadAssignmentController::class)
 @Import(IntegrationStubsConfiguration::class)
-class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
-    @Autowired
-    private lateinit var mockMvc: MockMvc
+class FractionalSpreadAssignmentTest(
+    @Autowired mockMvc: MockMvc
+): BasicAssignmentTest(
+    mockMvc = mockMvc
+) {
 
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
@@ -36,7 +43,7 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
     fun `create, skip refresh and cancel buy`() {
         // Create
         val iid: InstrumentId = bootstrapper.getIid("kzos")
-        val direction = "buy"
+        val direction = OrderDirection.BUY
         val rate = 0.007
 
         val result: MvcResult = mockMvc.perform(
@@ -44,14 +51,14 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
                 .post(
                     "/assignment/fractional-spread/{instrumentId}/start/{direction}",
                     iid.id,
-                    direction
+                    direction.toString().lowercase(getDefault())
                 )
                 .content("{\"rate\": $rate}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.iid.id").value(iid.id))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("BUY"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value(direction.toString()))
             .andExpect(MockMvcResultMatchers.jsonPath("$.rate").value(rate))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
             .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("IN_PROGRESS"))
@@ -64,6 +71,23 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
         val assignmentId: String = JsonPath.parse(result.response.contentAsString).read("$.id")
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
+        val expectedPrice = MoneyPrice(
+            units = 65,
+            nano = 600_000_000,
+            currency = Currency.RUB
+        )
+        val expectedOrderRequest = LimitOrderRequest(
+            iid = iid,
+            direction = direction,
+            lots = 1,
+            idempotencyToken = null,
+            price = expectedPrice
+        )
+        expectOrderOnLimitedRequest(
+            orderId = orderId,
+            expectedLimitedRequest = expectedOrderRequest
+        )
+
         // Refresh
         mockMvc.perform(
             MockMvcRequestBuilders
@@ -75,7 +99,7 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.iid.id").value(iid.id))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("BUY"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value(direction.toString()))
             .andExpect(MockMvcResultMatchers.jsonPath("$.rate").value(rate))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(assignmentId))
             .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("IN_PROGRESS"))
@@ -95,7 +119,7 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.iid.id").value(iid.id))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value("BUY"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.direction").value(direction.toString()))
             .andExpect(MockMvcResultMatchers.jsonPath("$.rate").value(rate))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(assignmentId))
             .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("COMPLETED"))
@@ -106,12 +130,8 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
 
         assertAllAssignmentsCancelled(
             path = "/assignment/fractional-spread/",
-            mockMvc = mockMvc,
             expectedCount = 1
         )
-        assertAllOrdersCancelled(
-            mockMvc = mockMvc,
-            expectedCount = 1
-        )
+        assertAllOrdersCancelled(1)
     }
 }

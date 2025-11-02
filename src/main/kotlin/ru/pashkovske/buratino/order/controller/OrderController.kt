@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.order.controller
 
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.order.model.Order
@@ -20,7 +21,7 @@ class OrderController(
     }
 
     @GetMapping("/{id}")
-    fun get(id: String): Order {
+    fun get(@PathVariable id: String): Order {
         return orderRepo.get(id)
     }
 }
