@@ -104,8 +104,12 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
 
         verify(extOrderServiceAdapter).cancelOrder(orderId)
 
-        assertAllCancelled(
+        assertAllAssignmentsCancelled(
             path = "/assignment/top-price/",
+            mockMvc = mockMvc,
+            expectedCount = 1
+        )
+        assertAllOrdersCancelled(
             mockMvc = mockMvc,
             expectedCount = 1
         )

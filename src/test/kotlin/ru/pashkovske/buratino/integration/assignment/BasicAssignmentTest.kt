@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 abstract class BasicAssignmentTest {
-    protected fun assertAllCancelled(
+    protected fun assertAllAssignmentsCancelled(
         path: String,
         mockMvc: MockMvc,
         expectedCount: Int
@@ -21,7 +21,30 @@ abstract class BasicAssignmentTest {
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize<Any>(expectedCount)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[*].status",
-                everyItem(`is`("COMPLETED"))))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$[*].status",
+                    everyItem(`is`("COMPLETED"))
+                )
+            )
+    }
+
+    protected fun assertAllOrdersCancelled(
+        mockMvc: MockMvc,
+        expectedCount: Int
+    ) {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/order/")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize<Any>(expectedCount)))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$[*].currentInfo.state",
+                    everyItem(`is`("COMPLETED"))
+                )
+            )
     }
 }

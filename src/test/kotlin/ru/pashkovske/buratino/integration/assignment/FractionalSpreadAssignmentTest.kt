@@ -104,8 +104,12 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
 
         verify(extOrderServiceAdapter).cancelOrder(orderId)
 
-        assertAllCancelled(
+        assertAllAssignmentsCancelled(
             path = "/assignment/fractional-spread/",
+            mockMvc = mockMvc,
+            expectedCount = 1
+        )
+        assertAllOrdersCancelled(
             mockMvc = mockMvc,
             expectedCount = 1
         )
