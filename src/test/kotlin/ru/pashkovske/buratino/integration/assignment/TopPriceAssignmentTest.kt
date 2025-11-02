@@ -65,8 +65,6 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         // Refresh
-        bootstrapper.prepareKZOSRefreshTopSell()
-
         mockMvc.perform(
             MockMvcRequestBuilders
                 .patch(
@@ -87,8 +85,6 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
         // Cancel
-        bootstrapper.prepareKZOSRefreshTopSell()
-
         mockMvc.perform(
             MockMvcRequestBuilders
                 .delete(

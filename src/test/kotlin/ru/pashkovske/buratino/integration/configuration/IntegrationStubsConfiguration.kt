@@ -38,8 +38,10 @@ class IntegrationStubsConfiguration {
 
     @Bean
     @Primary
-    fun extOrderServiceAdapter(): ExtOrderServiceAdapter {
-        return ExtOrderServiceAdapterMock()
+    fun extOrderServiceAdapter(
+        offerBookMock: OfferBookMock
+    ): ExtOrderServiceAdapter {
+        return ExtOrderServiceAdapterMock(offerBookMock)
     }
 
     @Bean

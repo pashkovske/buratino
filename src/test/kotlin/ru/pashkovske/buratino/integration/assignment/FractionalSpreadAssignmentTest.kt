@@ -65,8 +65,6 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         // Refresh
-        bootstrapper.prepareKZOSRefreshFractionalSpreadBuy()
-
         mockMvc.perform(
             MockMvcRequestBuilders
                 .patch(
@@ -87,8 +85,6 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
         // Cancel
-        bootstrapper.prepareKZOSRefreshFractionalSpreadBuy()
-
         mockMvc.perform(
             MockMvcRequestBuilders
                 .delete(

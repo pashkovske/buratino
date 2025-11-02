@@ -26,16 +26,7 @@ class AssignmentTestBootstrapper(
     fun prepareKZOSCreateTopSell(): InstrumentId {
         val iid = instrumentServiceMocker.getIid("kzos")
         offerBookServiceMock.addMock(
-            path = "stub/price/offer/without-self/kzos.json",
-            iid = iid
-        )
-        return iid
-    }
-
-    fun prepareKZOSRefreshTopSell(): InstrumentId {
-        val iid = instrumentServiceMocker.getIid("kzos")
-        offerBookServiceMock.addMock(
-            path = "stub/price/offer/with-self/kzos.json",
+            path = "stub/price/offer/kzos.json",
             iid = iid
         )
         return iid
@@ -44,16 +35,7 @@ class AssignmentTestBootstrapper(
     fun prepareKZOSCreateFractionalSpreadBuy(): InstrumentId {
         val iid = instrumentServiceMocker.getIid("kzos")
         offerBookServiceMock.addMock(
-            path = "stub/price/offer/without-self/kzos.json",
-            iid = iid
-        )
-        return iid
-    }
-
-    fun prepareKZOSRefreshFractionalSpreadBuy(): InstrumentId {
-        val iid = instrumentServiceMocker.getIid("kzos")
-        offerBookServiceMock.addMock(
-            path = "stub/price/offer/with-self/kzos.json",
+            path = "stub/price/offer/kzos.json",
             iid = iid
         )
         return iid
