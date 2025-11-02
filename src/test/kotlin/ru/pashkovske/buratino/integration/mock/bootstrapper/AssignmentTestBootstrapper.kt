@@ -24,7 +24,7 @@ class AssignmentTestBootstrapper(
     }
 
     fun prepareKZOSCreateTopSell(): InstrumentId {
-        val iid = InstrumentId("a6121478-943f-4eae-bc2a-bab5c771dd4a")
+        val iid = instrumentServiceMocker.getIid("kzos")
         offerBookServiceMocker.addMock(
             path = "stub/price/offer/without-self/kzos.json",
             depth = 5,
@@ -34,7 +34,7 @@ class AssignmentTestBootstrapper(
     }
 
     fun prepareKZOSRefreshTopSell(): InstrumentId {
-        val iid = InstrumentId("a6121478-943f-4eae-bc2a-bab5c771dd4a")
+        val iid = instrumentServiceMocker.getIid("kzos")
         offerBookServiceMocker.addMock(
             path = "stub/price/offer/with-self/kzos.json",
             depth = 5,
@@ -44,7 +44,7 @@ class AssignmentTestBootstrapper(
     }
 
     fun prepareKZOSCreateFractionalSpreadBuy(): InstrumentId {
-        val iid = InstrumentId("a6121478-943f-4eae-bc2a-bab5c771dd4a")
+        val iid = instrumentServiceMocker.getIid("kzos")
         offerBookServiceMocker.addMock(
             path = "stub/price/offer/without-self/kzos.json",
             depth = 5,
@@ -54,7 +54,7 @@ class AssignmentTestBootstrapper(
     }
 
     fun prepareKZOSRefreshFractionalSpreadBuy(): InstrumentId {
-        val iid = InstrumentId("a6121478-943f-4eae-bc2a-bab5c771dd4a")
+        val iid = instrumentServiceMocker.getIid("kzos")
         offerBookServiceMocker.addMock(
             path = "stub/price/offer/with-self/kzos.json",
             depth = 5,
