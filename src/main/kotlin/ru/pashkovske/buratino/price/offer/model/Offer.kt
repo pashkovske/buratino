@@ -25,4 +25,11 @@ data class Offer(
             affiliation = affiliation
         )
     }
+
+    fun plusNullable(other: Offer?): Offer {
+        if (other == null) {
+            return this
+        }
+        return plus(other)
+    }
 }

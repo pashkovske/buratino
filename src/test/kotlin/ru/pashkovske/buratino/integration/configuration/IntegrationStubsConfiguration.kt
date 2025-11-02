@@ -10,6 +10,7 @@ import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.account.service.AccountSupplier
 import ru.pashkovske.buratino.instrument.adapter.InstrumentServiceAdapter
 import ru.pashkovske.buratino.integration.mock.ExtOrderServiceAdapterMock
+import ru.pashkovske.buratino.integration.mock.OfferBookMock
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.price.offer.service.OfferBookService
 import ru.pashkovske.buratino.util.loader.FileLoader
@@ -18,8 +19,15 @@ import ru.pashkovske.buratino.util.loader.FileLoader
 class IntegrationStubsConfiguration {
     @Bean
     @Primary
-    fun offerBookService(): OfferBookService {
-        return mock(OfferBookService::class.java)
+    fun offerBookService(
+        offerBookMock: OfferBookMock
+    ): OfferBookService {
+        return offerBookMock
+    }
+
+    @Bean
+    fun offerBookMock(): OfferBookMock {
+        return OfferBookMock()
     }
 
     @Bean
