@@ -19,25 +19,25 @@ class AssignmentTestBootstrapper(
             .forEach(instrumentServiceMocker::addMock)
     }
 
+    fun bootstrapOfferBookServiceMock() {
+        val offerBookStubsPath = "stub/price/offer"
+        val offerBookStubPaths: Set<String> = FileLoader.walkPath(offerBookStubsPath)
+        offerBookStubPaths.forEach { offerBookStubFile ->
+            val alias = FileLoader.fileNameToAlias(offerBookStubFile)
+            val iid: InstrumentId = instrumentServiceMocker.getIid(alias) ?: return@forEach
+            offerBookServiceMock.addMock(
+                path = "$offerBookStubsPath/$offerBookStubFile",
+                iid = iid
+            )
+        }
+    }
+
     init {
         bootstrapInstrumentServiceMocker()
+        bootstrapOfferBookServiceMock()
     }
 
-    fun prepareKZOSCreateTopSell(): InstrumentId {
-        val iid = instrumentServiceMocker.getIid("kzos")
-        offerBookServiceMock.addMock(
-            path = "stub/price/offer/kzos.json",
-            iid = iid
-        )
-        return iid
-    }
-
-    fun prepareKZOSCreateFractionalSpreadBuy(): InstrumentId {
-        val iid = instrumentServiceMocker.getIid("kzos")
-        offerBookServiceMock.addMock(
-            path = "stub/price/offer/kzos.json",
-            iid = iid
-        )
-        return iid
+    fun getIid(alias: String): InstrumentId {
+        return instrumentServiceMocker.getIid(alias) ?: throw IllegalArgumentException("No such alias: $alias")
     }
 }

@@ -54,6 +54,12 @@ object FileLoader {
             .toSet()
     }
 
+    fun fileNameToAlias(fileName: String): String {
+        return fileName
+            .split("/").last()
+            .split(".").first()
+    }
+
     private fun getValidResourceUrl(path: String): URL {
         val resourcePath = if (path.startsWith("/")) path.substring(1) else path
         return this::class.java.classLoader.getResource(resourcePath)

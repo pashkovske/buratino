@@ -18,15 +18,13 @@ class InstrumentServiceMocker(
             path = stubPath,
             clazz = Instrument::class.java
         )
-        val alias = stubPath
-            .split("/").last()
-            .split(".").first()
+        val alias = FileLoader.fileNameToAlias(stubPath)
         iidAliases[alias] = instrument.iid
         Mockito.`when`(mock.get(instrument.iid))
             .thenReturn(instrument)
     }
 
-    fun getIid(alias: String): InstrumentId {
-        return iidAliases[alias] ?: throw IllegalArgumentException("No such alias: $alias")
+    fun getIid(alias: String): InstrumentId? {
+        return iidAliases[alias]
     }
 }

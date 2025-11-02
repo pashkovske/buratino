@@ -35,7 +35,7 @@ class FractionalSpreadAssignmentTest: BasicAssignmentTest() {
     @Test
     fun `create, skip refresh and cancel buy`() {
         // Create
-        val iid: InstrumentId = bootstrapper.prepareKZOSCreateFractionalSpreadBuy()
+        val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = "buy"
         val rate = 0.007
 

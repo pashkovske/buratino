@@ -35,7 +35,7 @@ class TopPriceAssignmentTest: BasicAssignmentTest() {
     @Test
     fun `should create, skip refresh and cancel sell`() {
         // Create
-        val iid: InstrumentId = bootstrapper.prepareKZOSCreateTopSell()
+        val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = "sell"
         val oneStepOver = true
 
