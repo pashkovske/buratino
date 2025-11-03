@@ -3,6 +3,9 @@ package ru.pashkovske.buratino.assignment.nested.continuous.base.service
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.model.AssignmentAction
+import ru.pashkovske.buratino.assignment.base.model.AssignmentActionChain
+import ru.pashkovske.buratino.assignment.base.model.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.nested.base.service.BasicSuperAssignmentExe
@@ -24,23 +27,55 @@ abstract class BasicContinuousAssignmentExe<
     ),
     ContinuousAssignmentExe<CA>
 {
-    override fun continueAssignment(id: UUID): CA {
-        val assignment = assignmentRepo.get(id)
-        logger.info("Continuing assignment: $assignment")
-        if (assignment.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment ${assignment.id} is already completed, skipping continuation")
-            return assignment
-        }
-        if (assignment.nested.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment ${assignment.nested.id} is completed, replacing with next one")
-            assignment.nested = doContinue(assignment.nested)
-            logger.info("Completed assignment replaced with ${assignment.nested.id}")
-        } else {
-            logger.warn("Assignment ${assignment.nested.id} is not completed, skipping continuation")
-        }
-        assignmentRepo.update(assignment)
-        return assignment
+    protected val continueAssignmentChain: AssignmentActionChain<CA> = AssignmentActionChain()
+
+    init {
+        initContinueChain()
     }
 
-    protected abstract fun doContinue(assignment: Nested): Nested
+    protected fun initContinueChain() {
+        continueAssignmentChain += AssignmentAction(
+            name = "log_continue",
+            action = { assignment ->
+                logger.info("Continuing assignment: $assignment")
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        continueAssignmentChain += AssignmentAction(
+            name = "check_status",
+            action = { assignment ->
+                val isCompleted = assignment.status == AssignmentStatus.COMPLETED
+                if (isCompleted) {
+                    logger.info("Assignment ${assignment.id} is already completed, skipping continuation")
+                }
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = !isCompleted
+                )
+            }
+        )
+        continueAssignmentChain += AssignmentAction(
+            name = "check_nested_status",
+            action = { assignment ->
+                val isCompleted = assignment.nested.status == AssignmentStatus.COMPLETED
+                if (!isCompleted) {
+                    logger.warn("Assignment ${assignment.nested.id} is not completed, skipping continuation")
+                } else {
+                    logger.info("Assignment ${assignment.nested.id} is completed, continuing")
+                }
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = isCompleted
+                )
+            }
+        )
+        continueAssignmentChain += updateInRepoAction
+    }
+
+    final override fun continueAssignment(id: UUID): CA {
+        return continueAssignmentChain(assignmentRepo.get(id))
+    }
 }

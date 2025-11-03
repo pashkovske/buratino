@@ -3,6 +3,9 @@ package ru.pashkovske.buratino.assignment.base.service
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.model.AssignmentAction
+import ru.pashkovske.buratino.assignment.base.model.AssignmentActionChain
+import ru.pashkovske.buratino.assignment.base.model.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import java.util.UUID
 
@@ -11,48 +14,143 @@ private val logger = KotlinLogging.logger {}
 abstract class BasicAssignmentExe<A: Assignment>(
     protected open val assignmentRepo: AssignmentRepo<A>
 ): AssignmentExe<A> {
-    override fun start(assignment: A): A {
-        logger.info("Starting assignment: $assignment")
+    protected val startAssignmentChain: AssignmentActionChain<A> = AssignmentActionChain()
+    protected val refreshAssignmentChain: AssignmentActionChain<A> = AssignmentActionChain()
+    protected val cancelAssignmentChain: AssignmentActionChain<A> = AssignmentActionChain()
 
-        doStart(assignment)
-
-        assignment.status = AssignmentStatus.IN_PROGRESS
-        assignmentRepo.create(assignment)
-        return assignment
-    }
-
-    override fun refresh(id: UUID): A {
-        logger.info("Refreshing assignment: $id")
-        val assignment = assignmentRepo.get(id)
-        if (assignment.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment ${assignment.id} is already completed, skipping refresh")
-            return assignment
+    protected val updateInRepoAction: AssignmentAction<A> = AssignmentAction(
+        name = "update_in_repo",
+        action = { assignment ->
+            assignmentRepo.update(assignment)
+            AssignmentActionResult(
+                assignment = assignment,
+                shouldContinue = true
+            )
         }
+    )
 
-        doRefresh(assignment)
-
-        assignmentRepo.update(assignment)
-        return assignment
+    init {
+        initStartChain()
+        initRefreshChain()
+        initCancelChain()
     }
 
-    override fun cancel(id: UUID): A {
-        logger.info("Cancelling assignment: $id")
-        val assignment = assignmentRepo.get(id)
-        if (assignment.status == AssignmentStatus.COMPLETED) {
-            logger.info("Assignment ${assignment.id} is already completed, skipping cancel")
-            return assignment
-        }
-
-        doCancel(assignment)
-
-        assignment.status = AssignmentStatus.COMPLETED
-        assignmentRepo.update(assignment)
-        return assignment
+    private fun initStartChain() {
+        startAssignmentChain += AssignmentAction(
+            name = "log_start",
+            action = { assignment ->
+                logger.info("Starting assignment: $assignment")
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        startAssignmentChain += AssignmentAction(
+            name = "set_status_in_progress",
+            action = { assignment ->
+                assignment.status = AssignmentStatus.IN_PROGRESS
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        startAssignmentChain += AssignmentAction(
+            name = "create_in_repo",
+            action = { assignment ->
+                assignmentRepo.create(assignment)
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
     }
 
-    protected abstract fun doStart(assignment: A)
+    private fun initRefreshChain() {
+        refreshAssignmentChain += AssignmentAction(
+            name = "log_refresh",
+            action = { assignment ->
+                logger.info("Refreshing assignment: $assignment")
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        refreshAssignmentChain += AssignmentAction(
+            name = "check_completed",
+            action = { assignment ->
+                val isCompleted: Boolean = assignment.status == AssignmentStatus.COMPLETED
+                if (isCompleted) {
+                    logger.info("Assignment ${assignment.id} is already completed, skipping refresh")
+                }
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = !isCompleted
+                )
+            }
+        )
+        refreshAssignmentChain += AssignmentAction(
+            name = "set_status_in_progress",
+            action = { assignment ->
+                assignment.status = AssignmentStatus.IN_PROGRESS
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        refreshAssignmentChain += updateInRepoAction
+    }
 
-    protected abstract fun doRefresh(assignment: A)
+    private fun initCancelChain() {
+        cancelAssignmentChain += AssignmentAction(
+            name = "log_cancel",
+            action = { assignment ->
+                logger.info("Cancelling assignment: $assignment")
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        cancelAssignmentChain += AssignmentAction(
+            name = "check_completed",
+            action = { assignment ->
+                val isCompleted: Boolean = assignment.status == AssignmentStatus.COMPLETED
+                if (isCompleted) {
+                    logger.info("Assignment ${assignment.id} is already completed, skipping cancel")
+                }
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = !isCompleted
+                )
+            }
+        )
+        cancelAssignmentChain += AssignmentAction(
+            name = "set_status_completed",
+            action = { assignment ->
+                assignment.status = AssignmentStatus.COMPLETED
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        cancelAssignmentChain += updateInRepoAction
+    }
 
-    protected abstract fun doCancel(assignment: A)
+    final override fun start(assignment: A): A {
+        return startAssignmentChain(assignment)
+    }
+
+    final override fun refresh(id: UUID): A {
+        return refreshAssignmentChain(assignmentRepo.get(id))
+    }
+
+    final override fun cancel(id: UUID): A {
+        return cancelAssignmentChain(assignmentRepo.get(id))
+    }
 }

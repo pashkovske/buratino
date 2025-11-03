@@ -2,7 +2,8 @@ package ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.serv
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentAction
+import ru.pashkovske.buratino.assignment.base.model.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.nested.continuous.base.service.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousSpreadFractionAssignment
@@ -22,17 +23,28 @@ class ContinuousSpreadFractionAssignmentExe(
     assignmentRepo = assignmentRepo,
     nestedAssignmentExe = nestedAssignmentExe
 ) {
-    override fun doContinue(assignment: FractionalSpreadAssignment): FractionalSpreadAssignment {
-        if (assignment.status == AssignmentStatus.COMPLETED) {
-            val nextAssignment = FractionalSpreadAssignment(
-                iid = assignment.iid,
-                direction = assignment.direction.getOpposite(),
-                rate = assignment.rate
-            )
-            return nestedAssignmentExe.start(nextAssignment)
-        } else {
-            logger.warn("Nested assignment ${assignment.id} is not competed, is in ${assignment.status} status, skipping continue")
-            return assignment
-        }
+    init {
+        addReplaceCompletedAssignmentToChain()
+    }
+
+    private fun addReplaceCompletedAssignmentToChain() {
+        continueAssignmentChain["check_nested_status"] = AssignmentAction(
+            name = "start_new_spread_fraction_assignment",
+            action = { assignment: ContinuousSpreadFractionAssignment ->
+                val completedAssignment = assignment.nested
+                val nextAssignment = FractionalSpreadAssignment(
+                    iid = completedAssignment.iid,
+                    direction = completedAssignment.direction.getOpposite(),
+                    rate = completedAssignment.rate
+                )
+                nestedAssignmentExe.start(nextAssignment)
+                assignment.nested = nextAssignment
+                logger.info("Started new spread fraction assignment: ${nextAssignment.id}")
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
     }
 }
