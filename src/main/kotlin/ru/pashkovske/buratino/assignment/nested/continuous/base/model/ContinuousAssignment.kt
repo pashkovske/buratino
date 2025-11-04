@@ -5,7 +5,7 @@ import ru.pashkovske.buratino.assignment.nested.base.model.SuperAssignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 
 abstract class ContinuousAssignment<A: Assignment>(
-    override val iid: InstrumentId,
+    iid: InstrumentId,
     nested: A
 ): SuperAssignment<A>(
     iid = iid,
