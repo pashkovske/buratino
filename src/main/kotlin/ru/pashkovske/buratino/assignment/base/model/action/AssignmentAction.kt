@@ -1,4 +1,6 @@
-package ru.pashkovske.buratino.assignment.base.model
+package ru.pashkovske.buratino.assignment.base.model.action
+
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 
 data class AssignmentAction<A : Assignment>(
     val name: String,

@@ -3,9 +3,9 @@ package ru.pashkovske.buratino.assignment.nested.continuous.base.service
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.AssignmentAction
-import ru.pashkovske.buratino.assignment.base.model.AssignmentActionChain
-import ru.pashkovske.buratino.assignment.base.model.AssignmentActionResult
+import ru.pashkovske.buratino.assignment.base.model.action.AssignmentAction
+import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionChain
+import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.nested.base.service.BasicSuperAssignmentExe

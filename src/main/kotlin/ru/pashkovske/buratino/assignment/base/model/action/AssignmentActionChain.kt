@@ -1,4 +1,6 @@
-package ru.pashkovske.buratino.assignment.base.model
+package ru.pashkovske.buratino.assignment.base.model.action
+
+import ru.pashkovske.buratino.assignment.base.model.Assignment
 
 class AssignmentActionChain<A : Assignment> {
     private val actions: MutableList<AssignmentAction<A>> = mutableListOf()

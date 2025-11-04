@@ -6,7 +6,8 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 
 abstract class ContinuousAssignment<A: Assignment>(
     iid: InstrumentId,
-    nested: A
+    nested: A,
+    autoContinuable: Boolean = true
 ): SuperAssignment<A>(
     iid = iid,
     nested = nested

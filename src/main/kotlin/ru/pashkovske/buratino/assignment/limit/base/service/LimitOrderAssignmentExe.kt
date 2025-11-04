@@ -1,8 +1,8 @@
 package ru.pashkovske.buratino.assignment.limit.base.service
 
 import mu.KotlinLogging
-import ru.pashkovske.buratino.assignment.base.model.AssignmentAction
-import ru.pashkovske.buratino.assignment.base.model.AssignmentActionResult
+import ru.pashkovske.buratino.assignment.base.model.action.AssignmentAction
+import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
