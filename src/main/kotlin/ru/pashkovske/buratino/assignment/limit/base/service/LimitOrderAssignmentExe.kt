@@ -28,7 +28,7 @@ abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
     }
 
     private fun addStartOrderToChain() {
-        startAssignmentChain["set_status_in_progress"] = AssignmentAction(
+        startAssignmentChain["log_start"] = AssignmentAction(
             name = "start_limit_order",
             action = { assignment: LA ->
                 val order: Order = orderService.createOrder(
@@ -54,7 +54,7 @@ abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
     }
 
     private fun addRefreshOrderToChain() {
-        refreshAssignmentChain["set_status_in_progress"] = AssignmentAction(
+        refreshAssignmentChain["log_refresh"] = AssignmentAction(
             name = "refresh_limit_order",
             action = { assignment: LA ->
                 val orderId: String = getOrderId(assignment)
@@ -80,7 +80,7 @@ abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
     }
 
     private fun addCancelOrderToChain() {
-        cancelAssignmentChain["set_status_completed"] = AssignmentAction(
+        cancelAssignmentChain["log_cancel"] = AssignmentAction(
             name = "cancel_limit_order",
             action = { assignment: LA ->
                 val orderId: String = getOrderId(assignment)

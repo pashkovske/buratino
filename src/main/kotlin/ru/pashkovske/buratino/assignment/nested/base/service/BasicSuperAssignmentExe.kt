@@ -27,8 +27,8 @@ abstract class BasicSuperAssignmentExe<
     }
 
     private fun addStartNestedToChain() {
-        startAssignmentChain["set_status_in_progress"] = AssignmentAction(
-            name = "check_nested_started",
+        startAssignmentChain["log_start"] = AssignmentAction(
+            name = "check_and_start_nested",
             action = { assignment ->
                 when (assignment.nested.status) {
                     AssignmentStatus.QUEUED -> {
@@ -47,7 +47,7 @@ abstract class BasicSuperAssignmentExe<
     }
 
     private fun addRefreshNestedToChain() {
-        refreshAssignmentChain["set_status_in_progress"] = AssignmentAction(
+        refreshAssignmentChain["check_completed"] = AssignmentAction(
             name = "refresh_nested",
             action = { assignment ->
                 when (assignment.nested.status) {
@@ -69,7 +69,7 @@ abstract class BasicSuperAssignmentExe<
     }
 
     private fun addCancelNestedToChain() {
-        cancelAssignmentChain["set_status_in_progress"] = AssignmentAction(
+        cancelAssignmentChain["check_completed"] = AssignmentAction(
             name = "cancel_nested",
             action = { assignment ->
                 when (assignment.nested.status) {

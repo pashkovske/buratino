@@ -78,4 +78,8 @@ abstract class BasicContinuousAssignmentExe<
     final override fun continueAssignment(id: UUID): CA {
         return continueAssignmentChain(assignmentRepo.get(id))
     }
+
+    fun getContinueChainNames(): List<String> {
+        return continueAssignmentChain.getNames()
+    }
 }

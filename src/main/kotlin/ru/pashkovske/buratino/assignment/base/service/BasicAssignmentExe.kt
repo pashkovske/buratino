@@ -153,4 +153,16 @@ abstract class BasicAssignmentExe<A: Assignment>(
     final override fun cancel(id: UUID): A {
         return cancelAssignmentChain(assignmentRepo.get(id))
     }
+
+    fun getStartChainNames(): List<String> {
+        return startAssignmentChain.getNames()
+    }
+
+    fun getRefreshChainNames(): List<String> {
+        return refreshAssignmentChain.getNames()
+    }
+
+    fun getCancelChainNames(): List<String> {
+        return cancelAssignmentChain.getNames()
+    }
 }
