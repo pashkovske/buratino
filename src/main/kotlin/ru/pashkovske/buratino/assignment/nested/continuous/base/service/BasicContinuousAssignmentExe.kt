@@ -18,7 +18,7 @@ abstract class BasicContinuousAssignmentExe<
     CA : ContinuousAssignment<Nested>,
     Nested : Assignment
     >(
-    override val assignmentRepo: AssignmentRepo<CA>,
+    assignmentRepo: AssignmentRepo<CA>,
     nestedAssignmentExe: AssignmentExe<Nested>
 ):
     BasicSuperAssignmentExe<CA, Nested>(

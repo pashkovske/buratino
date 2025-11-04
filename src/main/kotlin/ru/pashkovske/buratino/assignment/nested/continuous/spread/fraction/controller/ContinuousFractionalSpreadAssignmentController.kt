@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousSpreadFractionAssignment
-import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExe
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service.ContinuousFractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.controller.dto.StartFractionalSpredAssignmentDto
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -19,10 +19,10 @@ import java.util.UUID
 @Suppress("unused")
 @RestController
 @RequestMapping("/assignment/continuous/fractional-spread")
-class ContinuousSpreadFractionAssignmentController(
-    repo: AssignmentRepo<ContinuousSpreadFractionAssignment>,
-    override val exe: ContinuousSpreadFractionAssignmentExe
-): BasicAssignmentController<ContinuousSpreadFractionAssignment>(
+class ContinuousFractionalSpreadAssignmentController(
+    repo: AssignmentRepo<ContinuousFractionalSpreadAssignment>,
+    override val exe: ContinuousFractionalSpreadAssignmentExe
+): BasicAssignmentController<ContinuousFractionalSpreadAssignment>(
     repo = repo,
     exe = exe
 ) {
@@ -31,14 +31,14 @@ class ContinuousSpreadFractionAssignmentController(
         @PathVariable instrumentId: String,
         @PathVariable direction: String,
         @RequestBody body: StartFractionalSpredAssignmentDto
-    ): ContinuousSpreadFractionAssignment {
+    ): ContinuousFractionalSpreadAssignment {
         val iid = InstrumentId(id = instrumentId)
         val nestedAssignment = FractionalSpreadAssignment(
             iid = iid,
             direction = OrderDirection.fromString(direction),
             rate = body.rate
         )
-        val assignment = ContinuousSpreadFractionAssignment(
+        val assignment = ContinuousFractionalSpreadAssignment(
             iid = iid,
             nested = nestedAssignment
         )
@@ -46,7 +46,7 @@ class ContinuousSpreadFractionAssignmentController(
     }
 
     @PatchMapping("/{id}/continue")
-    fun continueAssignment(@PathVariable id: UUID): ContinuousSpreadFractionAssignment {
+    fun continueAssignment(@PathVariable id: UUID): ContinuousFractionalSpreadAssignment {
         return exe.continueAssignment(id)
     }
 }

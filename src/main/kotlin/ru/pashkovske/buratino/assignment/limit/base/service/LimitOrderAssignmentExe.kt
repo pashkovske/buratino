@@ -16,8 +16,8 @@ import java.util.UUID
 private val logger = KotlinLogging.logger {}
 
 abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
-    val orderService: OrderService,
-    override val assignmentRepo: AssignmentRepo<LA>
+    private val orderService: OrderService,
+    assignmentRepo: AssignmentRepo<LA>
 ): BasicAssignmentExe<LA>(
     assignmentRepo = assignmentRepo
 ) {

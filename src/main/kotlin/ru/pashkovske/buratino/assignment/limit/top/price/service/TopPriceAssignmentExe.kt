@@ -9,7 +9,7 @@ import ru.pashkovske.buratino.price.money.model.MoneyPrice
 import ru.pashkovske.buratino.price.money.service.MarketMoneyPriceService
 
 @Service
-class TopPriceAssignmentExe(
+final class TopPriceAssignmentExe(
     orderService: OrderService,
     assignmentRepo: AssignmentRepo<TopPriceAssignment>,
     val marketDataService: MarketMoneyPriceService

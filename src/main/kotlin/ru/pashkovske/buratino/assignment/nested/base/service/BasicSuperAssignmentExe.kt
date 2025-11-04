@@ -16,8 +16,8 @@ abstract class BasicSuperAssignmentExe<
     A : SuperAssignment<Nested>,
     Nested : Assignment
     >(
-    override val assignmentRepo: AssignmentRepo<A>,
-    protected open val nestedAssignmentExe: AssignmentExe<Nested>
+    assignmentRepo: AssignmentRepo<A>,
+    protected val nestedAssignmentExe: AssignmentExe<Nested>
 ): BasicAssignmentExe<A>(assignmentRepo = assignmentRepo) {
 
     init {

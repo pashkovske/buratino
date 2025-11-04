@@ -15,7 +15,7 @@ import ru.pashkovske.buratino.price.money.service.MarketMoneyPriceService
 private val logger = KotlinLogging.logger {}
 
 @Service
-class FractionalSpreadAssignmentExe(
+final class FractionalSpreadAssignmentExe(
     orderService: OrderService,
     assignmentRepo: AssignmentRepo<FractionalSpreadAssignment>,
     val marketDataService: MarketMoneyPriceService,

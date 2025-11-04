@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
-import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service.ContinuousSpreadFractionAssignmentExe
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service.ContinuousFractionalSpreadAssignmentExe
 
 class FinalAssignmentExeChainsTest {
 
     @Test
-    fun checkContinuousSpreadFractionAssignmentExeChains() {
-        val assignmentExe = ContinuousSpreadFractionAssignmentExe(
+    fun checkContinuousFractionalSpreadAssignmentExeChains() {
+        val assignmentExe = ContinuousFractionalSpreadAssignmentExe(
             assignmentRepo = mock(),
             nestedAssignmentExe = mock()
         )
