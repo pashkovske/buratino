@@ -1,7 +1,9 @@
 package ru.pashkovske.buratino.integration.mock.bootstrapper
 
 import org.springframework.stereotype.Service
+import ru.pashkovske.buratino.instrument.model.Future
 import ru.pashkovske.buratino.instrument.model.InstrumentId
+import ru.pashkovske.buratino.instrument.model.Share
 import ru.pashkovske.buratino.integration.mock.InstrumentServiceMocker
 import ru.pashkovske.buratino.integration.mock.OfferBookMock
 import ru.pashkovske.buratino.util.loader.FileLoader
@@ -12,11 +14,20 @@ class AssignmentTestBootstrapper(
     private val offerBookServiceMock: OfferBookMock
 ) {
     fun bootstrapInstrumentServiceMocker() {
-        val instrumentStubsPath = "stub/instrument/share"
-        val shareStubPaths: Set<String> = FileLoader.walkPath(instrumentStubsPath)
+        val shareStubsPath = "stub/instrument/share"
+        val shareStubPaths: Set<String> = FileLoader.walkPath(shareStubsPath)
         shareStubPaths
-            .map { "$instrumentStubsPath/$it" }
-            .forEach(instrumentServiceMocker::addMock)
+            .map { "$shareStubsPath/$it" }
+            .forEach {
+                instrumentServiceMocker.addMock(it, Share::class.java)
+            }
+        val futureStubsPath = "stub/instrument/future"
+        val futureStubsPaths: Set<String> = FileLoader.walkPath(futureStubsPath)
+        futureStubsPaths
+            .map { "$futureStubsPath/$it" }
+            .forEach {
+                instrumentServiceMocker.addMock(it, Future::class.java)
+            }
     }
 
     fun bootstrapOfferBookServiceMock() {

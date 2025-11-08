@@ -1,0 +1,97 @@
+{
+  "ts": "${now}",
+  "asks": {
+    "10829": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10829",
+        "lots": 16,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10830": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10830",
+        "lots": 3,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10831": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10831",
+        "lots": 32,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10832": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10832",
+        "lots": 3,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10833": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10833",
+        "lots": 1,
+        "direction": "SELL",
+        "affiliation": "ALIEN"
+      }
+    }
+  },
+  "bids": {
+    "10814": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10814",
+        "lots": 14,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10799": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10799",
+        "lots": 1,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10787": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10787",
+        "lots": 22,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10784": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10784",
+        "lots": 2,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    },
+    "10778": {
+      "selfAffiliated": null,
+      "alienAffiliated": {
+        "price": "10778",
+        "lots": 3,
+        "direction": "BUY",
+        "affiliation": "ALIEN"
+      }
+    }
+  }
+}

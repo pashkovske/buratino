@@ -4,15 +4,15 @@ import ru.pashkovske.buratino.price.money.model.Currency
 import ru.pashkovske.buratino.price.money.model.MoneyPrice
 import ru.pashkovske.buratino.price.quotation.model.PtsPrice
 
-data class Future(
-    override val iid: InstrumentId,
-    override val name: String,
-    override val ticker: String,
-    override val minPriceIncrement: MoneyPrice,
-    override val lot: Int,
-    override val isTradable: Boolean,
-    override val forQualifiedInvestorOnly: Boolean,
-    override val currency: Currency,
+class Future(
+    iid: InstrumentId,
+    name: String,
+    ticker: String,
+    minPriceIncrement: MoneyPrice,
+    lot: Int,
+    isTradable: Boolean,
+    forQualifiedInvestorOnly: Boolean,
+    currency: Currency,
     val minPriceIncrementPts: PtsPrice
 ) : Instrument(
     iid = iid,

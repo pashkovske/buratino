@@ -39,11 +39,11 @@ open class Quotation(
     }
 
     open operator fun times(multiplier: Int): Quotation {
-        var units = this.units * multiplier
-        var nano = this.nano * multiplier
-        units += nano / MAX_NANO
-        nano %= MAX_NANO
-        return Quotation(units, nano)
+        return fromBigInt(
+            this
+                .toBigInt()
+                .multiply(BigInteger.valueOf(multiplier.toLong()))
+        )
     }
 
     open operator fun times(multiplier: Double): Quotation {
@@ -99,6 +99,10 @@ open class Quotation(
         return BigInteger.valueOf(price.units)
             .multiply(BigInteger.valueOf(MAX_NANO.toLong()))
             .add(BigInteger.valueOf(price.nano.toLong()))
+    }
+
+    private fun toBigInt(): BigInteger {
+        return toBigInt(this)
     }
 
     private fun fromBigInt(bigInt: BigInteger): Quotation {

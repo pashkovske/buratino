@@ -1,0 +1,21 @@
+{
+  "iid": {
+    "id": "d30c50a1-517d-437c-8a42-548a77a9c17c"
+  },
+  "name": "COPPER-12.25 Медь",
+  "ticker": "CEZ5",
+  "lot": 1,
+  "forQualifiedInvestorOnly": false,
+  "minPriceIncrement": {
+    "units": 0,
+    "nano": 812260000,
+    "currency": "RUB"
+  },
+  "minPriceIncrementPts": {
+    "units": 1,
+    "nano": 0
+  },
+  "currency": "RUB",
+  "type": "FUTURE",
+  "tradable": true
+}

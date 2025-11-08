@@ -48,7 +48,7 @@ object TinkoffInstrumentMapper {
             isTradable = isTradableNow(tinkoffFuture.tradingStatus),
             forQualifiedInvestorOnly = tinkoffFuture.forQualInvestorFlag,
             currency = Currency.fromStr(tinkoffFuture.currency),
-            minPriceIncrementPts = priceMapper.mapToPoints(tinkoffFuture.minPriceIncrementAmount)
+            minPriceIncrementPts = priceMapper.mapToPoints(tinkoffFuture.minPriceIncrement)
         )
     }
 }

@@ -48,7 +48,7 @@ class TopPriceAssignmentTest(
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @Test
-    fun `should create, skip refresh and cancel sell`() {
+    fun `create, skip refresh and cancel sell share`() {
         // Create
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
@@ -119,7 +119,7 @@ class TopPriceAssignmentTest(
     }
 
     @Test
-    fun `create with refresh schedule and cancel sell`()  {
+    fun `create with refresh schedule and cancel sell share`()  {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val oneStepOver = true
@@ -148,5 +148,76 @@ class TopPriceAssignmentTest(
             iid = iid
         )
         assertTrue(assignmentTaskScheduler.getScheduled().isEmpty())
+    }
+
+    @Test
+    fun `create, skip refresh and cancel sell future`() {
+        // Create
+        val iid: InstrumentId = bootstrapper.getIid("cez5")
+        val direction = OrderDirection.SELL
+        val oneStepOver = true
+
+        val result: MvcResult = performAndCheckCreate(
+            path = "/assignment/top-price/{instrumentId}/start/{direction}",
+            iid = iid,
+            direction = direction,
+            content = "{}",
+            params = mapOf("oneStepOver" to oneStepOver.toString())
+        )
+            .andExpect(jsonPath("$.direction").value(direction.toString()))
+            .andExpect(jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
+            .andReturn()
+
+        verify(extOrderServiceAdapter).createOrder(any())
+
+        val assignmentId: UUID = UUID.fromString(JsonPath.parse(result.response.contentAsString).read("$.id"))
+        val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
+
+        val expectedPrice = MoneyPrice(
+            units = 8795,
+            nano = 151_280_000,
+            currency = Currency.RUB
+        )
+        val expectedOrderRequest = LimitOrderRequest(
+            iid = iid,
+            direction = direction,
+            lots = 1,
+            idempotencyToken = null,
+            price = expectedPrice
+        )
+        expectOrderOnLimitedRequest(
+            orderId = orderId,
+            expectedLimitedRequest = expectedOrderRequest
+        )
+
+        // Refresh
+        performAndCheckRefresh(
+            path = "/assignment/top-price/{assignmentId}/refresh",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
+
+        verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
+
+        // Cancel
+        performAndCheckCancel(
+            path = "/assignment/top-price/{assignmentId}",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
+
+        verify(extOrderServiceAdapter).cancelOrder(orderId)
+
+        assertAllAssignmentsCancelled(
+            path = "/assignment/top-price/",
+            expectedCount = 1
+        )
+        assertAllOrdersCancelled(1)
     }
 }

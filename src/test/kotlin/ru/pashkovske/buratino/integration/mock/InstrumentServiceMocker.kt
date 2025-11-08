@@ -13,10 +13,13 @@ class InstrumentServiceMocker(
 ) {
     private val iidAliases: MutableMap<String, InstrumentId> = mutableMapOf()
 
-    fun addMock(stubPath: String) {
+    fun <T: Instrument> addMock(
+        stubPath: String,
+        instrumentType: Class<T>
+    ) {
         val instrument: Instrument = FileLoader.loadFromJson(
             path = stubPath,
-            clazz = Instrument::class.java
+            clazz = instrumentType
         )
         val alias = FileLoader.fileNameToAlias(stubPath)
         iidAliases[alias] = instrument.iid

@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.price.money.service
 
 import org.springframework.stereotype.Service
+import ru.pashkovske.buratino.instrument.model.Future
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
@@ -24,7 +25,17 @@ class CurrentMarketMoneyPriceService(
             iid = iid,
             direction = direction
         )
-        return quotationPrice?.let {
+        val moneyQuotationPrice: Quotation? = when (instrument) {
+            is Future -> quotationPrice?.let { price ->
+                if (price % instrument.minPriceIncrementPts != 0L) {
+                    throw IllegalArgumentException("Cannot transform future points price to money price: `$price` is not multiple of min price increment `${instrument.minPriceIncrementPts}`")
+                }
+                val stepsInPrice: Long = price / instrument.minPriceIncrementPts
+                instrument.minPriceIncrement * stepsInPrice.toInt()
+            }
+            else -> quotationPrice
+        }
+        return moneyQuotationPrice?.let {
             MoneyPrice(
                 quotation = it,
                 currency = instrument.currency
