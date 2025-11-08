@@ -46,7 +46,7 @@ abstract class BasicContinuousAssignmentExe<
         startAssignmentChain["check_and_start_nested"] = AssignmentAction(
             name = "schedule_continuation",
             action = { assignment: CA ->
-                val schedulingProps: SchedulingProperties? = assignment.schedulingProperties
+                val schedulingProps: SchedulingProperties? = assignment.continueSchedulingProperties
                 if (schedulingProps != null) {
                     val task = SchedulingAssignmentTask(
                         actionChain = continueAssignmentChain,

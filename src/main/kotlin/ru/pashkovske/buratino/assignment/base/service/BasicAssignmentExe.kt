@@ -48,6 +48,16 @@ abstract class BasicAssignmentExe<A: Assignment>(
             }
         )
         startAssignmentChain += AssignmentAction(
+            name = "schedule_refresh",
+            action = { assignment ->
+                assignmentScheduler.schedule(assignment)
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        startAssignmentChain += AssignmentAction(
             name = "set_status_in_progress",
             action = { assignment ->
                 assignment.status = AssignmentStatus.IN_PROGRESS

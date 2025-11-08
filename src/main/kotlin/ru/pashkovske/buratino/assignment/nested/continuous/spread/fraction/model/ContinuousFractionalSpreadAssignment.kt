@@ -12,5 +12,5 @@ class ContinuousFractionalSpreadAssignment(
 ): ContinuousAssignment<FractionalSpreadAssignment>(
     iid = iid,
     nested = nested,
-    schedulingProperties = schedulingProperties
+    continueSchedulingProperties = schedulingProperties
 )
