@@ -165,19 +165,55 @@ class ContinuousFractionalSpreadAssignmentTest(
             content = """
                 {
                     "rate": $rate,
-                    "schedulingInterval": "PT10M"
+                    "continueSchedulingInterval": "PT10M"
                 }
             """.trimIndent(),
             params = null
         ).andReturn()
 
-        assertTrue(assignmentTaskScheduler.getScheduled().size == 1)
+        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousAssignmentRepo.get(assignmentId)
         assertNotNull(assignment.getContinueSchedulingInfo())
         assertEquals(
             assignmentTaskScheduler.getScheduled().first(),
             assignment.getContinueSchedulingInfo()!!.taskId
+        )
+
+        performAndCheckCancel(
+            path = "/assignment/continuous/fractional-spread/{assignmentId}",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+        assertTrue(assignmentTaskScheduler.getScheduled().isEmpty())
+    }
+
+    @Test
+    fun `create with refresh schedule and cancel sell`()  {
+        val iid: InstrumentId = bootstrapper.getIid("kzos")
+        val direction = OrderDirection.SELL
+        val rate = 0.007
+
+        // Create
+        val createResult: MvcResult = performAndCheckCreate(
+            path = "/assignment/continuous/fractional-spread/{instrumentId}/start/{direction}",
+            iid = iid,
+            direction = direction,
+            content = """
+                {
+                    "rate": $rate,
+                    "refreshSchedulingInterval": "PT10M"
+                }
+            """.trimIndent(),
+            params = null
+        ).andReturn()
+        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
+        val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
+        val assignment: ContinuousFractionalSpreadAssignment = continuousAssignmentRepo.get(assignmentId)
+        assertNotNull(assignment.getRefreshSchedulingInfo())
+        assertEquals(
+            assignmentTaskScheduler.getScheduled().first(),
+            assignment.getRefreshSchedulingInfo()!!.taskId
         )
 
         performAndCheckCancel(

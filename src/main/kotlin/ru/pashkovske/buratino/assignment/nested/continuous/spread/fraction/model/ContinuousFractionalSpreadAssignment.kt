@@ -7,10 +7,12 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 
 class ContinuousFractionalSpreadAssignment(
     iid: InstrumentId,
+    refreshSchedulingProperties: SchedulingProperties?,
     nested: FractionalSpreadAssignment,
-    schedulingProperties: SchedulingProperties?
+    continueSchedulingProperties: SchedulingProperties?
 ): ContinuousAssignment<FractionalSpreadAssignment>(
     iid = iid,
+    refreshSchedulingProperties = refreshSchedulingProperties,
     nested = nested,
-    continueSchedulingProperties = schedulingProperties
+    continueSchedulingProperties = continueSchedulingProperties
 )

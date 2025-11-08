@@ -48,7 +48,7 @@ class TopPriceAssignmentTest(
             path = "/assignment/top-price/{instrumentId}/start/{direction}",
             iid = iid,
             direction = direction,
-            content = null,
+            content = "{}",
             params = mapOf("oneStepOver" to oneStepOver.toString())
         )
             .andExpect(jsonPath("$.direction").value(direction.toString()))

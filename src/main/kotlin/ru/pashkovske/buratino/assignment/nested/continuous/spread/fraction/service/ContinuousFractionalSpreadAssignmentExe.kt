@@ -37,6 +37,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
                 val completedAssignment = assignment.nested
                 val nextAssignment = FractionalSpreadAssignment(
                     iid = completedAssignment.iid,
+                    refreshSchedulingProperties = null,
                     direction = completedAssignment.direction.getOpposite(),
                     rate = completedAssignment.rate
                 )

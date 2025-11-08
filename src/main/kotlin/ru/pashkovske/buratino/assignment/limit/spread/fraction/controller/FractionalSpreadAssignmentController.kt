@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
@@ -31,6 +32,11 @@ class FractionalSpreadAssignmentController(
     ): FractionalSpreadAssignment {
         val assignment = FractionalSpreadAssignment(
             iid = InstrumentId(id = instrumentId),
+            refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
+                SchedulingProperties(
+                    interval = it
+                )
+            },
             direction = OrderDirection.fromString(direction),
             rate = body.rate
         )

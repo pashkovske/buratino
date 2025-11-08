@@ -9,7 +9,7 @@ abstract class Assignment(
     val id: UUID = UUID.randomUUID(),
     val iid: InstrumentId,
     var status: AssignmentStatus = AssignmentStatus.QUEUED,
-    val refreshSchedulingProperties: SchedulingProperties? = null
+    val refreshSchedulingProperties: SchedulingProperties?
 ) {
     private var refreshSchedulingInfo: SchedulingInfo? = null
 

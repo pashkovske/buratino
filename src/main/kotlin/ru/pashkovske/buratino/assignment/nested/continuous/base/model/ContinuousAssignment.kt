@@ -9,10 +9,12 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 abstract class ContinuousAssignment<A: Assignment>(
     iid: InstrumentId,
     nested: A,
+    refreshSchedulingProperties: SchedulingProperties?,
     val continueSchedulingProperties: SchedulingProperties?
 ): SuperAssignment<A>(
     iid = iid,
-    nested = nested
+    nested = nested,
+    refreshSchedulingProperties = refreshSchedulingProperties
 ) {
     private var continueSchedulingInfo: SchedulingInfo? = null
 

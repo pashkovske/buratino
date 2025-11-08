@@ -36,13 +36,19 @@ class ContinuousFractionalSpreadAssignmentController(
         val iid = InstrumentId(id = instrumentId)
         val nestedAssignment = FractionalSpreadAssignment(
             iid = iid,
+            refreshSchedulingProperties = null,
             direction = OrderDirection.fromString(direction),
             rate = body.rate
         )
         val assignment = ContinuousFractionalSpreadAssignment(
             iid = iid,
             nested = nestedAssignment,
-            schedulingProperties = body.schedulingInterval?.let {
+            refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
+                SchedulingProperties(
+                    interval = it
+                )
+            },
+            continueSchedulingProperties = body.continueSchedulingInterval?.let {
                 SchedulingProperties(
                     interval = it
                 )
