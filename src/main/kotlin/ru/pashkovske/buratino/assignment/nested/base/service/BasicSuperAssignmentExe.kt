@@ -74,7 +74,7 @@ abstract class BasicSuperAssignmentExe<
     }
 
     private fun addCancelNestedToChain() {
-        cancelAssignmentChain["check_completed"] = AssignmentAction(
+        cancelAssignmentChain["stop_scheduling_refresh"] = AssignmentAction(
             name = "cancel_nested",
             action = { assignment ->
                 when (assignment.nested.status) {

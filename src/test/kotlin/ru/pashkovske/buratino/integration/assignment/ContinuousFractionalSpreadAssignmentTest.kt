@@ -32,7 +32,7 @@ import java.util.UUID
 
 @WebMvcTest
 @Import(IntegrationStubsConfiguration::class)
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ContinuousFractionalSpreadAssignmentTest(
     @Autowired mockMvc: MockMvc
 ): BasicAssignmentTest(

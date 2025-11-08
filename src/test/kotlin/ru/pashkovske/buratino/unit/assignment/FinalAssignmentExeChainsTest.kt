@@ -21,6 +21,7 @@ class FinalAssignmentExeChainsTest {
             "log_start",
             "check_and_start_nested",
             "schedule_continuation",
+            "schedule_refresh",
             "set_status_in_progress",
             "create_in_repo"
         )
@@ -39,6 +40,7 @@ class FinalAssignmentExeChainsTest {
             "log_cancel",
             "check_completed",
             "stop_scheduling_continuation",
+            "stop_scheduling_refresh",
             "cancel_nested",
             "set_status_completed",
             "update_in_repo"
@@ -68,6 +70,7 @@ class FinalAssignmentExeChainsTest {
         val expectedStartChain: List<String> = listOf(
             "log_start",
             "start_limit_order",
+            "schedule_refresh",
             "set_status_in_progress",
             "create_in_repo"
         )
@@ -85,6 +88,7 @@ class FinalAssignmentExeChainsTest {
         val expectedCancelChain: List<String> = listOf(
             "log_cancel",
             "check_completed",
+            "stop_scheduling_refresh",
             "cancel_limit_order",
             "set_status_completed",
             "update_in_repo"
@@ -104,6 +108,7 @@ class FinalAssignmentExeChainsTest {
         val expectedStartChain: List<String> = listOf(
             "log_start",
             "start_limit_order",
+            "schedule_refresh",
             "set_status_in_progress",
             "create_in_repo"
         )
@@ -121,6 +126,7 @@ class FinalAssignmentExeChainsTest {
         val expectedCancelChain: List<String> = listOf(
             "log_cancel",
             "check_completed",
+            "stop_scheduling_refresh",
             "cancel_limit_order",
             "set_status_completed",
             "update_in_repo"

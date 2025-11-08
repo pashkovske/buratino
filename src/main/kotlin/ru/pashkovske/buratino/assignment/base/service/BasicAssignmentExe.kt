@@ -6,6 +6,10 @@ import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.action.AssignmentAction
 import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionChain
 import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionResult
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingAssignmentTask
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import java.util.UUID
 
@@ -34,6 +38,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         initStartChain()
         initRefreshChain()
         initCancelChain()
+        addAutoRefreshToStartChain()
     }
 
     private fun initStartChain() {
@@ -41,16 +46,6 @@ abstract class BasicAssignmentExe<A: Assignment>(
             name = "log_start",
             action = { assignment ->
                 logger.info("Starting assignment: $assignment")
-                AssignmentActionResult(
-                    assignment = assignment,
-                    shouldContinue = true
-                )
-            }
-        )
-        startAssignmentChain += AssignmentAction(
-            name = "schedule_refresh",
-            action = { assignment ->
-                assignmentScheduler.schedule(assignment)
                 AssignmentActionResult(
                     assignment = assignment,
                     shouldContinue = true
@@ -141,6 +136,20 @@ abstract class BasicAssignmentExe<A: Assignment>(
             }
         )
         cancelAssignmentChain += AssignmentAction(
+            name = "stop_scheduling_refresh",
+            action = { assignment ->
+                val schedulingInfo: SchedulingInfo? = assignment.getRefreshSchedulingInfo()
+                if (schedulingInfo != null) {
+                    assignmentScheduler.stop(schedulingInfo.taskId)
+                    schedulingInfo.status = SchedulingStatus.COMPLETED
+                }
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+        cancelAssignmentChain += AssignmentAction(
             name = "set_status_completed",
             action = { assignment ->
                 assignment.status = AssignmentStatus.COMPLETED
@@ -151,6 +160,38 @@ abstract class BasicAssignmentExe<A: Assignment>(
             }
         )
         cancelAssignmentChain += updateInRepoAction
+    }
+
+    private fun addAutoRefreshToStartChain() {
+        startAssignmentChain["log_start"] = AssignmentAction(
+            name = "schedule_refresh",
+            action = { assignment ->
+                val schedulingProps: SchedulingProperties? = assignment.refreshSchedulingProperties
+                if (schedulingProps != null) {
+                    val task = SchedulingAssignmentTask(
+                        actionChain = refreshAssignmentChain,
+                        assignment = assignment
+                    )
+                    val schedulingInfo = SchedulingInfo(
+                        properties = schedulingProps,
+                        taskId = UUID.randomUUID(),
+                        task = task
+                    )
+                    assignmentScheduler.start(
+                        task = task,
+                        taskId = schedulingInfo.taskId,
+                        interval = schedulingProps.interval
+                    )
+                    schedulingInfo.status = SchedulingStatus.ACTIVE
+                    assignment.initRefreshScheduling(schedulingInfo)
+                }
+                AssignmentActionResult(
+                    assignment = assignment,
+                    shouldContinue = true
+                )
+            }
+        )
+
     }
 
     final override fun start(assignment: A): A {
