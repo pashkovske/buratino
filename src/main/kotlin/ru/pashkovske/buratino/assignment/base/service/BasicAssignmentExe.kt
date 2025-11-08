@@ -12,7 +12,8 @@ import java.util.UUID
 private val logger = KotlinLogging.logger {}
 
 abstract class BasicAssignmentExe<A: Assignment>(
-    protected val assignmentRepo: AssignmentRepo<A>
+    protected val assignmentRepo: AssignmentRepo<A>,
+    protected val assignmentScheduler: AssignmentTaskScheduler
 ): AssignmentExe<A> {
     protected val startAssignmentChain: AssignmentActionChain<A> = AssignmentActionChain()
     protected val refreshAssignmentChain: AssignmentActionChain<A> = AssignmentActionChain()

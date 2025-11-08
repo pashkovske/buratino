@@ -12,7 +12,7 @@ class AssignmentActionChain<A : Assignment> {
     ) {
         registerName(action)
         actions.add(
-            index = actions.indexOfFirst { action -> action.name == after } + 1,
+            index = actions.indexOfFirst { act -> act.name == after } + 1,
             element = action
         )
     }

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service.ContinuousFractionalSpreadAssignmentExe
@@ -40,7 +42,12 @@ class ContinuousFractionalSpreadAssignmentController(
         )
         val assignment = ContinuousFractionalSpreadAssignment(
             iid = iid,
-            nested = nestedAssignment
+            nested = nestedAssignment,
+            schedulingProperties = body.schedulingInterval?.let {
+                SchedulingProperties(
+                    interval = it
+                )
+            }
         )
         return exe.start(assignment)
     }

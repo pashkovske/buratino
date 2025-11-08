@@ -1,7 +1,10 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import com.jayway.jsonpath.JsonPath
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
@@ -14,6 +17,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.repo.ContinuousFractionalSpreadAssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
@@ -35,6 +41,10 @@ class ContinuousFractionalSpreadAssignmentTest(
 
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
+    @Autowired
+    private lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
+    @Autowired
+    private lateinit var continuousAssignmentRepo: ContinuousFractionalSpreadAssignmentRepo
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
@@ -139,5 +149,42 @@ class ContinuousFractionalSpreadAssignmentTest(
             expectedCount = 2
         )
         assertAllOrdersCancelled(2)
+    }
+
+    @Test
+    fun `create with continue schedule and cancel sell`() {
+        val iid: InstrumentId = bootstrapper.getIid("kzos")
+        val direction = OrderDirection.SELL
+        val rate = 0.007
+
+        // Create
+        val createResult: MvcResult = performAndCheckCreate(
+            path = "/assignment/continuous/fractional-spread/{instrumentId}/start/{direction}",
+            iid = iid,
+            direction = direction,
+            content = """
+                {
+                    "rate": $rate,
+                    "schedulingInterval": "PT10M"
+                }
+            """.trimIndent(),
+            params = null
+        ).andReturn()
+
+        assertTrue(assignmentTaskScheduler.getScheduled().size == 1)
+        val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
+        val assignment: ContinuousFractionalSpreadAssignment = continuousAssignmentRepo.get(assignmentId)
+        assertNotNull(assignment.getContinueSchedulingInfo())
+        assertEquals(
+            assignmentTaskScheduler.getScheduled().first(),
+            assignment.getContinueSchedulingInfo()!!.taskId
+        )
+
+        performAndCheckCancel(
+            path = "/assignment/continuous/fractional-spread/{assignmentId}",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+        assertTrue(assignmentTaskScheduler.getScheduled().isEmpty())
     }
 }

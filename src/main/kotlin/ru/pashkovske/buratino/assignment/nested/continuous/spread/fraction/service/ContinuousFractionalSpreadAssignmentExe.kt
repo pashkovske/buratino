@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.action.AssignmentAction
 import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.nested.continuous.base.service.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
@@ -15,13 +16,15 @@ private val logger = KotlinLogging.logger {}
 @Service
 final class ContinuousFractionalSpreadAssignmentExe(
     assignmentRepo: AssignmentRepo<ContinuousFractionalSpreadAssignment>,
-    nestedAssignmentExe: FractionalSpreadAssignmentExe
+    nestedAssignmentExe: FractionalSpreadAssignmentExe,
+    assignmentScheduler: AssignmentTaskScheduler
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment
     >(
     assignmentRepo = assignmentRepo,
-    nestedAssignmentExe = nestedAssignmentExe
+    nestedAssignmentExe = nestedAssignmentExe,
+    assignmentScheduler = assignmentScheduler
 ) {
     init {
         addReplaceCompletedAssignmentToChain()

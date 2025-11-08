@@ -6,6 +6,7 @@ import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionResul
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
@@ -17,9 +18,11 @@ private val logger = KotlinLogging.logger {}
 
 abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
     private val orderService: OrderService,
-    assignmentRepo: AssignmentRepo<LA>
+    assignmentRepo: AssignmentRepo<LA>,
+    assignmentScheduler: AssignmentTaskScheduler
 ): BasicAssignmentExe<LA>(
-    assignmentRepo = assignmentRepo
+    assignmentRepo = assignmentRepo,
+    assignmentScheduler = assignmentScheduler
 ) {
     init {
         addStartOrderToChain()

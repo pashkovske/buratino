@@ -3,6 +3,7 @@ package ru.pashkovske.buratino.assignment.limit.spread.fraction.service
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.instrument.model.Instrument
@@ -18,11 +19,13 @@ private val logger = KotlinLogging.logger {}
 final class FractionalSpreadAssignmentExe(
     orderService: OrderService,
     assignmentRepo: AssignmentRepo<FractionalSpreadAssignment>,
+    assignmentScheduler: AssignmentTaskScheduler,
     val marketDataService: MarketMoneyPriceService,
     val instrumentService: InstrumentService
 ): LimitOrderAssignmentExe<FractionalSpreadAssignment>(
     orderService = orderService,
-    assignmentRepo = assignmentRepo
+    assignmentRepo = assignmentRepo,
+    assignmentScheduler = assignmentScheduler
 ) {
     override fun getPrice(assignment: FractionalSpreadAssignment): MoneyPrice {
         val instrument: Instrument = instrumentService.get(assignment.iid)

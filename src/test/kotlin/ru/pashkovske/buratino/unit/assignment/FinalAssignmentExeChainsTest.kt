@@ -13,12 +13,14 @@ class FinalAssignmentExeChainsTest {
     fun checkContinuousFractionalSpreadAssignmentExeChains() {
         val assignmentExe = ContinuousFractionalSpreadAssignmentExe(
             assignmentRepo = mock(),
-            nestedAssignmentExe = mock()
+            nestedAssignmentExe = mock(),
+            assignmentScheduler = mock()
         )
 
         val expectedStartChain: List<String> = listOf(
             "log_start",
             "check_and_start_nested",
+            "schedule_continuation",
             "set_status_in_progress",
             "create_in_repo"
         )
@@ -36,6 +38,7 @@ class FinalAssignmentExeChainsTest {
         val expectedCancelChain: List<String> = listOf(
             "log_cancel",
             "check_completed",
+            "stop_scheduling_continuation",
             "cancel_nested",
             "set_status_completed",
             "update_in_repo"
@@ -58,7 +61,8 @@ class FinalAssignmentExeChainsTest {
             orderService = mock(),
             assignmentRepo = mock(),
             marketDataService = mock(),
-            instrumentService = mock()
+            instrumentService = mock(),
+            assignmentScheduler = mock()
         )
 
         val expectedStartChain: List<String> = listOf(
@@ -93,7 +97,8 @@ class FinalAssignmentExeChainsTest {
         val assignmentExe = TopPriceAssignmentExe(
             orderService = mock(),
             assignmentRepo = mock(),
-            marketDataService = mock()
+            marketDataService = mock(),
+            assignmentScheduler = mock()
         )
 
         val expectedStartChain: List<String> = listOf(
