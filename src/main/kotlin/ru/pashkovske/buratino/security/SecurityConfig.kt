@@ -19,9 +19,13 @@ class SecurityConfig {
         authErrorEntryPoint: AuthErrorEntryPoint,
         http: HttpSecurity
     ): SecurityFilterChain {
-        return http.csrf { it.disable() }
+        return http
             .authorizeHttpRequests { auth: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ->
                 auth
+                    .requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**"
+                    ).permitAll()
                     .anyRequest().hasRole("USER")
             }
             .exceptionHandling { exceptionHandlingConfigurer: ExceptionHandlingConfigurer<HttpSecurity> ->
