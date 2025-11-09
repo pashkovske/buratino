@@ -4,6 +4,7 @@ import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -16,6 +17,7 @@ import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import java.util.Locale.getDefault
 import java.util.UUID
 
+@ActiveProfiles("test")
 abstract class BasicAssignmentTest(
     protected val mockMvc: MockMvc
 ) {
@@ -26,6 +28,7 @@ abstract class BasicAssignmentTest(
         mockMvc.perform(
             MockMvcRequestBuilders
                 .get(path)
+                .header("X-API-KEY", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -42,6 +45,7 @@ abstract class BasicAssignmentTest(
         mockMvc.perform(
             MockMvcRequestBuilders
                 .get("/order/")
+                .header("X-API-KEY", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -64,6 +68,7 @@ abstract class BasicAssignmentTest(
                     "/order/{id}",
                     orderId
                 )
+                .header("X-API-KEY", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -90,6 +95,7 @@ abstract class BasicAssignmentTest(
                     iid.id,
                     direction.toString().lowercase(getDefault())
                 )
+                .header("X-API-KEY", "test-api-key")
                 .content(content ?: "")
                 .params(MultiValueMap.fromSingleValue(params ?: emptyMap()))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -111,6 +117,7 @@ abstract class BasicAssignmentTest(
                     path,
                     assignmentId
                 )
+                .header("X-API-KEY", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -130,6 +137,7 @@ abstract class BasicAssignmentTest(
                     path,
                     assignmentId
                 )
+                .header("X-API-KEY", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -149,6 +157,7 @@ abstract class BasicAssignmentTest(
                     path,
                     assignmentId
                 )
+                .header("X-API-KEY", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
