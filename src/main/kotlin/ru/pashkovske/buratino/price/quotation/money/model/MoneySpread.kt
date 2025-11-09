@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.price.money.model
+package ru.pashkovske.buratino.price.quotation.money.model
 
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.price.quotation.model.Spread

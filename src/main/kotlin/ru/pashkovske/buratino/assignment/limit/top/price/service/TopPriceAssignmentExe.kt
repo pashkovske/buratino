@@ -6,8 +6,8 @@ import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
 import ru.pashkovske.buratino.order.service.OrderService
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
-import ru.pashkovske.buratino.price.money.service.MarketMoneyPriceService
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.service.MarketMoneyPriceService
 
 @Service
 final class TopPriceAssignmentExe(

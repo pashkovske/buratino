@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.order.model.limit
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.OrderRequest
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
 import java.util.UUID
 
 class LimitOrderRequest(

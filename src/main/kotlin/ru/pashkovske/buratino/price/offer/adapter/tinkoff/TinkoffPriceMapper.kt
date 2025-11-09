@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.price.offer.adapter.tinkoff
 
-import ru.pashkovske.buratino.price.money.model.Currency
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.model.Currency
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
 import ru.pashkovske.buratino.price.quotation.model.PtsPrice
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.tinkoff.piapi.contract.v1.MoneyValue

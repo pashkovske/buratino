@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.price.money.service
+package ru.pashkovske.buratino.price.quotation.money.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.instrument.model.Future
@@ -7,8 +7,8 @@ import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.price.quotation.model.Quotation
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
-import ru.pashkovske.buratino.price.money.model.MoneySpread
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.model.MoneySpread
 import ru.pashkovske.buratino.price.quotation.service.MarketPriceService
 
 @Service

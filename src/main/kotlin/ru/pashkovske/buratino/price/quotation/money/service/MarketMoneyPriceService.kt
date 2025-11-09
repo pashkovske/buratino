@@ -1,9 +1,9 @@
-package ru.pashkovske.buratino.price.money.service
+package ru.pashkovske.buratino.price.quotation.money.service
 
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
-import ru.pashkovske.buratino.price.money.model.MoneySpread
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.model.MoneySpread
 
 interface MarketMoneyPriceService {
     fun getTopOfBook(

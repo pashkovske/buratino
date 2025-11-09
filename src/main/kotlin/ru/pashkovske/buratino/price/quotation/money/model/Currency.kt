@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.price.money.model
+package ru.pashkovske.buratino.price.quotation.money.model
 
 enum class Currency {
     RUB,

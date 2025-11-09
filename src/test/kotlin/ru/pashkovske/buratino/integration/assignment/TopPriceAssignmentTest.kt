@@ -25,8 +25,8 @@ import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootst
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.price.money.model.Currency
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.model.Currency
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
 import java.util.UUID
 
 @WebMvcTest

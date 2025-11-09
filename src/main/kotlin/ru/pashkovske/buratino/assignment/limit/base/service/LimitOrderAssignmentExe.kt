@@ -11,7 +11,7 @@ import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}

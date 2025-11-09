@@ -10,8 +10,8 @@ import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.service.OrderService
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
-import ru.pashkovske.buratino.price.money.service.MarketMoneyPriceService
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.service.MarketMoneyPriceService
 
 private val logger = KotlinLogging.logger {}
 

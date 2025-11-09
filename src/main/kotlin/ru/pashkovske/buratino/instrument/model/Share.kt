@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.instrument.model
 
-import ru.pashkovske.buratino.price.money.model.Currency
-import ru.pashkovske.buratino.price.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.quotation.money.model.Currency
+import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
 
 class Share(
     iid: InstrumentId,
