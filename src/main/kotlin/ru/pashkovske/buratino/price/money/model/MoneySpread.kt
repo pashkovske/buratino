@@ -3,9 +3,9 @@ package ru.pashkovske.buratino.price.money.model
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.price.quotation.model.Spread
 
-data class MoneySpread(
-    override val bid: Quotation?,
-    override val ask: Quotation?,
+class MoneySpread(
+    bid: Quotation?,
+    ask: Quotation?,
     val currency: Currency
 ): Spread(
     bid = bid,
