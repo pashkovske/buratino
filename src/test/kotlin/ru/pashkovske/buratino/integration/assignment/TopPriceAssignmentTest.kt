@@ -220,4 +220,75 @@ class TopPriceAssignmentTest(
         )
         assertAllOrdersCancelled(1)
     }
+
+    @Test
+    fun `create, skip refresh and cancel sell future with fractional increment`() {
+        // Create
+        val iid: InstrumentId = bootstrapper.getIid("MYH6")
+        val direction = OrderDirection.SELL
+        val oneStepOver = true
+
+        val result: MvcResult = performAndCheckCreate(
+            path = "/assignment/top-price/{instrumentId}/start/{direction}",
+            iid = iid,
+            direction = direction,
+            content = "{}",
+            params = mapOf("oneStepOver" to oneStepOver.toString())
+        )
+            .andExpect(jsonPath("$.direction").value(direction.toString()))
+            .andExpect(jsonPath("$.oneStepOver").value(oneStepOver))
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
+            .andReturn()
+
+        verify(extOrderServiceAdapter).createOrder(any())
+
+        val assignmentId: UUID = UUID.fromString(JsonPath.parse(result.response.contentAsString).read("$.id"))
+        val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
+
+        val expectedPrice = MoneyPrice(
+            units = 11865,
+            nano = 604_080_000,
+            currency = Currency.RUB
+        )
+        val expectedOrderRequest = LimitOrderRequest(
+            iid = iid,
+            direction = direction,
+            lots = 1,
+            idempotencyToken = null,
+            price = expectedPrice
+        )
+        expectOrderOnLimitedRequest(
+            orderId = orderId,
+            expectedLimitedRequest = expectedOrderRequest
+        )
+
+        // Refresh
+        performAndCheckRefresh(
+            path = "/assignment/top-price/{assignmentId}/refresh",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
+
+        verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
+
+        // Cancel
+        performAndCheckCancel(
+            path = "/assignment/top-price/{assignmentId}",
+            assignmentId = assignmentId,
+            iid = iid
+        )
+            .andExpect(jsonPath("$.info.orderId").isString())
+            .andExpect(jsonPath("$.info.lastUpdate").exists())
+
+        verify(extOrderServiceAdapter).cancelOrder(orderId)
+
+        assertAllAssignmentsCancelled(
+            path = "/assignment/top-price/",
+            expectedCount = 1
+        )
+        assertAllOrdersCancelled(1)
+    }
 }

@@ -1,0 +1,21 @@
+{
+  "iid": {
+    "id": "4dcb34bb-75c2-47fa-a5ab-cfd9465075ed"
+  },
+  "name": "MOEXCNY-3.26 Индекс МосБиржи (в юанях)",
+  "ticker": "MYH6",
+  "minPriceIncrement": {
+    "units": 1,
+    "nano": 137860000,
+    "currency": "RUB"
+  },
+  "lot": 1,
+  "forQualifiedInvestorOnly": false,
+  "currency": "RUB",
+  "minPriceIncrementPts": {
+    "units": 0,
+    "nano": 100000000
+  },
+  "type": "FUTURE",
+  "tradable": true
+}
