@@ -1,37 +1,37 @@
-package ru.pashkovske.buratino.price.quotation.money.model
+package ru.pashkovske.buratino.price.model
 
 import ru.pashkovske.buratino.price.quotation.model.Quotation
-import ru.pashkovske.buratino.price.quotation.model.Spread
+import ru.pashkovske.buratino.price.quotation.model.QuotationSpread
 
-class MoneySpread(
+class Spread(
     bid: Quotation?,
     ask: Quotation?,
     val currency: Currency
-): Spread(
+): QuotationSpread(
     bid = bid,
     ask = ask
 ) {
     constructor(
-        spread: Spread,
+        quotationSpread: QuotationSpread,
         currency: Currency
     ): this(
-        bid = spread.bid,
-        ask = spread.ask,
+        bid = quotationSpread.bid,
+        ask = quotationSpread.ask,
         currency = currency
     )
 
-    fun getMoneyBid(): MoneyPrice? {
+    fun getMoneyBid(): Price? {
         return bid?.let {
-            MoneyPrice(
+            Price(
                 quotation = it,
                 currency = currency
             )
         }
     }
 
-    fun getMoneyAsk(): MoneyPrice? {
+    fun getMoneyAsk(): Price? {
         return ask?.let {
-            MoneyPrice(
+            Price(
                 quotation = it,
                 currency = currency
             )

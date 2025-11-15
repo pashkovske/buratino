@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.price.quotation.model
 
-open class Spread(
+open class QuotationSpread(
     val bid: Quotation?,
     val ask: Quotation?
 )

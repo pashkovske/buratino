@@ -10,8 +10,8 @@ import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.service.OrderService
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
-import ru.pashkovske.buratino.price.quotation.money.service.MarketMoneyPriceService
+import ru.pashkovske.buratino.price.model.Price
+import ru.pashkovske.buratino.price.service.MarketPriceService
 
 private val logger = KotlinLogging.logger {}
 
@@ -20,31 +20,31 @@ final class FractionalSpreadAssignmentExe(
     orderService: OrderService,
     assignmentRepo: AssignmentRepo<FractionalSpreadAssignment>,
     assignmentScheduler: AssignmentTaskScheduler,
-    val marketDataService: MarketMoneyPriceService,
+    val marketDataService: MarketPriceService,
     val instrumentService: InstrumentService
 ): LimitOrderAssignmentExe<FractionalSpreadAssignment>(
     orderService = orderService,
     assignmentRepo = assignmentRepo,
     assignmentScheduler = assignmentScheduler
 ) {
-    override fun getPrice(assignment: FractionalSpreadAssignment): MoneyPrice {
+    override fun getPrice(assignment: FractionalSpreadAssignment): Price {
         val instrument: Instrument = instrumentService.get(assignment.iid)
-        val step: MoneyPrice = instrument.minPriceIncrement
-        val directTopPrice: MoneyPrice = marketDataService.getOneStepOverTopOfBook(
+        val step: Price = instrument.minPriceIncrement
+        val directTopPrice: Price = marketDataService.getOneStepOverTopOfBook(
             iid = assignment.iid,
             direction = assignment.direction
         )!!
-        val oppositeTopPrice: MoneyPrice = marketDataService.getTopOfBook(
+        val oppositeTopPrice: Price = marketDataService.getTopOfBook(
             iid = assignment.iid,
             direction = assignment.direction.getOpposite()
         )!!
-        val askPrice: MoneyPrice = if (assignment.direction == OrderDirection.BUY) {
+        val askPrice: Price = if (assignment.direction == OrderDirection.BUY) {
             directTopPrice
         } else {
             oppositeTopPrice
         }
-        val adjustedMinSpreadDelta: MoneyPrice = step * (askPrice * assignment.rate / step).toInt()
-        val topSpreadPrice: MoneyPrice = if (assignment.direction == OrderDirection.BUY) {
+        val adjustedMinSpreadDelta: Price = step * (askPrice * assignment.rate / step).toInt()
+        val topSpreadPrice: Price = if (assignment.direction == OrderDirection.BUY) {
             oppositeTopPrice - adjustedMinSpreadDelta
         } else {
             oppositeTopPrice + adjustedMinSpreadDelta

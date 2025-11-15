@@ -1,8 +1,8 @@
-package ru.pashkovske.buratino.price.quotation.money.model
+package ru.pashkovske.buratino.price.model
 
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 
-class MoneyPrice(
+class Price(
     units: Long,
     nano: Int,
     val currency: Currency,
@@ -16,51 +16,51 @@ class MoneyPrice(
         currency = currency
     )
 
-    operator fun plus(other: MoneyPrice): MoneyPrice {
+    operator fun plus(other: Price): Price {
         if (currency != other.currency) {
             throw IllegalArgumentException("Currencies must be the same")
         }
         val sum: Quotation = super.plus(other)
-        return MoneyPrice(
+        return Price(
             quotation = sum,
             currency = currency
         )
     }
 
-    operator fun minus(other: MoneyPrice): MoneyPrice {
+    operator fun minus(other: Price): Price {
         if (currency != other.currency) {
             throw IllegalArgumentException("Currencies must be the same")
         }
         val diff: Quotation = super.minus(other)
-        return MoneyPrice(
+        return Price(
             quotation = diff,
             currency = currency
         )
     }
 
-    override operator fun times(multiplier: Int): MoneyPrice {
+    override operator fun times(multiplier: Int): Price {
         val result: Quotation = super.times(multiplier)
-        return MoneyPrice(
+        return Price(
             quotation = result,
             currency = currency
         )
     }
 
-    override operator fun times(multiplier: Double): MoneyPrice {
+    override operator fun times(multiplier: Double): Price {
         val result: Quotation = super.times(multiplier)
-        return MoneyPrice(
+        return Price(
             quotation = result,
             currency = currency
         )
     }
 
-    operator fun div(other: MoneyPrice): Long {
+    operator fun div(other: Price): Long {
         return super.div(other)
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is MoneyPrice) return false
+        if (other !is Price) return false
         return super.equals(other) && currency == other.currency
     }
 

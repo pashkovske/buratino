@@ -26,8 +26,8 @@ import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootst
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.price.quotation.money.model.Currency
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
 @WebMvcTest
@@ -75,7 +75,7 @@ class ContinuousFractionalSpreadAssignmentTest(
         val nestedAssignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.nested.id"))
         val createdOrderId: String = JsonPath.parse(createResult.response.contentAsString).read("$.nested.info.orderId")
 
-        val expectedPrice = MoneyPrice(
+        val expectedPrice = Price(
             units = 65,
             nano = 600_000_000,
             currency = Currency.RUB

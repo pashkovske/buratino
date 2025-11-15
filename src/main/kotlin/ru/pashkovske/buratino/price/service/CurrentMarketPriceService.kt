@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.price.quotation.money.service
+package ru.pashkovske.buratino.price.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.instrument.model.Future
@@ -7,21 +7,21 @@ import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.price.quotation.model.Quotation
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
-import ru.pashkovske.buratino.price.quotation.money.model.MoneySpread
-import ru.pashkovske.buratino.price.quotation.service.MarketPriceService
+import ru.pashkovske.buratino.price.model.Price
+import ru.pashkovske.buratino.price.model.Spread
+import ru.pashkovske.buratino.price.quotation.service.MarketQuotationService
 
 @Service
-class CurrentMarketMoneyPriceService(
-    private val quotationMarketPriceService: MarketPriceService,
+class CurrentMarketPriceService(
+    private val quotationMarketQuotationService: MarketQuotationService,
     private val instrumentService: InstrumentService
-) : MarketMoneyPriceService {
+) : MarketPriceService {
     override fun getTopOfBook(
         iid: InstrumentId,
         direction: OrderDirection
-    ): MoneyPrice? {
+    ): Price? {
         val instrument: Instrument = instrumentService.get(iid)
-        val quotationPrice: Quotation? = quotationMarketPriceService.getTopOfBook(
+        val quotationPrice: Quotation? = quotationMarketQuotationService.getTopOfBook(
             iid = iid,
             direction = direction
         )
@@ -36,7 +36,7 @@ class CurrentMarketMoneyPriceService(
             else -> quotationPrice
         }
         return moneyQuotationPrice?.let {
-            MoneyPrice(
+            Price(
                 quotation = it,
                 currency = instrument.currency
             )
@@ -46,9 +46,9 @@ class CurrentMarketMoneyPriceService(
     override fun getOneStepOverTopOfBook(
         iid: InstrumentId,
         direction: OrderDirection
-    ): MoneyPrice? {
+    ): Price? {
         val instrument: Instrument = instrumentService.get(iid)
-        var topPrice: MoneyPrice = getTopOfBook(
+        var topPrice: Price = getTopOfBook(
             iid = iid,
             direction = direction
         )!!
@@ -67,10 +67,10 @@ class CurrentMarketMoneyPriceService(
         return topPrice
     }
 
-    override fun getSpread(iid: InstrumentId): MoneySpread {
+    override fun getSpread(iid: InstrumentId): Spread {
         val instrument: Instrument = instrumentService.get(iid)
-        return MoneySpread(
-            spread = quotationMarketPriceService.getSpread(iid),
+        return Spread(
+            quotationSpread = quotationMarketQuotationService.getSpread(iid),
             currency = instrument.currency
         )
     }

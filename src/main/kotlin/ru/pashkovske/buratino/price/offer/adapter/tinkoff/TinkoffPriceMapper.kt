@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.price.offer.adapter.tinkoff
 
-import ru.pashkovske.buratino.price.quotation.money.model.Currency
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.quotation.model.PtsPrice
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.tinkoff.piapi.contract.v1.MoneyValue
@@ -21,8 +21,8 @@ object TinkoffPriceMapper {
         )
     }
 
-    fun map(tinkoffMoneyValue: MoneyValue): MoneyPrice {
-        return MoneyPrice(
+    fun map(tinkoffMoneyValue: MoneyValue): Price {
+        return Price(
             units = tinkoffMoneyValue.units,
             nano = tinkoffMoneyValue.nano,
             currency = Currency.fromStr(tinkoffMoneyValue.currency)
@@ -32,22 +32,22 @@ object TinkoffPriceMapper {
     fun map(
         tinkoffQuotation: ru.tinkoff.piapi.contract.v1.Quotation,
         currency: String
-    ): MoneyPrice {
-        return MoneyPrice(
+    ): Price {
+        return Price(
             units = tinkoffQuotation.units,
             nano = tinkoffQuotation.nano,
             currency = Currency.fromStr(currency)
         )
     }
 
-    fun map(moneyPrice: MoneyPrice): MoneyValue {
-        if (moneyPrice.currency == Currency.UNKNOWN) {
+    fun map(price: Price): MoneyValue {
+        if (price.currency == Currency.UNKNOWN) {
             throw IllegalArgumentException("Unknown currency")
         }
         return MoneyValue.newBuilder()
-            .setUnits(moneyPrice.units)
-            .setNano(moneyPrice.nano)
-            .setCurrency(moneyPrice.currency.name)
+            .setUnits(price.units)
+            .setNano(price.nano)
+            .setCurrency(price.currency.name)
             .build()
     }
 

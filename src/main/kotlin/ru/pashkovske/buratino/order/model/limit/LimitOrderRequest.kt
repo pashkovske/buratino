@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.order.model.limit
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.OrderRequest
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
 class LimitOrderRequest(
@@ -11,7 +11,7 @@ class LimitOrderRequest(
     direction: OrderDirection,
     lots: Long,
     idempotencyToken: UUID?,
-    val price: MoneyPrice
+    val price: Price
 ) : OrderRequest(
     iid = iid,
     direction = direction,

@@ -11,7 +11,7 @@ import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
@@ -103,7 +103,7 @@ abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
         )
     }
 
-    protected abstract fun getPrice(assignment: LA): MoneyPrice
+    protected abstract fun getPrice(assignment: LA): Price
 
     private fun getOrderId(assignment: LA): String {
         return assignment.info.orderId

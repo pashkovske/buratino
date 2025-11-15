@@ -1,14 +1,14 @@
 package ru.pashkovske.buratino.instrument.model
 
-import ru.pashkovske.buratino.price.quotation.money.model.Currency
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.quotation.model.PtsPrice
 
 class Future(
     iid: InstrumentId,
     name: String,
     ticker: String,
-    minPriceIncrement: MoneyPrice,
+    minPriceIncrement: Price,
     lot: Int,
     isTradable: Boolean,
     forQualifiedInvestorOnly: Boolean,

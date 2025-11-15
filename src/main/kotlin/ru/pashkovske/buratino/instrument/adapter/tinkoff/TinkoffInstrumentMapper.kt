@@ -4,7 +4,7 @@ import ru.pashkovske.buratino.instrument.model.Future
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Share
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffPriceMapper
-import ru.pashkovske.buratino.price.quotation.money.model.Currency
+import ru.pashkovske.buratino.price.model.Currency
 import ru.tinkoff.piapi.contract.v1.SecurityTradingStatus
 
 object TinkoffInstrumentMapper {

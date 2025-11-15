@@ -1,9 +1,9 @@
 package ru.pashkovske.buratino.order.model
 
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Price
 import java.time.Instant
 
 data class OrderCommitResult(
-    val commission: MoneyPrice,
+    val commission: Price,
     val time: Instant
 )

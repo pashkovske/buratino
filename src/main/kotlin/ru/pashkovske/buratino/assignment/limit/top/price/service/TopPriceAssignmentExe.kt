@@ -6,21 +6,21 @@ import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
 import ru.pashkovske.buratino.order.service.OrderService
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
-import ru.pashkovske.buratino.price.quotation.money.service.MarketMoneyPriceService
+import ru.pashkovske.buratino.price.model.Price
+import ru.pashkovske.buratino.price.service.MarketPriceService
 
 @Service
 final class TopPriceAssignmentExe(
     orderService: OrderService,
     assignmentRepo: AssignmentRepo<TopPriceAssignment>,
-    val marketDataService: MarketMoneyPriceService,
+    val marketDataService: MarketPriceService,
     assignmentScheduler: AssignmentTaskScheduler
 ) : LimitOrderAssignmentExe<TopPriceAssignment>(
     orderService = orderService,
     assignmentRepo = assignmentRepo,
     assignmentScheduler = assignmentScheduler
 ) {
-    override fun getPrice(assignment: TopPriceAssignment): MoneyPrice {
+    override fun getPrice(assignment: TopPriceAssignment): Price {
         return if (assignment.oneStepOver) {
             marketDataService.getOneStepOverTopOfBook(
                 iid = assignment.iid,

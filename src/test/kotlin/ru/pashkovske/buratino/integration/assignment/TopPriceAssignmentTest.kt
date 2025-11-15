@@ -25,8 +25,8 @@ import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootst
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.price.quotation.money.model.Currency
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
 @WebMvcTest
@@ -72,7 +72,7 @@ class TopPriceAssignmentTest(
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(result.response.contentAsString).read("$.id"))
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
-        val expectedPrice = MoneyPrice(
+        val expectedPrice = Price(
             units = 66,
             nano = 100_000_000,
             currency = Currency.RUB
@@ -175,7 +175,7 @@ class TopPriceAssignmentTest(
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(result.response.contentAsString).read("$.id"))
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
-        val expectedPrice = MoneyPrice(
+        val expectedPrice = Price(
             units = 8795,
             nano = 151_280_000,
             currency = Currency.RUB
@@ -246,7 +246,7 @@ class TopPriceAssignmentTest(
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(result.response.contentAsString).read("$.id"))
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
-        val expectedPrice = MoneyPrice(
+        val expectedPrice = Price(
             units = 11865,
             nano = 604_080_000,
             currency = Currency.RUB

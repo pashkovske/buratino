@@ -7,18 +7,18 @@ import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
 import ru.pashkovske.buratino.price.offer.service.MarketScrapper
-import ru.pashkovske.buratino.price.quotation.model.Spread
+import ru.pashkovske.buratino.price.quotation.model.QuotationSpread
 
 private const val DEPTH_CHECK = 5
 
 @Service
-class CurrentMarketPriceService(
+class CurrentMarketQuotationService(
     private val marketScrapper: MarketScrapper,
     private val offerBookRepo: OfferBookRepo
-) : MarketPriceService {
+) : MarketQuotationService {
     override fun getSpread(
         iid: InstrumentId
-    ): Spread {
+    ): QuotationSpread {
         val topSell: Quotation? = getTopOfBook(
             iid = iid,
             direction = OrderDirection.SELL
@@ -27,7 +27,7 @@ class CurrentMarketPriceService(
             iid = iid,
             direction = OrderDirection.BUY
         )
-        return Spread(
+        return QuotationSpread(
             bid = topBuy,
             ask = topSell
         )

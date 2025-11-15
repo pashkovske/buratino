@@ -7,8 +7,8 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.OrderInstantInfo
 import ru.pashkovske.buratino.order.model.OrderState
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.price.quotation.money.model.Currency
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
@@ -22,7 +22,7 @@ class ExtOrderServiceAdapterMock(
 
     override fun createOrder(orderRequest: LimitOrderRequest): Order {
         val orderCommitResult = OrderCommitResult(
-            commission = MoneyPrice(
+            commission = Price(
                 units = 0,
                 nano = 0,
                 currency = Currency.RUB

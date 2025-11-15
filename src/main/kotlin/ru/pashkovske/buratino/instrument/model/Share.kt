@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.instrument.model
 
-import ru.pashkovske.buratino.price.quotation.money.model.Currency
-import ru.pashkovske.buratino.price.quotation.money.model.MoneyPrice
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 
 class Share(
     iid: InstrumentId,
@@ -10,7 +10,7 @@ class Share(
     lot: Int,
     isTradable: Boolean,
     forQualifiedInvestorOnly: Boolean,
-    minPriceIncrement: MoneyPrice,
+    minPriceIncrement: Price,
     currency: Currency
 ) : Instrument(
     iid = iid,
