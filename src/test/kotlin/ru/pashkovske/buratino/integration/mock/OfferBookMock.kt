@@ -5,12 +5,12 @@ import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
 import ru.pashkovske.buratino.price.offer.model.QuotationLevelOffers
-import ru.pashkovske.buratino.price.offer.service.OfferBookService
+import ru.pashkovske.buratino.price.offer.adapter.OfferBookAdapter
 import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.util.loader.FileLoader
 import java.time.Instant
 
-class OfferBookMock: OfferBookService {
+class OfferBookMock: OfferBookAdapter {
     private val offerBooks: MutableMap<InstrumentId, OfferBook> = mutableMapOf()
 
     fun addMock(

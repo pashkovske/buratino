@@ -5,7 +5,7 @@ import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.service.InstrumentService
-import ru.pashkovske.buratino.price.offer.service.OfferBookService
+import ru.pashkovske.buratino.price.offer.adapter.OfferBookAdapter
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
@@ -18,12 +18,12 @@ import ru.tinkoff.piapi.core.OrdersService
 import java.time.Instant
 
 @Component
-class TinkoffOfferBookService(
+class TinkoffOfferBookAdapter(
     private val tinkoffMarketDataService: MarketDataService,
     private val tinkoffOrderService: OrdersService,
     private val instrumentService: InstrumentService,
     private val account: Account
-) : OfferBookService {
+) : OfferBookAdapter {
     override fun getOfferBook(
         iid: InstrumentId,
         depth: Int
