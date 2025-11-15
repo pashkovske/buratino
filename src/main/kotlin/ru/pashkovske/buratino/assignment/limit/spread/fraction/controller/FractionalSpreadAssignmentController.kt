@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingPropert
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
-import ru.pashkovske.buratino.assignment.limit.top.price.controller.dto.StartFractionalSpredAssignmentDto
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.dto.StartFractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 
@@ -28,7 +28,7 @@ class FractionalSpreadAssignmentController(
     fun start(
         @PathVariable instrumentId: String,
         @PathVariable direction: String,
-        @RequestBody body: StartFractionalSpredAssignmentDto
+        @RequestBody body: StartFractionalSpreadAssignmentDto
     ): FractionalSpreadAssignment {
         val assignment = FractionalSpreadAssignment(
             iid = InstrumentId(id = instrumentId),
