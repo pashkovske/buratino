@@ -1,8 +1,8 @@
 package ru.pashkovske.buratino.instrument.model
 
 import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.PointsPrice
 import ru.pashkovske.buratino.price.model.Price
-import ru.pashkovske.buratino.price.quotation.model.PtsPrice
 
 class Future(
     iid: InstrumentId,
@@ -13,7 +13,7 @@ class Future(
     isTradable: Boolean,
     forQualifiedInvestorOnly: Boolean,
     currency: Currency,
-    val minPriceIncrementPts: PtsPrice
+    val minPriceIncrementPts: PointsPrice
 ) : Instrument(
     iid = iid,
     name = name,

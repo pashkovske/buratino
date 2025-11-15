@@ -1,45 +1,38 @@
 package ru.pashkovske.buratino.price.service
 
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.instrument.model.Future
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
 import ru.pashkovske.buratino.order.model.OrderDirection
-import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.model.Spread
-import ru.pashkovske.buratino.price.quotation.service.MarketQuotationService
+import ru.pashkovske.buratino.price.offer.model.OfferBook
+import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
+import ru.pashkovske.buratino.price.offer.service.MarketScrapper
+
+private const val DEPTH_CHECK = 5
 
 @Service
 class CurrentMarketPriceService(
-    private val quotationMarketQuotationService: MarketQuotationService,
+    private val marketScrapper: MarketScrapper,
+    private val offerBookRepo: OfferBookRepo,
     private val instrumentService: InstrumentService
 ) : MarketPriceService {
     override fun getTopOfBook(
         iid: InstrumentId,
         direction: OrderDirection
     ): Price? {
-        val instrument: Instrument = instrumentService.get(iid)
-        val quotationPrice: Quotation? = quotationMarketQuotationService.getTopOfBook(
+        marketScrapper.updateOfferBook(
             iid = iid,
-            direction = direction
+            depth = DEPTH_CHECK
         )
-        val moneyQuotationPrice: Quotation? = when (instrument) {
-            is Future -> quotationPrice?.let { price ->
-                if (price % instrument.minPriceIncrementPts != 0L) {
-                    throw IllegalArgumentException("Cannot transform future points price to money price: `$price` is not multiple of min price increment `${instrument.minPriceIncrementPts}`")
-                }
-                val stepsInPrice: Long = price / instrument.minPriceIncrementPts
-                instrument.minPriceIncrement * stepsInPrice.toInt()
-            }
-            else -> quotationPrice
-        }
-        return moneyQuotationPrice?.let {
-            Price(
-                quotation = it,
-                currency = instrument.currency
-            )
+        val offerBook: OfferBook = offerBookRepo.read(iid)!!
+        @Suppress("REDUNDANT_ELSE_IN_WHEN")
+        return when (direction) {
+            OrderDirection.BUY -> getTopOfBookBuyPrice(offerBook)
+            OrderDirection.SELL -> getTopOfBookSellPrice(offerBook)
+            else -> throw IllegalArgumentException("Определение лучшей цены не зависимо от направления сделки не реализовано")
         }
     }
 
@@ -69,9 +62,30 @@ class CurrentMarketPriceService(
 
     override fun getSpread(iid: InstrumentId): Spread {
         val instrument: Instrument = instrumentService.get(iid)
+        val topSell: Price? = getTopOfBook(
+            iid = iid,
+            direction = OrderDirection.SELL
+        )
+        val topBuy: Price? = getTopOfBook(
+            iid = iid,
+            direction = OrderDirection.BUY
+        )
         return Spread(
-            quotationSpread = quotationMarketQuotationService.getSpread(iid),
+            bid = topBuy,
+            ask = topSell,
             currency = instrument.currency
         )
+    }
+
+    private fun getTopOfBookSellPrice(offerBook: OfferBook): Price? {
+        return offerBook.asks.keys
+            .sorted()
+            .firstOrNull { offerBook.asks[it]!!.alienAffiliated != null }
+    }
+
+    private fun getTopOfBookBuyPrice(offerBook: OfferBook): Price? {
+        return offerBook.bids.keys
+            .sortedDescending()
+            .firstOrNull { offerBook.bids[it]!!.alienAffiliated != null }
     }
 }

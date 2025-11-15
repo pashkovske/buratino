@@ -2,21 +2,24 @@ package ru.pashkovske.buratino.unit.price
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import ru.pashkovske.buratino.price.quotation.model.Quotation
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 
-class QuotationArithmeticTest {
+class PriceArithmeticTest {
     @Test
     fun testMulInt() {
-        val mulLeft = Quotation(
+        val mulLeft = Price(
             units = 0L,
-            nano = 812_260_000
+            nano = 812_260_000,
+            currency = Currency.RUB
         )
         val mulRight = 93L
 
         val mulResult = mulLeft * mulRight.toInt()
-        val expectedMulResult = Quotation(
+        val expectedMulResult = Price(
             units = 75L,
-            nano = 540_180_000
+            nano = 540_180_000,
+            currency = Currency.RUB
         )
 
         assertEquals(expectedMulResult, mulResult)
@@ -24,16 +27,18 @@ class QuotationArithmeticTest {
 
     @Test
     fun testMulDouble() {
-        val mulLeft = Quotation(
+        val mulLeft = Price(
             units = 10_812L,
-            nano = 812_260_000
+            nano = 812_260_000,
+            currency = Currency.RUB
         )
         val mulRight = 0.007
 
         val mulResult = mulLeft * mulRight
-        val expectedMulResult = Quotation(
+        val expectedMulResult = Price(
             units = 75L,
-            nano = 689_685_820
+            nano = 689_685_820,
+            currency = Currency.RUB
         )
 
         assertEquals(expectedMulResult, mulResult)
@@ -41,13 +46,15 @@ class QuotationArithmeticTest {
 
     @Test
     fun testDivQuotation() {
-        val divisible = Quotation(
+        val divisible = Price(
             units = 75L,
-            nano = 689_685_820
+            nano = 689_685_820,
+            currency = Currency.RUB
         )
-        val divisor = Quotation(
+        val divisor = Price(
             units = 0L,
-            nano = 812_260_000
+            nano = 812_260_000,
+            currency = Currency.RUB
         )
 
         val quotient: Long = divisible / divisor

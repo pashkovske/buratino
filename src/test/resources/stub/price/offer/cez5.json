@@ -1,46 +1,46 @@
 {
   "ts": "${now}",
   "asks": {
-    "10829": {
+    "10829 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10829",
+        "price": "10829 RUB",
         "lots": 16,
         "direction": "SELL",
         "affiliation": "ALIEN"
       }
     },
-    "10830": {
+    "10830 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10830",
+        "price": "10830 RUB",
         "lots": 3,
         "direction": "SELL",
         "affiliation": "ALIEN"
       }
     },
-    "10831": {
+    "10831 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10831",
+        "price": "10831 RUB",
         "lots": 32,
         "direction": "SELL",
         "affiliation": "ALIEN"
       }
     },
-    "10832": {
+    "10832 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10832",
+        "price": "10832 RUB",
         "lots": 3,
         "direction": "SELL",
         "affiliation": "ALIEN"
       }
     },
-    "10833": {
+    "10833 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10833",
+        "price": "10833 RUB",
         "lots": 1,
         "direction": "SELL",
         "affiliation": "ALIEN"
@@ -48,46 +48,46 @@
     }
   },
   "bids": {
-    "10814": {
+    "10814 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10814",
+        "price": "10814 RUB",
         "lots": 14,
         "direction": "BUY",
         "affiliation": "ALIEN"
       }
     },
-    "10799": {
+    "10799 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10799",
+        "price": "10799 RUB",
         "lots": 1,
         "direction": "BUY",
         "affiliation": "ALIEN"
       }
     },
-    "10787": {
+    "10787 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10787",
+        "price": "10787 RUB",
         "lots": 22,
         "direction": "BUY",
         "affiliation": "ALIEN"
       }
     },
-    "10784": {
+    "10784 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10784",
+        "price": "10784 RUB",
         "lots": 2,
         "direction": "BUY",
         "affiliation": "ALIEN"
       }
     },
-    "10778": {
+    "10778 RUB": {
       "selfAffiliated": null,
       "alienAffiliated": {
-        "price": "10778",
+        "price": "10778 RUB",
         "lots": 3,
         "direction": "BUY",
         "affiliation": "ALIEN"

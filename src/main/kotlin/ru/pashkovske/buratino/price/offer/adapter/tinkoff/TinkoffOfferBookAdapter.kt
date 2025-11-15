@@ -5,13 +5,14 @@ import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.service.InstrumentService
+import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.offer.adapter.OfferBookAdapter
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
 import ru.pashkovske.buratino.price.offer.model.QuotationLevelOffers
-import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.tinkoff.piapi.contract.v1.Order
 import ru.tinkoff.piapi.core.MarketDataService
 import ru.tinkoff.piapi.core.OrdersService
@@ -42,25 +43,27 @@ class TinkoffOfferBookAdapter(
                 )
             }
 
-        val selfAsks: Map<Quotation, Offer> = aggregateOffers(
+        val selfAsks: Map<Price, Offer> = aggregateOffers(
             offers = selfOffersList.filter { it.direction == OfferDirection.SELL }
         )
-        val selfBids: Map<Quotation, Offer> = aggregateOffers(
+        val selfBids: Map<Price, Offer> = aggregateOffers(
             offers = selfOffersList.filter { it.direction == OfferDirection.BUY }
         )
 
-        val alienAsks: Map<Quotation, Offer> = aggregateOffers(
+        val alienAsks: Map<Price, Offer> = aggregateOffers(
             offers = getAlienOffers(
                 tinkoffMixedOrders = tinkoffOrderBook.asksList,
                 selfOffers = selfAsks,
-                direction = OfferDirection.SELL
+                direction = OfferDirection.SELL,
+                currency = instrument.currency
             )
         )
-        val alienBids: Map<Quotation, Offer> = aggregateOffers(
+        val alienBids: Map<Price, Offer> = aggregateOffers(
             offers = getAlienOffers(
                 tinkoffMixedOrders = tinkoffOrderBook.bidsList,
                 selfOffers = selfBids,
-                direction = OfferDirection.BUY
+                direction = OfferDirection.BUY,
+                currency = instrument.currency
             )
         )
 
@@ -82,12 +85,16 @@ class TinkoffOfferBookAdapter(
 
     private fun getAlienOffers(
         tinkoffMixedOrders: List<Order>,
-        selfOffers: Map<Quotation, Offer>,
-        direction: OfferDirection
+        selfOffers: Map<Price, Offer>,
+        direction: OfferDirection,
+        currency: Currency
     ): List<Offer> {
         return tinkoffMixedOrders
-            .map { tinkoffMixedOrder ->
-                val price: Quotation = TinkoffPriceMapper.map(tinkoffMixedOrder.price)
+            .map { tinkoffMixedOrder: Order ->
+                val price: Price = TinkoffPriceMapper.map(
+                    tinkoffQuotation = tinkoffMixedOrder.price,
+                    currency = currency
+                )
                 var lots = tinkoffMixedOrder.quantity
                 val selfOffer: Offer? = selfOffers[price]
                 if (selfOffer != null) {
@@ -105,16 +112,16 @@ class TinkoffOfferBookAdapter(
             }
     }
 
-    private fun aggregateOffers(offers: List<Offer>): Map<Quotation, Offer> {
+    private fun aggregateOffers(offers: List<Offer>): Map<Price, Offer> {
         return offers.groupBy { it.price }
             .map { it.value.reduce(Offer::plus) }
             .associateBy { it.price }
     }
 
     private fun combineOffers(
-        selfOffers: Map<Quotation, Offer>,
-        alienOffers: Map<Quotation, Offer>
-    ): Map<Quotation, QuotationLevelOffers> {
+        selfOffers: Map<Price, Offer>,
+        alienOffers: Map<Price, Offer>
+    ): Map<Price, QuotationLevelOffers> {
         val allPrices = alienOffers.keys
         
         return allPrices.associateWith { price ->

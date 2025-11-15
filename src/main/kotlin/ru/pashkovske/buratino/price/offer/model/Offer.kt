@@ -1,9 +1,9 @@
 package ru.pashkovske.buratino.price.offer.model
 
-import ru.pashkovske.buratino.price.quotation.model.Quotation
+import ru.pashkovske.buratino.price.model.Price
 
 data class Offer(
-    val price: Quotation,
+    val price: Price,
     val lots: Long,
     val direction: OfferDirection,
     val affiliation: OfferAffiliation

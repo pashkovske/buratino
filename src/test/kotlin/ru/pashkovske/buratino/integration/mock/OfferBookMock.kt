@@ -1,12 +1,12 @@
 package ru.pashkovske.buratino.integration.mock
 
 import ru.pashkovske.buratino.instrument.model.InstrumentId
+import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
 import ru.pashkovske.buratino.price.offer.model.QuotationLevelOffers
 import ru.pashkovske.buratino.price.offer.adapter.OfferBookAdapter
-import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.pashkovske.buratino.util.loader.FileLoader
 import java.time.Instant
 
@@ -43,15 +43,15 @@ class OfferBookMock: OfferBookAdapter {
     }
 
     private fun updateOfferBookProperty(
-        property: Map<Quotation, QuotationLevelOffers>,
+        property: Map<Price, QuotationLevelOffers>,
         offer: Offer
-    ): Map<Quotation, QuotationLevelOffers> {
+    ): Map<Price, QuotationLevelOffers> {
         val quotationLevel: QuotationLevelOffers = property.getOrDefault(
             key = offer.price,
             defaultValue = QuotationLevelOffers()
         )
         val newQuotationLevel: QuotationLevelOffers = quotationLevel + offer
-        val newProperty: MutableMap<Quotation, QuotationLevelOffers> = property.toMutableMap()
+        val newProperty: MutableMap<Price, QuotationLevelOffers> = property.toMutableMap()
         newProperty[offer.price] = newQuotationLevel
         return newProperty
     }
@@ -64,13 +64,13 @@ class OfferBookMock: OfferBookAdapter {
         return fullOfferBook.copy(
             asks = fullOfferBook.asks
                 .entries
-                .sortedBy(Map.Entry<Quotation, QuotationLevelOffers>::key)
+                .sortedBy(Map.Entry<Price, QuotationLevelOffers>::key)
                 .reversed()
                 .take(depth)
                 .associate { it.key to it.value },
             bids = fullOfferBook.bids
                 .entries
-                .sortedBy(Map.Entry<Quotation, QuotationLevelOffers>::key)
+                .sortedBy(Map.Entry<Price, QuotationLevelOffers>::key)
                 .take(depth)
                 .associate { it.key to it.value }
         )

@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.util.loader
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import ru.pashkovske.buratino.order.model.OrderRequest
-import ru.pashkovske.buratino.price.quotation.model.Quotation
+import ru.pashkovske.buratino.price.model.Price
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
@@ -24,8 +24,8 @@ object FileLoader {
                     InstantTypeAdapter()
                 )
                 .registerTypeAdapter(
-                    Quotation::class.java,
-                    QuotationTypeAdapter()
+                    Price::class.java,
+                    PriceTypeAdapter()
                 )
                 .registerTypeAdapter(
                     OrderRequest::class.java,

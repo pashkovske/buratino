@@ -8,7 +8,6 @@ import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.OrderInstantInfo
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.price.offer.adapter.tinkoff.TinkoffPriceMapper
-import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.tinkoff.piapi.contract.v1.OrderState
 import ru.tinkoff.piapi.contract.v1.PostOrderResponse
 import ru.tinkoff.piapi.contract.v1.PriceType
@@ -31,7 +30,7 @@ class TinkoffOrderApi(
         val response: PostOrderResponse = tinkoffOrderService.postLimitOrderSync(
             orderRequest.iid.id,
             orderRequest.lots,
-            priceMapper.map(orderRequest.price as Quotation),
+            priceMapper.mapToQuotation(orderRequest.price),
             orderMapper.map(orderRequest.direction),
             account.id,
             TimeInForceType.TIME_IN_FORCE_DAY,
@@ -61,7 +60,7 @@ class TinkoffOrderApi(
         val response = tinkoffOrderService.replaceOrderSync(
             account.id,
             newOrderRequest.lots,
-            priceMapper.map(newOrderRequest.price as Quotation),
+            priceMapper.mapToQuotation(newOrderRequest.price),
             newOrderRequest.idempotencyToken?.toString() ?: UUID.randomUUID().toString(),
             orderId,
             PriceType.PRICE_TYPE_CURRENCY

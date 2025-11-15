@@ -1,25 +1,12 @@
 package ru.pashkovske.buratino.price.offer.adapter.tinkoff
 
 import ru.pashkovske.buratino.price.model.Currency
+import ru.pashkovske.buratino.price.model.PointsPrice
 import ru.pashkovske.buratino.price.model.Price
-import ru.pashkovske.buratino.price.quotation.model.PtsPrice
-import ru.pashkovske.buratino.price.quotation.model.Quotation
 import ru.tinkoff.piapi.contract.v1.MoneyValue
+import ru.tinkoff.piapi.contract.v1.Quotation
 
 object TinkoffPriceMapper {
-    fun map(tinkoffQuotation: ru.tinkoff.piapi.contract.v1.Quotation): Quotation {
-        return Quotation(
-            units = tinkoffQuotation.units,
-            nano = tinkoffQuotation.nano
-        )
-    }
-
-    fun mapToPoints(tinkoffQuotation: ru.tinkoff.piapi.contract.v1.Quotation): PtsPrice {
-        return PtsPrice(
-            units = tinkoffQuotation.units,
-            nano = tinkoffQuotation.nano
-        )
-    }
 
     fun map(tinkoffMoneyValue: MoneyValue): Price {
         return Price(
@@ -30,13 +17,33 @@ object TinkoffPriceMapper {
     }
 
     fun map(
-        tinkoffQuotation: ru.tinkoff.piapi.contract.v1.Quotation,
+        tinkoffQuotation: Quotation,
+        currency: Currency
+    ): Price {
+        return Price(
+            units = tinkoffQuotation.units,
+            nano = tinkoffQuotation.nano,
+            currency = currency
+        )
+    }
+
+    fun map(
+        tinkoffQuotation: Quotation,
         currency: String
     ): Price {
         return Price(
             units = tinkoffQuotation.units,
             nano = tinkoffQuotation.nano,
             currency = Currency.fromStr(currency)
+        )
+    }
+
+    fun mapToPointsPrice(
+        tinkoffQuotation: Quotation
+    ): PointsPrice {
+        return PointsPrice(
+            unit = tinkoffQuotation.units,
+            nano = tinkoffQuotation.nano
         )
     }
 
@@ -51,10 +58,10 @@ object TinkoffPriceMapper {
             .build()
     }
 
-    fun map(quotation: Quotation): ru.tinkoff.piapi.contract.v1.Quotation {
-        return ru.tinkoff.piapi.contract.v1.Quotation.newBuilder()
-            .setUnits(quotation.units)
-            .setNano(quotation.nano)
+    fun mapToQuotation(price: Price): Quotation {
+        return Quotation.newBuilder()
+            .setUnits(price.units)
+            .setNano(price.nano)
             .build()
     }
 }
