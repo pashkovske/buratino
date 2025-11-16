@@ -1,0 +1,99 @@
+{
+  "figi_": "BBG004730N88",
+  "depth_": 5,
+  "instrumentUid_": "e6123145-9665-43e0-8413-cd61b8aa9b13",
+  "lastPrice_": {
+    "units_": 296,
+    "nano_": 520000000
+  },
+  "limitUp_": {
+    "units_": 311,
+    "nano_": 850000000
+  },
+  "limitDown_": {
+    "units_": 244,
+    "nano_": 750000000
+  },
+  "lastPriceTs_": {
+    "seconds_": 1763238612,
+    "nanos_": 165971357
+  },
+  "orderbookTs_": {
+    "seconds_": 1763238673,
+    "nanos_": 177850401
+  },
+  "bids_": [
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 510000000
+      },
+      "quantity_": 1345
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 500000000
+      },
+      "quantity_": 2897
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 420000000
+      },
+      "quantity_": 21
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 380000000
+      },
+      "quantity_": 200
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 370000000
+      },
+      "quantity_": 293
+    }
+  ],
+  "asks_": [
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 650000000
+      },
+      "quantity_": 35
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 680000000
+      },
+      "quantity_": 2
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 690000000
+      },
+      "quantity_": 627
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 710000000
+      },
+      "quantity_": 300
+    },
+    {
+      "price_": {
+        "units_": 296,
+        "nano_": 720000000
+      },
+      "quantity_": 421
+    }
+  ]
+}

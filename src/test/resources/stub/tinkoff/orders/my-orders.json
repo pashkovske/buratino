@@ -1,0 +1,173 @@
+[
+  {
+    "orderId_": "REX07CI5J9BLUQC0K6AG",
+    "executionReportStatus_": 4,
+    "lotsRequested_": 1,
+    "lotsExecuted_": 0,
+    "initialOrderPrice_": {
+      "currency_": "rub",
+      "units_": 316,
+      "nano_": 200000000
+    },
+    "executedOrderPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "totalOrderAmount_": {
+      "currency_": "rub",
+      "units_": 316,
+      "nano_": 200000000
+    },
+    "averagePositionPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "initialCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 130000000
+    },
+    "executedCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "figi_": "TCS00A107KX0",
+    "direction_": 1,
+    "initialSecurityPrice_": {
+      "currency_": "rub",
+      "units_": 3,
+      "nano_": 162000000
+    },
+    "stages_": [],
+    "serviceCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "currency_": "rub",
+    "orderType_": 1,
+    "orderDate_": {
+      "seconds_": 1763227498,
+      "nanos_": 78003000
+    },
+    "instrumentUid_": "e3f629fd-367b-4dbd-922c-4a4c130c70ab",
+    "orderRequestId_": "d5d88640-8c97-4d43-8a48-0209f947762f"
+  },
+  {
+    "orderId_": "REX07C4DO2I9S3138FW1",
+    "executionReportStatus_": 4,
+    "lotsRequested_": 1,
+    "lotsExecuted_": 0,
+    "initialOrderPrice_": {
+      "currency_": "rub",
+      "units_": 296,
+      "nano_": 680000000
+    },
+    "executedOrderPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "totalOrderAmount_": {
+      "currency_": "rub",
+      "units_": 296,
+      "nano_": 680000000
+    },
+    "averagePositionPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "initialCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 120000000
+    },
+    "executedCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "figi_": "BBG004730N88",
+    "direction_": 2,
+    "initialSecurityPrice_": {
+      "currency_": "rub",
+      "units_": 296,
+      "nano_": 680000000
+    },
+    "stages_": [],
+    "serviceCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "currency_": "rub",
+    "orderType_": 1,
+    "orderDate_": {
+      "seconds_": 1763238662,
+      "nanos_": 987561000
+    },
+    "instrumentUid_": "e6123145-9665-43e0-8413-cd61b8aa9b13",
+    "orderRequestId_": "46299374-a206-46fe-8fdb-130c532950b7"
+  },
+  {
+    "orderId_": "2041288481367393768",
+    "executionReportStatus_": 4,
+    "lotsRequested_": 1,
+    "lotsExecuted_": 0,
+    "initialOrderPrice_": {
+      "currency_": "rub",
+      "units_": 11690,
+      "nano_": 370000000
+    },
+    "executedOrderPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "totalOrderAmount_": {
+      "currency_": "rub",
+      "units_": 11690,
+      "nano_": 370000000
+    },
+    "averagePositionPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "initialCommission_": {
+      "currency_": "rub",
+      "units_": 2,
+      "nano_": 930000000
+    },
+    "executedCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "figi_": "FUTMOEXC0326",
+    "direction_": 1,
+    "initialSecurityPrice_": {
+      "currency_": "rub",
+      "units_": 11690,
+      "nano_": 373640000
+    },
+    "stages_": [],
+    "serviceCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "currency_": "rub",
+    "orderType_": 1,
+    "orderDate_": {
+      "seconds_": 1763306375,
+      "nanos_": 853601000
+    },
+    "instrumentUid_": "4dcb34bb-75c2-47fa-a5ab-cfd9465075ed",
+    "orderRequestId_": "57cccc13-8195-40e7-b752-414cc00383c0"
+  }
+]

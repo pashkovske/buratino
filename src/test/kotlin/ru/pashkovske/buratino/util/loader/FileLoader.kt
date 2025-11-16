@@ -2,17 +2,19 @@ package ru.pashkovske.buratino.util.loader
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 import ru.pashkovske.buratino.order.model.OrderRequest
 import ru.pashkovske.buratino.price.model.Price
 import java.io.File
 import java.io.FileNotFoundException
+import java.lang.reflect.Type
 import java.net.URL
 import java.time.Instant
 
 object FileLoader {
-    fun <T> loadFromJson(
+    private fun <T> loadAnyFromJson(
         path: String,
-        clazz: Class<T>
+        type: Type
     ): T {
         try {
             val resource: URL = getValidResourceUrl(path)
@@ -32,7 +34,7 @@ object FileLoader {
                     OrderRequestTypeAdapter()
                 )
                 .create()
-            return gson.fromJson(processedContent, clazz)
+            return gson.fromJson(processedContent, type)
         } catch (e: FileNotFoundException) {
             throw RuntimeException("File not found: $path", e)
         } catch (e: JsonSyntaxException) {
@@ -40,6 +42,21 @@ object FileLoader {
         } catch (e: Exception) {
             throw RuntimeException("Error loading JSON from file: $path", e)
         }
+    }
+
+    fun <T> loadFromJson(
+        path: String,
+        clazz: Class<T>
+    ): T {
+        return loadAnyFromJson(path, clazz)
+    }
+
+    fun <T> loadListFromJson(
+        path: String,
+        clazz: Class<T>
+    ): List<T> {
+        val listType = TypeToken.getParameterized(List::class.java, clazz).type
+        return loadAnyFromJson(path, listType)
     }
 
     fun walkPath(path: String): Set<String> {

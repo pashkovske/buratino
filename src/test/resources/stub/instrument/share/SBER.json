@@ -1,0 +1,17 @@
+{
+  "iid": {
+    "id": "e6123145-9665-43e0-8413-cd61b8aa9b13"
+  },
+  "name": "Сбер Банк",
+  "ticker": "SBER",
+  "lot": 1,
+  "forQualifiedInvestorOnly": false,
+  "minPriceIncrement": {
+    "units": 0,
+    "nano": 10000000,
+    "currency": "RUB"
+  },
+  "currency": "RUB",
+  "type": "SHARE",
+  "tradable": true
+}

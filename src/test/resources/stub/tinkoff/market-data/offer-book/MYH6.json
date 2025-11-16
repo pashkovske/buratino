@@ -1,0 +1,107 @@
+{
+  "figi_": "FUTMOEXC0326",
+  "depth_": 5,
+  "instrumentUid_": "4dcb34bb-75c2-47fa-a5ab-cfd9465075ed",
+  "lastPrice_": {
+    "units_": 1031,
+    "nano_": 600000000
+  },
+  "limitUp_": {
+    "units_": 1062,
+    "nano_": 500000000
+  },
+  "limitDown_": {
+    "units_": 1000,
+    "nano_": 700000000
+  },
+  "closePrice_": {
+    "units_": 1031,
+    "nano_": 600000000
+  },
+  "lastPriceTs_": {
+    "seconds_": 1763133051,
+    "nanos_": 694000
+  },
+  "closePriceTs_": {
+    "seconds_": 1763135400,
+    "nanos_": 0
+  },
+  "orderbookTs_": {
+    "seconds_": 1763306375,
+    "nanos_": 845000000
+  },
+  "bids_": [
+    {
+      "price_": {
+        "units_": 1027,
+        "nano_": 400000000
+      },
+      "quantity_": 4
+    },
+    {
+      "price_": {
+        "units_": 1027,
+        "nano_": 100000000
+      },
+      "quantity_": 2
+    },
+    {
+      "price_": {
+        "units_": 1025,
+        "nano_": 200000000
+      },
+      "quantity_": 2
+    },
+    {
+      "price_": {
+        "units_": 1025,
+        "nano_": 0
+      },
+      "quantity_": 1
+    },
+    {
+      "price_": {
+        "units_": 1024,
+        "nano_": 700000000
+      },
+      "quantity_": 1
+    }
+  ],
+  "asks_": [
+    {
+      "price_": {
+        "units_": 1043,
+        "nano_": 600000000
+      },
+      "quantity_": 2
+    },
+    {
+      "price_": {
+        "units_": 1043,
+        "nano_": 700000000
+      },
+      "quantity_": 1
+    },
+    {
+      "price_": {
+        "units_": 1043,
+        "nano_": 800000000
+      },
+      "quantity_": 3
+    },
+    {
+      "price_": {
+        "units_": 1043,
+        "nano_": 900000000
+      },
+      "quantity_": 3
+    },
+    {
+      "price_": {
+        "units_": 1044,
+        "nano_": 0
+      },
+      "quantity_": 1
+    }
+  ]
+}

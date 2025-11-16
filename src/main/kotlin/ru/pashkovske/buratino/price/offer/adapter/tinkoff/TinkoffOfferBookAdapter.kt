@@ -13,7 +13,9 @@ import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
 import ru.pashkovske.buratino.price.offer.model.QuotationLevelOffers
+import ru.tinkoff.piapi.contract.v1.GetOrderBookResponse
 import ru.tinkoff.piapi.contract.v1.Order
+import ru.tinkoff.piapi.contract.v1.OrderState
 import ru.tinkoff.piapi.core.MarketDataService
 import ru.tinkoff.piapi.core.OrdersService
 import java.time.Instant
@@ -29,8 +31,8 @@ class TinkoffOfferBookAdapter(
         iid: InstrumentId,
         depth: Int
     ): OfferBook {
-        val tinkoffOrderBook = tinkoffMarketDataService.getOrderBookSync(iid.id, depth)
-        val tinkoffOwnedOrdes = tinkoffOrderService.getOrdersSync(account.id)
+        val tinkoffOrderBook: GetOrderBookResponse = tinkoffMarketDataService.getOrderBookSync(iid.id, depth)
+        val tinkoffOwnedOrdes: List<OrderState> = tinkoffOrderService.getOrdersSync(account.id)
         val instrument: Instrument = instrumentService.get(iid)
 
         val selfOffersList: List<Offer> = tinkoffOwnedOrdes
