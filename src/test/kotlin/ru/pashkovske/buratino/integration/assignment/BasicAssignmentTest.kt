@@ -76,7 +76,7 @@ abstract class BasicAssignmentTest(
             .andExpect(jsonPath("$.request.direction").value(expectedLimitedRequest.direction.toString()))
             .andExpect(jsonPath("$.request.lots").value(expectedLimitedRequest.lots))
             .andExpect(jsonPath("$.currentInfo.remainingLots").value(expectedLimitedRequest.lots))
-            .andExpect(jsonPath("$.request.price.units").value(expectedLimitedRequest.price.units))
+            .andExpect(jsonPath("$.request.price.units").value(expectedLimitedRequest.price.unit))
             .andExpect(jsonPath("$.request.price.nano").value(expectedLimitedRequest.price.nano))
             .andExpect(jsonPath("$.request.price.currency").value(expectedLimitedRequest.price.currency.toString()))
     }

@@ -64,7 +64,7 @@ class FractionalSpreadAssignmentTest(
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         val expectedPrice = Price(
-            units = 65,
+            unit = 65,
             nano = 600_000_000,
             currency = Currency.RUB
         )

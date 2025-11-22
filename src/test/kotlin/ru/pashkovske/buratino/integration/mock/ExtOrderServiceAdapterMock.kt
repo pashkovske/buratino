@@ -23,7 +23,7 @@ class ExtOrderServiceAdapterMock(
     override fun createOrder(orderRequest: LimitOrderRequest): Order {
         val orderCommitResult = OrderCommitResult(
             commission = Price(
-                units = 0,
+                unit = 0,
                 nano = 0,
                 currency = Currency.RUB
             ),

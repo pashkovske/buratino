@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 data class Price(
-    val units: Long,
+    val unit: Long,
     val nano: Int,
     val currency: Currency
 ): Comparable<Price> {
@@ -41,16 +41,9 @@ data class Price(
     }
 
     override fun toString(): String {
-        return "$units.$nano $currency"
+        return "$unit.$nano $currency"
             .trimEnd('0')
             .trimEnd('.')
-    }
-
-    fun makeZero(): Price {
-        return copy(
-            newUnit = 0L,
-            newNano = 0
-        )
     }
 
     fun copy(
@@ -58,7 +51,7 @@ data class Price(
         newNano: Int
     ): Price {
         return Price(
-            units = newUnit,
+            unit = newUnit,
             nano = newNano,
             currency = currency
         )
@@ -133,8 +126,8 @@ data class Price(
 
     override operator fun compareTo(other: Price): Int {
         checkConsistency(other)
-        if (this.units != other.units) {
-            return this.units.compareTo(other.units)
+        if (this.unit != other.unit) {
+            return this.unit.compareTo(other.unit)
         }
         return this.nano.compareTo(other.nano)
     }
@@ -142,19 +135,19 @@ data class Price(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Price) return false
-        return units == other.units
+        return unit == other.unit
             && nano == other.nano
             && currency == other.currency
     }
 
     override fun hashCode(): Int {
-        return units.hashCode()
+        return unit.hashCode()
             .xor(nano.hashCode())
             .xor(currency.hashCode())
     }
 
     private fun toBigInt(price: Price): BigInteger {
-        return BigInteger.valueOf(price.units)
+        return BigInteger.valueOf(price.unit)
             .multiply(BigInteger.valueOf(MAX_NANO.toLong()))
             .add(BigInteger.valueOf(price.nano.toLong()))
     }

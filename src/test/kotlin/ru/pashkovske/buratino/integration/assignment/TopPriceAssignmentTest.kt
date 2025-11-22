@@ -73,7 +73,7 @@ class TopPriceAssignmentTest(
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         val expectedPrice = Price(
-            units = 66,
+            unit = 66,
             nano = 100_000_000,
             currency = Currency.RUB
         )
@@ -176,7 +176,7 @@ class TopPriceAssignmentTest(
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         val expectedPrice = Price(
-            units = 8795,
+            unit = 8795,
             nano = 151_280_000,
             currency = Currency.RUB
         )
@@ -247,7 +247,7 @@ class TopPriceAssignmentTest(
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         val expectedPrice = Price(
-            units = 11865,
+            unit = 11865,
             nano = 604_080_000,
             currency = Currency.RUB
         )

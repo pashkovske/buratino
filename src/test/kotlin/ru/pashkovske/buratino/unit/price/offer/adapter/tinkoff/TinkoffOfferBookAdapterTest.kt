@@ -161,7 +161,7 @@ class TinkoffOfferBookAdapterTest {
         
         // Then
         val expectedSelfOrderPrice = Price(
-            units = 296L,
+            unit = 296L,
             nano = 680_000_000,
             currency = currency
         )
@@ -225,7 +225,7 @@ class TinkoffOfferBookAdapterTest {
 
         // Then
         val expectedSelfOrderPrice = Price(
-            units = 11690L,
+            unit = 11690L,
             nano = 373_640_000,
             currency = currency
         )
@@ -250,7 +250,7 @@ class TinkoffOfferBookAdapterTest {
 
         // Then
         val expectedSelfOrderPrice = Price(
-            units = 26L,
+            unit = 26L,
             nano = 460_000_000,
             currency = currency
         )

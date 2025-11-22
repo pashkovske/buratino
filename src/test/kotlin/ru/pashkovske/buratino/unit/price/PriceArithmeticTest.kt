@@ -9,7 +9,7 @@ class PriceArithmeticTest {
     @Test
     fun testMulInt() {
         val mulLeft = Price(
-            units = 0L,
+            unit = 0L,
             nano = 812_260_000,
             currency = Currency.RUB
         )
@@ -17,7 +17,7 @@ class PriceArithmeticTest {
 
         val mulResult = mulLeft * mulRight
         val expectedMulResult = Price(
-            units = 75L,
+            unit = 75L,
             nano = 540_180_000,
             currency = Currency.RUB
         )
@@ -28,7 +28,7 @@ class PriceArithmeticTest {
     @Test
     fun testMulDouble() {
         val mulLeft = Price(
-            units = 10_812L,
+            unit = 10_812L,
             nano = 812_260_000,
             currency = Currency.RUB
         )
@@ -36,7 +36,7 @@ class PriceArithmeticTest {
 
         val mulResult = mulLeft * mulRight
         val expectedMulResult = Price(
-            units = 75L,
+            unit = 75L,
             nano = 689_685_820,
             currency = Currency.RUB
         )
@@ -47,12 +47,12 @@ class PriceArithmeticTest {
     @Test
     fun testDivQuotation() {
         val divisible = Price(
-            units = 75L,
+            unit = 75L,
             nano = 689_685_820,
             currency = Currency.RUB
         )
         val divisor = Price(
-            units = 0L,
+            unit = 0L,
             nano = 812_260_000,
             currency = Currency.RUB
         )

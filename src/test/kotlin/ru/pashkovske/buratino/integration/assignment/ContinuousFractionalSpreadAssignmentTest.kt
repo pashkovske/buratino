@@ -76,7 +76,7 @@ class ContinuousFractionalSpreadAssignmentTest(
         val createdOrderId: String = JsonPath.parse(createResult.response.contentAsString).read("$.nested.info.orderId")
 
         val expectedPrice = Price(
-            units = 65,
+            unit = 65,
             nano = 600_000_000,
             currency = Currency.RUB
         )

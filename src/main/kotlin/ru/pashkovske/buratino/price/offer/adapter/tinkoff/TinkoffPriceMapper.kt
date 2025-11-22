@@ -12,7 +12,7 @@ object TinkoffPriceMapper {
 
     fun map(tinkoffMoneyValue: MoneyValue): Price {
         return Price(
-            units = tinkoffMoneyValue.units,
+            unit = tinkoffMoneyValue.units,
             nano = tinkoffMoneyValue.nano,
             currency = Currency.fromStr(tinkoffMoneyValue.currency)
         )
@@ -23,7 +23,7 @@ object TinkoffPriceMapper {
         currency: Currency
     ): Price {
         return Price(
-            units = tinkoffQuotation.units,
+            unit = tinkoffQuotation.units,
             nano = tinkoffQuotation.nano,
             currency = currency
         )
@@ -53,7 +53,7 @@ object TinkoffPriceMapper {
             throw IllegalArgumentException("Unknown currency")
         }
         return MoneyValue.newBuilder()
-            .setUnits(price.units)
+            .setUnits(price.unit)
             .setNano(price.nano)
             .setCurrency(price.currency.name)
             .build()
@@ -61,7 +61,7 @@ object TinkoffPriceMapper {
 
     fun mapToQuotation(price: Price): Quotation {
         return Quotation.newBuilder()
-            .setUnits(price.units)
+            .setUnits(price.unit)
             .setNano(price.nano)
             .build()
     }
@@ -72,12 +72,12 @@ object TinkoffPriceMapper {
         minPriceInc: Price
     ): Price {
         val ptsCasted = Price(
-            units = pts.units,
+            unit = pts.units,
             nano = pts.nano,
             currency = DUMMY_CURRENCY
         )
         val minPtsIncrementCasted = Price(
-            units = minPtsInc.unit,
+            unit = minPtsInc.unit,
             nano = minPtsInc.nano,
             currency = DUMMY_CURRENCY
         )
