@@ -6,6 +6,8 @@ import ru.pashkovske.buratino.price.model.Price
 import ru.tinkoff.piapi.contract.v1.MoneyValue
 import ru.tinkoff.piapi.contract.v1.Quotation
 
+private val DUMMY_CURRENCY = Currency.RUB
+
 object TinkoffPriceMapper {
 
     fun map(tinkoffMoneyValue: MoneyValue): Price {
@@ -31,9 +33,8 @@ object TinkoffPriceMapper {
         tinkoffQuotation: Quotation,
         currency: String
     ): Price {
-        return Price(
-            units = tinkoffQuotation.units,
-            nano = tinkoffQuotation.nano,
+        return map(
+            tinkoffQuotation = tinkoffQuotation,
             currency = Currency.fromStr(currency)
         )
     }
@@ -63,5 +64,27 @@ object TinkoffPriceMapper {
             .setUnits(price.units)
             .setNano(price.nano)
             .build()
+    }
+
+    fun convertPtsToMoney(
+        pts: Quotation,
+        minPtsInc: PointsPrice,
+        minPriceInc: Price
+    ): Price {
+        val ptsCasted = Price(
+            units = pts.units,
+            nano = pts.nano,
+            currency = DUMMY_CURRENCY
+        )
+        val minPtsIncrementCasted = Price(
+            units = minPtsInc.unit,
+            nano = minPtsInc.nano,
+            currency = DUMMY_CURRENCY
+        )
+        if (ptsCasted % minPtsIncrementCasted != 0L) {
+            throw IllegalArgumentException("PointsPrice $pts is not divisible by minimum increment $minPtsInc")
+        }
+        val minIncsInPrice: Long = ptsCasted / minPtsIncrementCasted
+        return minPriceInc * minIncsInPrice
     }
 }

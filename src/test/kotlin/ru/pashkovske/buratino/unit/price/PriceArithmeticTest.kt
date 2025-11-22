@@ -15,7 +15,7 @@ class PriceArithmeticTest {
         )
         val mulRight = 93L
 
-        val mulResult = mulLeft * mulRight.toInt()
+        val mulResult = mulLeft * mulRight
         val expectedMulResult = Price(
             units = 75L,
             nano = 540_180_000,

@@ -169,5 +169,62 @@
     },
     "instrumentUid_": "4dcb34bb-75c2-47fa-a5ab-cfd9465075ed",
     "orderRequestId_": "57cccc13-8195-40e7-b752-414cc00383c0"
+  },
+  {
+    "orderId_": "REX07JZGND7Y7QCBF3DW",
+    "executionReportStatus_": 4,
+    "lotsRequested_": 1,
+    "lotsExecuted_": 0,
+    "initialOrderPrice_": {
+      "currency_": "rub",
+      "units_": 264,
+      "nano_": 600000000
+    },
+    "executedOrderPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "totalOrderAmount_": {
+      "currency_": "rub",
+      "units_": 264,
+      "nano_": 600000000
+    },
+    "averagePositionPrice_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "initialCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 110000000
+    },
+    "executedCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "figi_": "BBG004S68507",
+    "direction_": 1,
+    "initialSecurityPrice_": {
+      "currency_": "rub",
+      "units_": 26,
+      "nano_": 460000000
+    },
+    "stages_": [],
+    "serviceCommission_": {
+      "currency_": "rub",
+      "units_": 0,
+      "nano_": 0
+    },
+    "currency_": "rub",
+    "orderType_": 1,
+    "orderDate_": {
+      "seconds_": 1763828194,
+      "nanos_": 676156000
+    },
+    "instrumentUid_": "7132b1c9-ee26-4464-b5b5-1046264b61d9",
+    "orderRequestId_": "45a260ee-dd2a-4b66-bf16-44aeff46778d"
   }
 ]

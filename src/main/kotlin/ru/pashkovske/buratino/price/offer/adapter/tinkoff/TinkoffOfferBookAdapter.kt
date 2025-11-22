@@ -5,10 +5,9 @@ import ru.pashkovske.buratino.account.model.Account
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.service.InstrumentService
-import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.offer.adapter.OfferBookAdapter
-import ru.pashkovske.buratino.price.offer.model.Offer
+import ru.pashkovske.buratino.price.offer.adapter.tinkoff.dto.TinkoffOfferDto
 import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
@@ -35,38 +34,42 @@ class TinkoffOfferBookAdapter(
         val tinkoffOwnedOrdes: List<OrderState> = tinkoffOrderService.getOrdersSync(account.id)
         val instrument: Instrument = instrumentService.get(iid)
 
-        val selfOffersList: List<Offer> = tinkoffOwnedOrdes
+        val selfOffersList: List<TinkoffOfferDto> = tinkoffOwnedOrdes
             .filter { it.instrumentUid == iid.id }
-            .map { orderState ->
+            .map { externalTinkoffOrderState: OrderState ->
                 TinkoffOfferMapper.map(
-                    tinkoffOrder = orderState,
-                    instrument = instrument,
+                    externalTinkoffOrderState = externalTinkoffOrderState,
                     affiliation = OfferAffiliation.SELF
                 )
             }
-
-        val selfAsks: Map<Price, Offer> = aggregateOffers(
+        val selfAsks: Map<Price, TinkoffOfferDto> = aggregateOffers(
             offers = selfOffersList.filter { it.direction == OfferDirection.SELL }
         )
-        val selfBids: Map<Price, Offer> = aggregateOffers(
+        val selfBids: Map<Price, TinkoffOfferDto> = aggregateOffers(
             offers = selfOffersList.filter { it.direction == OfferDirection.BUY }
         )
 
-        val alienAsks: Map<Price, Offer> = aggregateOffers(
-            offers = getAlienOffers(
-                tinkoffMixedOrders = tinkoffOrderBook.asksList,
-                selfOffers = selfAsks,
-                direction = OfferDirection.SELL,
-                currency = instrument.currency
-            )
+        val undefinedAsks: Map<Price, TinkoffOfferDto> = aggregateOffers(
+            offers = tinkoffOrderBook.asksList
+                .map { externalTinkoffOrder: Order ->
+                    TinkoffOfferMapper.map(
+                        externalTinkoffOrder = externalTinkoffOrder,
+                        instrument = instrument,
+                        affiliation = null,
+                        direction = OfferDirection.SELL
+                    )
+                }
         )
-        val alienBids: Map<Price, Offer> = aggregateOffers(
-            offers = getAlienOffers(
-                tinkoffMixedOrders = tinkoffOrderBook.bidsList,
-                selfOffers = selfBids,
-                direction = OfferDirection.BUY,
-                currency = instrument.currency
-            )
+        val undefinedBids: Map<Price, TinkoffOfferDto> = aggregateOffers(
+            offers = tinkoffOrderBook.bidsList
+                .map { externalTinkoffOrder: Order ->
+                    TinkoffOfferMapper.map(
+                        externalTinkoffOrder = externalTinkoffOrder,
+                        instrument = instrument,
+                        affiliation = null,
+                        direction = OfferDirection.BUY
+                    )
+                }
         )
 
         return OfferBook(
@@ -76,66 +79,48 @@ class TinkoffOfferBookAdapter(
             ),
             asks = combineOffers(
                 selfOffers = selfAsks,
-                alienOffers = alienAsks
+                undefinedOffers = undefinedAsks
             ),
             bids = combineOffers(
                 selfOffers = selfBids,
-                alienOffers = alienBids
+                undefinedOffers = undefinedBids
             )
         )
     }
 
-    private fun getAlienOffers(
-        tinkoffMixedOrders: List<Order>,
-        selfOffers: Map<Price, Offer>,
-        direction: OfferDirection,
-        currency: Currency
-    ): List<Offer> {
-        return tinkoffMixedOrders
-            .map { tinkoffMixedOrder: Order ->
-                val price: Price = TinkoffPriceMapper.map(
-                    tinkoffQuotation = tinkoffMixedOrder.price,
-                    currency = currency
-                )
-                var lots = tinkoffMixedOrder.quantity
-                val selfOffer: Offer? = selfOffers[price]
-                if (selfOffer != null) {
-                    lots -= selfOffer.lots
-                    if (lots < 0) {
-                        throw IllegalStateException("More self offers than all")
-                    }
-                }
-                Offer(
-                    price = price,
-                    lots = lots,
-                    direction = direction,
-                    affiliation = OfferAffiliation.ALIEN
-                )
-            }
-    }
-
-    private fun aggregateOffers(offers: List<Offer>): Map<Price, Offer> {
+    private fun aggregateOffers(offers: List<TinkoffOfferDto>): Map<Price, TinkoffOfferDto> {
         return offers.groupBy { it.price }
-            .map { it.value.reduce(Offer::plus) }
+            .map { it.value.reduce(TinkoffOfferDto::plus) }
             .associateBy { it.price }
     }
 
     private fun combineOffers(
-        selfOffers: Map<Price, Offer>,
-        alienOffers: Map<Price, Offer>
+        selfOffers: Map<Price, TinkoffOfferDto>,
+        undefinedOffers: Map<Price, TinkoffOfferDto>
     ): Map<Price, QuotationLevelOffers> {
-        val allPrices = alienOffers.keys
+        val allPrices: Set<Price> = undefinedOffers.keys
         
         return allPrices.associateWith { price ->
-            val selfOffer = selfOffers[price]
-            var alienOffer = alienOffers[price]
-            if (alienOffer?.lots == 0L) {
-                alienOffer = null
+            val selfOffer: TinkoffOfferDto? = selfOffers[price]
+            val undefinedOffer: TinkoffOfferDto? = undefinedOffers[price]
+            if ((undefinedOffer?.lots ?: 0L) < (selfOffer?.lots ?: 0L)) {
+                throw IllegalStateException("More self offers than all")
+            }
+            val alienOffer: TinkoffOfferDto? = undefinedOffer?.let {
+                val newAlienOffer: TinkoffOfferDto = it.copy(
+                    lots = it.lots - (selfOffer?.lots ?: 0L),
+                    affiliation = OfferAffiliation.ALIEN
+                )
+                if (newAlienOffer.lots == 0L) {
+                    null
+                } else {
+                    newAlienOffer
+                }
             }
 
             QuotationLevelOffers(
-                selfAffiliated = selfOffer,
-                alienAffiliated = alienOffer
+                selfAffiliated = TinkoffOfferMapper.map(selfOffer),
+                alienAffiliated = TinkoffOfferMapper.map(alienOffer)
             )
         }
     }

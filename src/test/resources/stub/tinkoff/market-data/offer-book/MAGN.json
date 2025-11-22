@@ -1,0 +1,107 @@
+{
+  "figi_": "BBG004S68507",
+  "depth_": 5,
+  "instrumentUid_": "7132b1c9-ee26-4464-b5b5-1046264b61d9",
+  "lastPrice_": {
+    "units_": 26,
+    "nano_": 500000000
+  },
+  "limitUp_": {
+    "units_": 27,
+    "nano_": 650000000
+  },
+  "limitDown_": {
+    "units_": 25,
+    "nano_": 20000000
+  },
+  "closePrice_": {
+    "units_": 26,
+    "nano_": 500000000
+  },
+  "lastPriceTs_": {
+    "seconds_": 1763827777,
+    "nanos_": 894236008
+  },
+  "closePriceTs_": {
+    "seconds_": 1763827777,
+    "nanos_": 894236008
+  },
+  "orderbookTs_": {
+    "seconds_": 1763828194,
+    "nanos_": 621557861
+  },
+  "bids_": [
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 495000000
+      },
+      "quantity_": 43
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 490000000
+      },
+      "quantity_": 3
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 465000000
+      },
+      "quantity_": 85
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 460000000
+      },
+      "quantity_": 101
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 455000000
+      },
+      "quantity_": 100
+    }
+  ],
+  "asks_": [
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 510000000
+      },
+      "quantity_": 3
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 545000000
+      },
+      "quantity_": 2
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 550000000
+      },
+      "quantity_": 5
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 555000000
+      },
+      "quantity_": 184
+    },
+    {
+      "price_": {
+        "units_": 26,
+        "nano_": 560000000
+      },
+      "quantity_": 90
+    }
+  ]
+}

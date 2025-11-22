@@ -86,11 +86,11 @@ data class Price(
                 .minus(other.toBigInt()))
     }
 
-    operator fun times(multiplier: Int): Price {
+    operator fun times(multiplier: Long): Price {
         return fromBigInt(
             this
                 .toBigInt()
-                .multiply(BigInteger.valueOf(multiplier.toLong())))
+                .multiply(BigInteger.valueOf(multiplier)))
     }
 
     operator fun times(multiplier: Double): Price {

@@ -1,0 +1,17 @@
+{
+  "iid": {
+    "id": "7132b1c9-ee26-4464-b5b5-1046264b61d9"
+  },
+  "name": "Магнитогорский металлургический комбинат",
+  "ticker": "MAGN",
+  "lot": 10,
+  "forQualifiedInvestorOnly": false,
+  "minPriceIncrement": {
+    "units": 0,
+    "nano": 5000000,
+    "currency": "RUB"
+  },
+  "currency": "RUB",
+  "type": "SHARE",
+  "tradable": true
+}

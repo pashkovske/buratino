@@ -43,7 +43,7 @@ final class FractionalSpreadAssignmentExe(
         } else {
             oppositeTopPrice
         }
-        val adjustedMinSpreadDelta: Price = step * (askPrice * assignment.rate / step).toInt()
+        val adjustedMinSpreadDelta: Price = step * (askPrice * assignment.rate / step)
         val topSpreadPrice: Price = if (assignment.direction == OrderDirection.BUY) {
             oppositeTopPrice - adjustedMinSpreadDelta
         } else {
