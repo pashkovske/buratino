@@ -54,8 +54,7 @@ abstract class BasicContinuousAssignmentExe<
                     )
                     val schedulingInfo = SchedulingInfo(
                         properties = schedulingProps,
-                        taskId = UUID.randomUUID(),
-                        task = task
+                        taskId = UUID.randomUUID()
                     )
                     assignmentScheduler.start(
                         task = task,
