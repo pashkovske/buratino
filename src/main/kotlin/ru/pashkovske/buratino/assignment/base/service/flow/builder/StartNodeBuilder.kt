@@ -1,0 +1,51 @@
+package ru.pashkovske.buratino.assignment.base.service.flow.builder
+
+import ru.pashkovske.buratino.assignment.base.model.flow.nodes.StartNode
+import ru.pashkovske.buratino.assignment.base.service.flow.exception.BuildNodeException
+import ru.pashkovske.buratino.assignment.base.service.flow.exception.FlowIsNotReadyException
+import ru.pashkovske.buratino.assignment.base.service.flow.readiness.BuilderReadiness
+import ru.pashkovske.buratino.assignment.base.service.flow.readiness.NodeNotReadyMessage
+import java.util.UUID
+
+class StartNodeBuilder : NodeBuilder(
+    name = "Start"
+) {
+    override fun build(): StartNode {
+        val readiness = validateUndefinedEdges()
+        if (!readiness.isReady) {
+            throw FlowIsNotReadyException(readiness.issues)
+        }
+        
+        return StartNode(
+            id = id,
+            next = next!!
+        )
+    }
+    
+    override fun validateUndefinedEdges(): BuilderReadiness {
+        val issues = mutableListOf<NodeNotReadyMessage>()
+        if (next == null) {
+            issues.add(
+                NodeNotReadyMessage(
+                    message = "Next node is not set",
+                    type = this::class,
+                    name = name,
+                    id = id
+                )
+            )
+        }
+        return BuilderReadiness(
+            issues = issues,
+            isReady = issues.isEmpty()
+        )
+    }
+
+    override fun setPrevious(previous: UUID): NodeBuilder {
+        throw BuildNodeException(
+            message = "StartNode cannot have a previous node",
+            type = this::class,
+            name = name,
+            id = id
+        )
+    }
+}
