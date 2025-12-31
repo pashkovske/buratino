@@ -21,14 +21,14 @@ class ExeNodeBuilder(
             name = name,
             id = id,
             action = action,
-            next = next!!,
-            previous = previous!!
+            next = nextNode!!,
+            previous = previousNode!!
         )
     }
     
     override fun validateUndefinedEdges(): BuilderReadiness {
         val issues = mutableListOf<NodeNotReadyMessage>()
-        if (next == null) {
+        if (nextNode == null) {
             issues.add(
                 NodeNotReadyMessage(
                     message = "Next node is not set",
@@ -38,7 +38,7 @@ class ExeNodeBuilder(
                 )
             )
         }
-        if (previous == null) {
+        if (previousNode == null) {
             issues.add(
                 NodeNotReadyMessage(
                     message = "Previous node is not set",

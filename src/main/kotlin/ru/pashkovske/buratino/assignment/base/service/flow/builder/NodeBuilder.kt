@@ -9,39 +9,39 @@ abstract class NodeBuilder(
     val name: String
 ) {
     val id: UUID = UUID.randomUUID()
-    protected var next: UUID? = null
-    protected var previous: UUID? = null
+    protected var nextNode: UUID? = null
+    protected var previousNode: UUID? = null
 
     open fun setNext(next: UUID): NodeBuilder {
-        if (this.next != null) {
+        if (this.nextNode != null) {
             throw BuildNodeException(
-                message = "Next node is already set to ${this.next}",
+                message = "Next node is already set to ${this.nextNode}",
                 type = this::class,
                 name = name,
                 id = id
             )
         }
-        this.next = next
+        this.nextNode = next
         return this
     }
     fun getNext(): UUID? {
-        return next
+        return nextNode
     }
 
     open fun setPrevious(previous: UUID): NodeBuilder {
-        if (this.previous != null) {
+        if (this.previousNode != null) {
             throw BuildNodeException(
-                message = "Previous node is already set to ${this.next}",
+                message = "Previous node is already set to ${this.nextNode}",
                 type = this::class,
                 name = name,
                 id = id
             )
         }
-        this.previous = previous
+        this.previousNode = previous
         return this
     }
     fun getPrevious(): UUID? {
-        return previous
+        return previousNode
     }
 
     abstract fun build(): Node

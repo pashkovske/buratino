@@ -21,13 +21,13 @@ class EndNodeBuilder(
         return EndNode(
             name = name,
             id = id,
-            previous = previous!!
+            previous = previousNode!!
         )
     }
     
     override fun validateUndefinedEdges(): BuilderReadiness {
         val issues = mutableListOf<NodeNotReadyMessage>()
-        if (previous == null) {
+        if (previousNode == null) {
             issues.add(
                 NodeNotReadyMessage(
                     message = "Previous node is not set",
