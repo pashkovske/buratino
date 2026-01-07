@@ -1,14 +1,16 @@
 package ru.pashkovske.buratino.flow.exe.action
 
-class ActionRegistry<T> {
+import ru.pashkovske.buratino.flow.exe.context.ExeCtx
 
-    private val actions: MutableMap<String, ActionExe<T>> = mutableMapOf()
+class ActionRegistry<Ctx: ExeCtx> {
 
-    operator fun get(name: String): ActionExe<T>? = actions[name]
+    private val actions: MutableMap<String, ActionExe<Ctx>> = mutableMapOf()
+
+    operator fun get(name: String): ActionExe<Ctx>? = actions[name]
 
     operator fun contains(name: String): Boolean = actions.containsKey(name)
 
-    fun registerAction(action: ActionExe<T>) {
+    fun registerAction(action: ActionExe<Ctx>) {
         if (actions.containsKey(action.name)) {
             throw IllegalArgumentException("Action ${action.name} already registered")
         }

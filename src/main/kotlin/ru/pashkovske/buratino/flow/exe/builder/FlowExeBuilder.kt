@@ -6,20 +6,21 @@ import ru.pashkovske.buratino.flow.builder.RouteNodeBuilder
 import ru.pashkovske.buratino.flow.exe.FlowExe
 import ru.pashkovske.buratino.flow.exe.action.ActionExe
 import ru.pashkovske.buratino.flow.exe.action.ActionRegistry
+import ru.pashkovske.buratino.flow.exe.context.ExeCtx
 import ru.pashkovske.buratino.flow.exe.router.Route
 import ru.pashkovske.buratino.flow.exe.router.RouterExe
 import ru.pashkovske.buratino.flow.exe.router.RouterRegistry
 import java.util.UUID
 
-abstract class FlowExeBuilder<T>(
+abstract class FlowExeBuilder<Ctx : ExeCtx>(
     flowName: String
 ) {
 
     protected val flowBuilder = FlowBuilder(flowName)
-    protected val actionRegistry: ActionRegistry<T> = ActionRegistry()
-    protected val routerRegistry: RouterRegistry<T> = RouterRegistry()
+    protected val actionRegistry: ActionRegistry<Ctx> = ActionRegistry()
+    protected val routerRegistry: RouterRegistry<Ctx> = RouterRegistry()
 
-    fun buildFlow(emptyFlowExe: FlowExe<T>): FlowExe<T> {
+    fun buildFlow(emptyFlowExe: FlowExe<Ctx>): FlowExe<Ctx> {
         return emptyFlowExe.build(
             flow = flowBuilder.build(),
             actionRegistry = actionRegistry,
@@ -27,7 +28,7 @@ abstract class FlowExeBuilder<T>(
         )
     }
 
-    private fun buildExeNode(action: ActionExe<T>): ExeNodeBuilder {
+    private fun buildExeNode(action: ActionExe<Ctx>): ExeNodeBuilder {
         actionRegistry.registerAction(action)
         flowBuilder.registerAction(action.name)
         return ExeNodeBuilder(
@@ -37,7 +38,7 @@ abstract class FlowExeBuilder<T>(
     }
 
     protected fun addAction(
-        action: ActionExe<T>,
+        action: ActionExe<Ctx>,
         afterNode: UUID
     ): UUID {
         val exeNode = buildExeNode(action)
@@ -49,7 +50,7 @@ abstract class FlowExeBuilder<T>(
     }
 
     protected fun addAction(
-        action: ActionExe<T>,
+        action: ActionExe<Ctx>,
         afterNode: UUID,
         route: Route
     ): UUID {
@@ -63,7 +64,7 @@ abstract class FlowExeBuilder<T>(
     }
 
     protected fun addRouter(
-        router: RouterExe<T>,
+        router: RouterExe<Ctx>,
         afterNode: UUID
     ): UUID {
         routerRegistry.registerRouter(router)

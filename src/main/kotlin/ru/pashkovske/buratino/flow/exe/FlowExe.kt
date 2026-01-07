@@ -5,8 +5,6 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.flow.exception.ExeFlowException
 import ru.pashkovske.buratino.flow.exe.action.ActionRegistry
 import ru.pashkovske.buratino.flow.exe.context.ExeCtx
-import ru.pashkovske.buratino.flow.exe.context.ExeCtxView
-import ru.pashkovske.buratino.flow.exe.context.ExeCtxViewMapper
 import ru.pashkovske.buratino.flow.exe.router.Route
 import ru.pashkovske.buratino.flow.exe.router.RouterRegistry
 import ru.pashkovske.buratino.flow.model.Flow
@@ -16,17 +14,15 @@ import ru.pashkovske.buratino.flow.model.nodes.Node
 import ru.pashkovske.buratino.flow.model.nodes.RouteNode
 import ru.pashkovske.buratino.flow.model.nodes.StartNode
 
-abstract class FlowExe<T>(
-    private val ctxViewMapper: ExeCtxViewMapper<T>
-) {
+abstract class FlowExe<Ctx: ExeCtx> {
 
     private val log: KLogger = KotlinLogging.logger {}
 
     lateinit var flow: Flow
-    lateinit var actionRegistry: ActionRegistry<T>
-    lateinit var routerRegistry: RouterRegistry<T>
+    lateinit var actionRegistry: ActionRegistry<Ctx>
+    lateinit var routerRegistry: RouterRegistry<Ctx>
 
-    fun execute(ctx: ExeCtx<T>): ExeCtx<T> {
+    fun execute(ctx: Ctx): Ctx {
         log.info("Starting flow ${flow.name}")
         var node: Node = flow[flow.start]!!
 
@@ -38,7 +34,7 @@ abstract class FlowExe<T>(
                     action = node
                 )
                 is RouteNode -> executeRouter(
-                    ctxView = ctxViewMapper.map(ctx),
+                    ctxView = ctx,
                     router = node
                 )
                 is Flow -> throw NotImplementedError()
@@ -56,9 +52,9 @@ abstract class FlowExe<T>(
 
     abstract fun build(
         flow: Flow,
-        actionRegistry: ActionRegistry<T>,
-        routerRegistry: RouterRegistry<T>
-    ): FlowExe<T>
+        actionRegistry: ActionRegistry<Ctx>,
+        routerRegistry: RouterRegistry<Ctx>
+    ): FlowExe<Ctx>
 
     private fun executeStart(
         start: StartNode
@@ -68,7 +64,7 @@ abstract class FlowExe<T>(
     }
 
     private fun executeAction(
-        ctx: ExeCtx<T>,
+        ctx: Ctx,
         action: ExeNode
     ): Node {
         val actionSlug: String = action.action
@@ -86,7 +82,7 @@ abstract class FlowExe<T>(
     }
 
     private fun executeRouter(
-        ctxView: ExeCtxView<T>,
+        ctxView: Ctx,
         router: RouteNode
     ): Node {
         val routerSlug: String = router.router

@@ -101,7 +101,7 @@ class FinalAssignmentExeChainsTest {
         val assignmentExe = TopPriceAssignmentExe(
             orderService = mock(),
             assignmentRepo = mock(),
-            marketDataService = mock(),
+            getTopPriceActionExe = mock(),
             assignmentScheduler = mock()
         )
 
