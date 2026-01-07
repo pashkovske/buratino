@@ -1,3 +1,3 @@
-package ru.pashkovske.buratino.assignment.base.service.flow.exception
+package ru.pashkovske.buratino.flow.exception
 
 open class BuildFlowException(message: String): IllegalArgumentException(message)

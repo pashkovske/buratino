@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.model.flow.nodes
+package ru.pashkovske.buratino.flow.model.nodes
 
 import java.util.UUID
 

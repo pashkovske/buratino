@@ -6,18 +6,18 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import ru.pashkovske.buratino.assignment.base.model.flow.Flow
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.EndNode
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.ExeNode
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.Node
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.RouteNode
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.StartNode
-import ru.pashkovske.buratino.assignment.base.service.flow.FlowBuilder
-import ru.pashkovske.buratino.assignment.base.service.flow.builder.EndNodeBuilder
-import ru.pashkovske.buratino.assignment.base.service.flow.builder.ExeNodeBuilder
-import ru.pashkovske.buratino.assignment.base.service.flow.builder.RouteNodeBuilder
-import ru.pashkovske.buratino.assignment.base.service.flow.exception.BuildNodeException
-import ru.pashkovske.buratino.assignment.base.service.flow.exception.FlowIsNotReadyException
+import ru.pashkovske.buratino.flow.model.Flow
+import ru.pashkovske.buratino.flow.model.nodes.EndNode
+import ru.pashkovske.buratino.flow.model.nodes.ExeNode
+import ru.pashkovske.buratino.flow.model.nodes.Node
+import ru.pashkovske.buratino.flow.model.nodes.RouteNode
+import ru.pashkovske.buratino.flow.model.nodes.StartNode
+import ru.pashkovske.buratino.flow.builder.FlowBuilder
+import ru.pashkovske.buratino.flow.builder.EndNodeBuilder
+import ru.pashkovske.buratino.flow.builder.ExeNodeBuilder
+import ru.pashkovske.buratino.flow.builder.RouteNodeBuilder
+import ru.pashkovske.buratino.flow.exception.BuildNodeException
+import ru.pashkovske.buratino.flow.exception.FlowIsNotReadyException
 import java.util.UUID
 import kotlin.jvm.java
 
@@ -117,6 +117,7 @@ class FlowBuilderTest {
         flowBuilder.registerResolution("test")
         flowBuilder.registerAction("action")
         flowBuilder.registerAction("another_action")
+        flowBuilder.registerRouter("router", setOf("route_1", "route_2"))
         val flow: Flow = flowBuilder
             .addNode(
                 node = exeNodeBuilder,
@@ -183,6 +184,7 @@ class FlowBuilderTest {
         val endNodeBuilder = EndNodeBuilder("end", "test")
 
         flowBuilder.registerResolution("test")
+        flowBuilder.registerRouter("router", setOf("route_1", "route_2"))
         val flow = flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -281,6 +283,7 @@ class FlowBuilderTest {
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
         val endNodeBuilder = EndNodeBuilder("end", "test")
         flowBuilder.registerResolution("test")
+        flowBuilder.registerRouter("router", setOf("route_1", "route_2"))
         flowBuilder
             .addNode(
                 node = endNodeBuilder,
@@ -297,6 +300,7 @@ class FlowBuilderTest {
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
         val endNodeBuilder = EndNodeBuilder("end", "test")
         flowBuilder.registerResolution("test")
+        flowBuilder.registerRouter("router", setOf("route_1", "route_2"))
         flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -319,6 +323,7 @@ class FlowBuilderTest {
         val endNodeBuilder2 = EndNodeBuilder("end2", "test")
         val endNodeBuilder3 = EndNodeBuilder("end3", "test")
         flowBuilder.registerResolution("test")
+        flowBuilder.registerRouter("router", setOf("route_1", "route_2"))
         flowBuilder
             .addNode(
                 node = endNodeBuilder3,
@@ -400,6 +405,7 @@ class FlowBuilderTest {
         val endNodeBuilder = EndNodeBuilder("end", "test")
         val endNodeBuilder2 = EndNodeBuilder("end2", "test")
         flowBuilder.registerResolution("test")
+        flowBuilder.registerRouter("router", setOf("route_1", "route_2"))
         flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -426,6 +432,7 @@ class FlowBuilderTest {
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
         val endNodeBuilder = EndNodeBuilder("end", "test")
         flowBuilder.registerResolution("test")
+        flowBuilder.registerRouter("router", setOf("route_1", "route_2"))
         flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -488,5 +495,13 @@ class FlowBuilderTest {
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
 
         assertThrows { flowBuilder.addNode(exeNodeBuilder) } as BuildNodeException
+    }
+
+    @Test
+    fun `try to add not registered router error`() {
+        val flowBuilder = FlowBuilder("test")
+        val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
+
+        assertThrows { flowBuilder.addNode(routeNodeBuilder) } as BuildNodeException
     }
 }

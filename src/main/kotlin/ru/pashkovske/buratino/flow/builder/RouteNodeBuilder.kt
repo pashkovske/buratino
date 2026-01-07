@@ -1,16 +1,16 @@
-package ru.pashkovske.buratino.assignment.base.service.flow.builder
+package ru.pashkovske.buratino.flow.builder
 
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.RouteNode
-import ru.pashkovske.buratino.assignment.base.service.flow.exception.BuildNodeException
-import ru.pashkovske.buratino.assignment.base.service.flow.exception.FlowIsNotReadyException
-import ru.pashkovske.buratino.assignment.base.service.flow.readiness.BuilderReadiness
-import ru.pashkovske.buratino.assignment.base.service.flow.readiness.NodeNotReadyMessage
+import ru.pashkovske.buratino.flow.model.nodes.RouteNode
+import ru.pashkovske.buratino.flow.exception.BuildNodeException
+import ru.pashkovske.buratino.flow.exception.FlowIsNotReadyException
+import ru.pashkovske.buratino.flow.readiness.BuilderReadiness
+import ru.pashkovske.buratino.flow.readiness.NodeNotReadyMessage
 import java.util.UUID
 
 class RouteNodeBuilder(
     name: String,
     routeNames: Set<String>,
-    private val router: String
+    val router: String
 ) : NodeBuilder(
     name = name
 ) {

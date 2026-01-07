@@ -1,8 +1,8 @@
-package ru.pashkovske.buratino.assignment.base.service.flow.builder
+package ru.pashkovske.buratino.flow.builder
 
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.Node
-import ru.pashkovske.buratino.assignment.base.service.flow.exception.BuildNodeException
-import ru.pashkovske.buratino.assignment.base.service.flow.readiness.BuilderReadiness
+import ru.pashkovske.buratino.flow.model.nodes.Node
+import ru.pashkovske.buratino.flow.exception.BuildNodeException
+import ru.pashkovske.buratino.flow.readiness.BuilderReadiness
 import java.util.UUID
 
 abstract class NodeBuilder(

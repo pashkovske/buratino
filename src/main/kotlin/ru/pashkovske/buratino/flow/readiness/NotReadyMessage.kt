@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.service.flow.readiness
+package ru.pashkovske.buratino.flow.readiness
 
 open class NotReadyMessage(
     val message: String

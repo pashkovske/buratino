@@ -1,9 +1,9 @@
-package ru.pashkovske.buratino.assignment.base.service.flow.builder
+package ru.pashkovske.buratino.flow.builder
 
-import ru.pashkovske.buratino.assignment.base.model.flow.nodes.ExeNode
-import ru.pashkovske.buratino.assignment.base.service.flow.exception.FlowIsNotReadyException
-import ru.pashkovske.buratino.assignment.base.service.flow.readiness.BuilderReadiness
-import ru.pashkovske.buratino.assignment.base.service.flow.readiness.NodeNotReadyMessage
+import ru.pashkovske.buratino.flow.model.nodes.ExeNode
+import ru.pashkovske.buratino.flow.exception.FlowIsNotReadyException
+import ru.pashkovske.buratino.flow.readiness.BuilderReadiness
+import ru.pashkovske.buratino.flow.readiness.NodeNotReadyMessage
 
 class ExeNodeBuilder(
     name: String,

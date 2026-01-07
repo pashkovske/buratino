@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.service.flow.readiness
+package ru.pashkovske.buratino.flow.readiness
 
 data class BuilderReadiness(
     val issues: List<NotReadyMessage>,

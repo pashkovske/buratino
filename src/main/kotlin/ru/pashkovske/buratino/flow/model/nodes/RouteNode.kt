@@ -1,6 +1,6 @@
-package ru.pashkovske.buratino.assignment.base.model.flow.nodes
+package ru.pashkovske.buratino.flow.model.nodes
 
-import ru.pashkovske.buratino.assignment.base.service.flow.exception.BuildFlowException
+import ru.pashkovske.buratino.flow.exception.BuildFlowException
 import java.util.UUID
 
 class RouteNode(
@@ -18,4 +18,6 @@ class RouteNode(
             throw BuildFlowException("Routes must be unique, in node $this they are not")
         }
     }
+
+    operator fun get(route: String): UUID? = routes[route]
 }
