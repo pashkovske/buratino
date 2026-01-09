@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.nested.continuous.base.service
+package ru.pashkovske.buratino.assignment.nested.continuous.base.exe
 
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
@@ -7,9 +7,9 @@ import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
-import ru.pashkovske.buratino.assignment.nested.base.service.BasicSuperAssignmentExe
+import ru.pashkovske.buratino.assignment.nested.base.exe.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.base.model.ContinuousAssignment
 import java.util.UUID
 

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
 import java.util.UUID
 
 @Suppress("unused")

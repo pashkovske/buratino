@@ -1,13 +1,13 @@
-package ru.pashkovske.buratino.assignment.nested.base.service
+package ru.pashkovske.buratino.assignment.nested.base.exe
 
 import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
-import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
+import ru.pashkovske.buratino.assignment.base.exe.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.base.model.SuperAssignment
 
 abstract class BasicSuperAssignmentExe<

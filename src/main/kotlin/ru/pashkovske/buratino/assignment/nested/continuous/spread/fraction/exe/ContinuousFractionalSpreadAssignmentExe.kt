@@ -1,13 +1,13 @@
-package ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.service
+package ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.exe
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
-import ru.pashkovske.buratino.assignment.nested.continuous.base.service.BasicContinuousAssignmentExe
+import ru.pashkovske.buratino.assignment.nested.continuous.base.exe.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.exe.FractionalSpreadAssignmentExe
 import java.util.UUID
 
 @Service

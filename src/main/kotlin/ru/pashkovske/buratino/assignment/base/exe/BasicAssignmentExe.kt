@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.service
+package ru.pashkovske.buratino.assignment.base.exe
 
 import mu.KLogger
 import mu.KotlinLogging
@@ -9,6 +9,7 @@ import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
 import java.util.UUID
 
 abstract class BasicAssignmentExe<A: Assignment>(

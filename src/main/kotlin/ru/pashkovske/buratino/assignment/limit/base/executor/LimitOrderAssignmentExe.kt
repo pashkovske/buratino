@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.limit.base.service
+package ru.pashkovske.buratino.assignment.limit.base.executor
 
 import mu.KLogger
 import mu.KotlinLogging
@@ -6,7 +6,7 @@ import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
-import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
+import ru.pashkovske.buratino.assignment.base.exe.BasicAssignmentExe
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService

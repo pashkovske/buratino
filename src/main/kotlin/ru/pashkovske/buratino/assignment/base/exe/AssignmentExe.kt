@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.service
+package ru.pashkovske.buratino.assignment.base.exe
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import java.util.UUID
