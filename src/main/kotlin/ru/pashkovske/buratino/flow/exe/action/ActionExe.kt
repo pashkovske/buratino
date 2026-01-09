@@ -2,8 +2,8 @@ package ru.pashkovske.buratino.flow.exe.action
 
 import ru.pashkovske.buratino.flow.exe.context.ExeCtx
 
-interface ActionExe<Ctx: ExeCtx> {
+interface ActionExe<T> {
 
-    fun execute(ctx: Ctx)
+    fun execute(ctx: ExeCtx<T>)
     val name: String
 }

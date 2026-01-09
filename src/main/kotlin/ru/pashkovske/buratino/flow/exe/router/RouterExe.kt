@@ -1,10 +1,10 @@
 package ru.pashkovske.buratino.flow.exe.router
 
-import ru.pashkovske.buratino.flow.exe.context.ExeCtx
+import ru.pashkovske.buratino.flow.exe.context.ExeCtxView
 
-interface RouterExe<Ctx: ExeCtx> {
+interface RouterExe<T> {
 
-    fun execute(ctx: Ctx): Route
+    fun execute(ctx: ExeCtxView<T>): Route
     val name: String
     val defaultRoute: Route
 }

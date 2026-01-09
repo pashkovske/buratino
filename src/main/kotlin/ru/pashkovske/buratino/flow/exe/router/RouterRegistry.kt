@@ -1,16 +1,14 @@
 package ru.pashkovske.buratino.flow.exe.router
 
-import ru.pashkovske.buratino.flow.exe.context.ExeCtx
+class RouterRegistry<T> {
 
-class RouterRegistry<Ctx : ExeCtx> {
+    private val routers: MutableMap<String, RouterExe<T>> = mutableMapOf()
 
-    private val routers: MutableMap<String, RouterExe<Ctx>> = mutableMapOf()
-
-    operator fun get(name: String): RouterExe<Ctx>? = routers[name]
+    operator fun get(name: String): RouterExe<T>? = routers[name]
 
     operator fun contains(name: String): Boolean = routers.containsKey(name)
 
-    fun registerRouter(router: RouterExe<Ctx>) {
+    fun registerRouter(router: RouterExe<T>) {
         if (routers.containsKey(router.name)) {
             throw IllegalArgumentException("Router with name ${router.name} already exists")
         }
