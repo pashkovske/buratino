@@ -1,0 +1,56 @@
+package ru.pashkovske.buratino.flow.builder
+
+import ru.pashkovske.buratino.flow.model.nodes.ExeNode
+import ru.pashkovske.buratino.flow.exception.FlowIsNotReadyException
+import ru.pashkovske.buratino.flow.readiness.BuilderReadiness
+import ru.pashkovske.buratino.flow.readiness.NodeNotReadyMessage
+
+class ExeNodeBuilder(
+    name: String,
+    val action: String
+): NodeBuilder(
+    name = name
+) {
+    override fun build(): ExeNode {
+        val readiness = validateUndefinedEdges()
+        if (!readiness.isReady) {
+            throw FlowIsNotReadyException(readiness.issues)
+        }
+        
+        return ExeNode(
+            name = name,
+            id = id,
+            action = action,
+            next = nextNode!!,
+            previous = previousNode!!
+        )
+    }
+    
+    override fun validateUndefinedEdges(): BuilderReadiness {
+        val issues = mutableListOf<NodeNotReadyMessage>()
+        if (nextNode == null) {
+            issues.add(
+                NodeNotReadyMessage(
+                    message = "Next node is not set",
+                    type = this::class,
+                    name = name,
+                    id = id
+                )
+            )
+        }
+        if (previousNode == null) {
+            issues.add(
+                NodeNotReadyMessage(
+                    message = "Previous node is not set",
+                    type = this::class,
+                    name = name,
+                    id = id
+                )
+            )
+        }
+        return BuilderReadiness(
+            issues = issues,
+            isReady = issues.isEmpty()
+        )
+    }
+}
