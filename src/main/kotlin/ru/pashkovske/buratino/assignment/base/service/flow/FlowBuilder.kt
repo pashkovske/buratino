@@ -1,11 +1,7 @@
 package ru.pashkovske.buratino.assignment.base.service.flow
 
-import mu.KLogger
-import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.flow.Flow
 import ru.pashkovske.buratino.assignment.base.model.flow.nodes.Node
-import ru.pashkovske.buratino.assignment.base.service.flow.builder.EndNodeBuilder
-import ru.pashkovske.buratino.assignment.base.service.flow.builder.ExeNodeBuilder
 import ru.pashkovske.buratino.assignment.base.service.flow.builder.NodeBuilder
 import ru.pashkovske.buratino.assignment.base.service.flow.builder.RouteNodeBuilder
 import ru.pashkovske.buratino.assignment.base.service.flow.builder.StartNodeBuilder
@@ -20,13 +16,7 @@ class FlowBuilder(
 ): NodeBuilder(
     name = name
 ) {
-
-    private val log: KLogger = KotlinLogging.logger {}
     private val nodes: MutableMap<UUID, NodeBuilder> = mutableMapOf()
-    private val actions: MutableSet<String> = mutableSetOf()
-    private val usedActions: MutableSet<String> = mutableSetOf()
-    private val resolutions : MutableSet<String> = mutableSetOf()
-    private val usedResolutions: MutableSet<String> = mutableSetOf()
     private val start: UUID
 
     init {
@@ -53,22 +43,6 @@ class FlowBuilder(
             .associate { (nodeId: UUID, node: NodeBuilder) ->
                 nodeId to node.build()
             }
-
-        if (usedActions.size != actions.size) {
-            for (action: String in actions) {
-                if (!usedActions.contains(action)) {
-                    log.warn("Action $action is not used in flow $name")
-                }
-            }
-        }
-        if (usedResolutions.size != resolutions.size) {
-            for (resolution: String in resolutions) {
-                if (!usedResolutions.contains(resolution)) {
-                    log.warn("Resolution $resolution is not used in flow $name")
-                }
-            }
-        }
-
         return Flow(
             name = name,
             id = id,
@@ -116,24 +90,6 @@ class FlowBuilder(
         return this
     }
 
-    fun registerAction(action: String): FlowBuilder {
-        if (action in actions) {
-            log.warn("Action $action is already registered in flow $name")
-            return this
-        }
-        actions.add(action)
-        return this
-    }
-
-    fun registerResolution(resolution: String): FlowBuilder {
-        if (resolution in resolutions) {
-            log.warn("Resolution $resolution is already registered in flow $name")
-            return this
-        }
-        resolutions.add(resolution)
-        return this
-    }
-
     private fun addNode(
         node: NodeBuilder,
         route: String? = null
@@ -160,11 +116,6 @@ class FlowBuilder(
                 node = node,
                 nextId = before
             )
-        }
-
-        when (node) {
-            is ExeNodeBuilder -> addExeNode(node)
-            is EndNodeBuilder -> addEndNode(node)
         }
 
         nodes[node.id] = node
@@ -197,20 +148,6 @@ class FlowBuilder(
         }
         val nextNode: NodeBuilder = nodes[nextId]!!
         nextNode.setPrevious(node.id)
-    }
-
-    private fun addExeNode(node: ExeNodeBuilder) {
-        if (node.action !in actions) {
-            throwWithMessage("Action ${node.action} of node ${node.id} with name ${node.name} is not registered")
-        }
-        usedActions.add(node.action)
-    }
-
-    private fun addEndNode(node: EndNodeBuilder) {
-        if (node.resolution !in resolutions) {
-            throwWithMessage("Resolution ${node.resolution} of node ${node.id} with name ${node.name} is not registered")
-        }
-        usedResolutions.add(node.resolution)
     }
 
     private fun throwWithMessage(message: String) {

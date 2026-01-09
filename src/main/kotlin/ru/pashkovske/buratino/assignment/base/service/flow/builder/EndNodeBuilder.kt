@@ -8,8 +8,7 @@ import ru.pashkovske.buratino.assignment.base.service.flow.readiness.NodeNotRead
 import java.util.UUID
 
 class EndNodeBuilder(
-    name: String,
-    val resolution: String
+    name: String
 ): NodeBuilder(
     name = name
 ) {

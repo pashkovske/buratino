@@ -27,9 +27,8 @@ class FlowBuilderTest {
     fun `build simplest flow`() {
         val flowBuilder = FlowBuilder("test")
         val startNodeId: UUID = flowBuilder.getStart()
-        val endNodeBuilder = EndNodeBuilder("end", "test")
+        val endNodeBuilder = EndNodeBuilder("end")
 
-        flowBuilder.registerResolution("test")
         val flow: Flow = flowBuilder
             .addNode(
                 node = endNodeBuilder,
@@ -54,10 +53,8 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId: UUID = flowBuilder.getStart()
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
+        val endNodeBuilder = EndNodeBuilder("end")
 
-        flowBuilder.registerResolution("test")
-        flowBuilder.registerAction("action")
         exeNodeBuilder.setNext(endNodeBuilder.id)
         exeNodeBuilder.setPrevious(startNodeId)
 
@@ -73,10 +70,8 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId: UUID = flowBuilder.getStart()
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
+        val endNodeBuilder = EndNodeBuilder("end")
 
-        flowBuilder.registerResolution("test")
-        flowBuilder.registerAction("action")
         exeNodeBuilder.setNext(endNodeBuilder.id)
         exeNodeBuilder.setPrevious(startNodeId)
 
@@ -88,10 +83,8 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId: UUID = flowBuilder.getStart()
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
+        val endNodeBuilder = EndNodeBuilder("end")
 
-        flowBuilder.registerResolution("test")
-        flowBuilder.registerAction("action")
         exeNodeBuilder.setPrevious(startNodeId)
 
         val flow: Flow = flowBuilder
@@ -111,12 +104,9 @@ class FlowBuilderTest {
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
         val anotherExeNodeBuilder = ExeNodeBuilder("another_exe", "another_action")
-        val endNodeBuilder1 = EndNodeBuilder("end_1", "test")
-        val endNodeBuilder2 = EndNodeBuilder("end_2", "test")
+        val endNodeBuilder1 = EndNodeBuilder("end_1")
+        val endNodeBuilder2 = EndNodeBuilder("end_2")
 
-        flowBuilder.registerResolution("test")
-        flowBuilder.registerAction("action")
-        flowBuilder.registerAction("another_action")
         val flow: Flow = flowBuilder
             .addNode(
                 node = exeNodeBuilder,
@@ -180,9 +170,8 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1"), "router")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
+        val endNodeBuilder = EndNodeBuilder("end")
 
-        flowBuilder.registerResolution("test")
         val flow = flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -223,9 +212,7 @@ class FlowBuilderTest {
     fun `build flow start not complete with other nodes error`() {
         val flowBuilder = FlowBuilder("test")
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        flowBuilder.registerResolution("test")
-        flowBuilder.registerAction("action")
+        val endNodeBuilder = EndNodeBuilder("end")
         flowBuilder
             .addNode(exeNodeBuilder)
             .addNode(
@@ -240,9 +227,7 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        flowBuilder.registerResolution("test")
-        flowBuilder.registerAction("action")
+        val endNodeBuilder = EndNodeBuilder("end")
         flowBuilder
             .addNode(
                 node = exeNodeBuilder,
@@ -257,10 +242,8 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val exeNodeBuilder = ExeNodeBuilder("exe", "action")
-        val endNodeBuilder1 = EndNodeBuilder("end1", "test")
-        val endNodeBuilder2 = EndNodeBuilder("end2", "test")
-        flowBuilder.registerResolution("test")
-        flowBuilder.registerAction("action")
+        val endNodeBuilder1 = EndNodeBuilder("end1")
+        val endNodeBuilder2 = EndNodeBuilder("end2")
         flowBuilder
             .addNode(
                 node = exeNodeBuilder,
@@ -279,8 +262,7 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
         flowBuilder
             .addNode(
                 node = endNodeBuilder,
@@ -295,8 +277,7 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
         flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -315,10 +296,9 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
-        val endNodeBuilder1 = EndNodeBuilder("end1", "test")
-        val endNodeBuilder2 = EndNodeBuilder("end2", "test")
-        val endNodeBuilder3 = EndNodeBuilder("end3", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder1 = EndNodeBuilder("end1")
+        val endNodeBuilder2 = EndNodeBuilder("end2")
+        val endNodeBuilder3 = EndNodeBuilder("end3")
         flowBuilder
             .addNode(
                 node = endNodeBuilder3,
@@ -342,8 +322,7 @@ class FlowBuilderTest {
     fun `try to build flow with same id error`() {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
         flowBuilder
             .addNode(
                 node = endNodeBuilder,
@@ -356,9 +335,8 @@ class FlowBuilderTest {
     fun `try to add node to same start link error`() {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        val endNodeBuilder2 = EndNodeBuilder("end2", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
+        val endNodeBuilder2 = EndNodeBuilder("end2")
         flowBuilder
             .addNode(
                 node = endNodeBuilder,
@@ -376,9 +354,8 @@ class FlowBuilderTest {
     fun `try to add same node to different start link error`() {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        val endNodeBuilder2 = EndNodeBuilder("end2", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
+        val endNodeBuilder2 = EndNodeBuilder("end2")
         flowBuilder
             .addNode(
                 node = endNodeBuilder,
@@ -397,9 +374,8 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        val endNodeBuilder2 = EndNodeBuilder("end2", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
+        val endNodeBuilder2 = EndNodeBuilder("end2")
         flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -424,8 +400,7 @@ class FlowBuilderTest {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
         val routeNodeBuilder = RouteNodeBuilder("route", setOf("route_1", "route_2"), "router")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
         flowBuilder
             .addNode(
                 node = routeNodeBuilder,
@@ -444,8 +419,7 @@ class FlowBuilderTest {
     fun `try to add node before start node error`() {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
         assertThrows {
             flowBuilder.addNode(
                 node = endNodeBuilder,
@@ -458,9 +432,8 @@ class FlowBuilderTest {
     fun `try to add node after end node error`() {
         val flowBuilder = FlowBuilder("test")
         val startNodeId = flowBuilder.getStart()
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-        val endNodeBuilder2 = EndNodeBuilder("end2", "test")
-        flowBuilder.registerResolution("test")
+        val endNodeBuilder = EndNodeBuilder("end")
+        val endNodeBuilder2 = EndNodeBuilder("end2")
         flowBuilder
             .addNode(
                 node = endNodeBuilder,
@@ -472,21 +445,5 @@ class FlowBuilderTest {
                 after = endNodeBuilder.id
             )
         } as BuildNodeException
-    }
-
-    @Test
-    fun `try to add not registered resolution error`() {
-        val flowBuilder = FlowBuilder("test")
-        val endNodeBuilder = EndNodeBuilder("end", "test")
-
-        assertThrows { flowBuilder.addNode(endNodeBuilder) } as BuildNodeException
-    }
-
-    @Test
-    fun `try to add not registered action error`() {
-        val flowBuilder = FlowBuilder("test")
-        val exeNodeBuilder = ExeNodeBuilder("exe", "action")
-
-        assertThrows { flowBuilder.addNode(exeNodeBuilder) } as BuildNodeException
     }
 }
