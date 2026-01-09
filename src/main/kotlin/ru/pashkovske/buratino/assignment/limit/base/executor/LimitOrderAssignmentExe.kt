@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.base.exe.BasicAssignmentExe
+import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
@@ -23,6 +24,42 @@ abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}
+
+    override fun doStart(ctx: AssignmentCommandExeCtx<LA>) {
+        val assignment: LA = ctx.assignment
+        startLimitOrder(assignment)
+        scheduleRefresh(assignment)
+        setStatusInProgress(assignment)
+
+        ctx.setMutated()
+    }
+
+    override fun doRefresh(ctx: AssignmentCommandExeCtx<LA>) {
+        val assignment: LA = ctx.assignment
+        val isCompleted: Boolean = checkCompleted(assignment)
+        if (isCompleted) {
+            log.warn("Assignment ${assignment.id} is already completed. Skipping refresh")
+            return
+        }
+        refreshLimitOrder(assignment)
+        setStatusInProgress(assignment)
+
+        ctx.setMutated()
+    }
+
+    override fun doCancel(ctx: AssignmentCommandExeCtx<LA>) {
+        val assignment: LA = ctx.assignment
+        val isCompleted: Boolean = checkCompleted(assignment)
+        if (isCompleted) {
+            log.warn("Assignment ${assignment.id} is already completed. Skipping cancel")
+            return
+        }
+        stopSchedulingRefresh(assignment)
+        cancelLimitOrder(assignment)
+        setStatusCompleted(assignment)
+
+        ctx.setMutated()
+    }
 
     protected fun startLimitOrder(assignment: LA): LA {
         val order: Order = orderService.createOrder(

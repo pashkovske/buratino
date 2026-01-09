@@ -3,6 +3,7 @@ package ru.pashkovske.buratino.assignment.limit.spread.fraction.exe
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.executor.LimitOrderAssignmentExe
@@ -13,7 +14,6 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.service.MarketPriceService
-import java.util.UUID
 
 @Service
 final class FractionalSpreadAssignmentExe(
@@ -62,41 +62,39 @@ final class FractionalSpreadAssignmentExe(
         }
     }
 
-    override fun start(assignment: FractionalSpreadAssignment): FractionalSpreadAssignment {
-        logStart(assignment)
+    override fun doStart(ctx: AssignmentCommandExeCtx<FractionalSpreadAssignment>) {
+        val assignment: FractionalSpreadAssignment = ctx.assignment
         startLimitOrder(assignment)
         scheduleRefresh(assignment)
         setStatusInProgress(assignment)
-        createInRepo(assignment)
-        return assignment
+
+        ctx.setMutated()
     }
 
-    override fun refresh(id: UUID): FractionalSpreadAssignment {
-        val assignment: FractionalSpreadAssignment = getFromRepo(id)
-        logRefresh(assignment)
+    override fun doRefresh(ctx: AssignmentCommandExeCtx<FractionalSpreadAssignment>) {
+        val assignment: FractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
         if (isCompleted) {
-            log.warn("Assignment $id is already completed. Skipping refresh")
-            return assignment
+            log.warn("Assignment ${assignment.id} is already completed. Skipping refresh")
+            return
         }
         refreshLimitOrder(assignment)
         setStatusInProgress(assignment)
-        updateInRepo(assignment)
-        return assignment
+
+        ctx.setMutated()
     }
 
-    override fun cancel(id: UUID): FractionalSpreadAssignment {
-        val assignment: FractionalSpreadAssignment = getFromRepo(id)
-        logCancel(assignment)
+    override fun doCancel(ctx: AssignmentCommandExeCtx<FractionalSpreadAssignment>) {
+        val assignment: FractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
         if (isCompleted) {
-            log.warn("Assignment $id is already completed. Skipping cancel")
-            return assignment
+            log.warn("Assignment ${assignment.id} is already completed. Skipping cancel")
+            return
         }
         stopSchedulingRefresh(assignment)
         cancelLimitOrder(assignment)
         setStatusCompleted(assignment)
-        updateInRepo(assignment)
-        return assignment
+
+        ctx.setMutated()
     }
 }

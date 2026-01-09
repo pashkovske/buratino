@@ -2,13 +2,13 @@ package ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.exe
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.nested.continuous.base.exe.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.exe.FractionalSpreadAssignmentExe
-import java.util.UUID
 
 @Service
 final class ContinuousFractionalSpreadAssignmentExe(
@@ -40,66 +40,70 @@ final class ContinuousFractionalSpreadAssignmentExe(
         return assignment
     }
 
-    override fun start(assignment: ContinuousFractionalSpreadAssignment): ContinuousFractionalSpreadAssignment {
-        logStart(assignment)
+    override fun doStart(
+        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+    ) {
+        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         checkAndStartNested(assignment)
         scheduleContinue(assignment)
         scheduleRefresh(assignment)
         setStatusInProgress(assignment)
-        createInRepo(assignment)
-        return assignment
+
+        ctx.setMutated()
     }
 
-    override fun refresh(id: UUID): ContinuousFractionalSpreadAssignment {
-        val assignment: ContinuousFractionalSpreadAssignment = getFromRepo(id)
-        logRefresh(assignment)
+    override fun doRefresh(
+        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+    ) {
+        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
         if (isCompleted) {
-            log.warn("Assignment $id is already completed. Skipping refresh")
-            return assignment
+            log.warn("Assignment ${assignment.id} is already completed. Skipping refresh")
+            return
         }
         val isNestedCompleted: Boolean = checkNestedCompleted(assignment)
         if (isNestedCompleted) {
             log.info("Nested assignment ${assignment.nested.id} is completed. Skipping refresh")
-            return assignment
         }
         refreshNested(assignment)
         setStatusInProgress(assignment)
-        updateInRepo(assignment)
-        return assignment
+
+        ctx.setMutated()
     }
 
-    override fun cancel(id: UUID): ContinuousFractionalSpreadAssignment {
-        val assignment: ContinuousFractionalSpreadAssignment = getFromRepo(id)
-        logCancel(assignment)
+    override fun doCancel(
+        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+    ) {
+        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
         if (isCompleted) {
-            log.warn("Assignment $id is already completed. Skipping cancel")
-            return assignment
+            log.warn("Assignment ${assignment.id} is already completed. Skipping cancel")
+            return
         }
         stopSchedulingContinuation(assignment)
         stopSchedulingRefresh(assignment)
         cancelNested(assignment)
         setStatusCompleted(assignment)
-        updateInRepo(assignment)
-        return assignment
+
+        ctx.setMutated()
     }
 
-    override fun continueAssignment(id: UUID): ContinuousFractionalSpreadAssignment {
-        val assignment: ContinuousFractionalSpreadAssignment = getFromRepo(id)
-        logContinue(assignment)
+    override fun doContinue(
+        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+    ) {
+        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
         if (isCompleted) {
-            log.warn("Assignment $id is already completed. Skipping continue")
-            return assignment
+            log.warn("Assignment ${assignment.id} is already completed. Skipping continue")
+            return
         }
         val isNestedCompleted: Boolean = checkNestedCompleted(assignment)
         if (!isNestedCompleted) {
             log.warn("Nested assignment ${assignment.nested.id} is not completed. Skipping continue")
-            return assignment
+            return
         }
         startNewSpreadFractionAssignment(assignment)
-        updateInRepo(assignment)
-        return assignment
+
+        ctx.setMutated()
     }
 }

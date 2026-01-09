@@ -6,5 +6,6 @@ import ru.pashkovske.buratino.assignment.nested.continuous.base.model.Continuous
 import java.util.UUID
 
 interface ContinuousAssignmentExe<CA : ContinuousAssignment<out Assignment>>: AssignmentExe<CA> {
+
     fun continueAssignment(id: UUID): CA
 }

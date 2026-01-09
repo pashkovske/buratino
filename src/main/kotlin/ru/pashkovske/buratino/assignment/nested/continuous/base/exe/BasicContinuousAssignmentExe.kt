@@ -3,11 +3,12 @@ package ru.pashkovske.buratino.assignment.nested.continuous.base.exe
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingAssignmentTask
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingInfo
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.nested.base.exe.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.base.model.ContinuousAssignment
@@ -29,7 +30,26 @@ abstract class BasicContinuousAssignmentExe<
     ContinuousAssignmentExe<CA>
 {
 
-    private val logger = KotlinLogging.logger {}
+    private val log = KotlinLogging.logger {}
+
+    final override fun continueAssignment(id: UUID): CA {
+        val ctx: AssignmentCommandExeCtx<CA> = preContinue(id)
+        doContinue(ctx)
+        postContinue(ctx)
+        return ctx.assignment
+    }
+    protected open fun preContinue(id: UUID): AssignmentCommandExeCtx<CA> {
+        val assignment: CA = assignmentRepo.get(id)
+        log.info("Continuing assignment: $assignment")
+        return AssignmentCommandExeCtx(assignment)
+    }
+    protected abstract fun doContinue(ctx: AssignmentCommandExeCtx<CA>)
+    protected open fun postContinue(ctx: AssignmentCommandExeCtx<CA>) {
+        if (ctx.isMutated()) {
+            assignmentRepo.update(ctx.assignment)
+        }
+        log.info("Assignment continued: ${ctx.assignment}")
+    }
 
     protected fun scheduleContinue(assignment: CA): CA {
         val schedulingProps: SchedulingProperties? = assignment.continueSchedulingProperties
@@ -59,9 +79,5 @@ abstract class BasicContinuousAssignmentExe<
             schedulingInfo.status = SchedulingStatus.COMPLETED
         }
         return assignment
-    }
-
-    protected fun logContinue(assignment: CA) {
-        logger.info("Continuing assignment: $assignment")
     }
 }

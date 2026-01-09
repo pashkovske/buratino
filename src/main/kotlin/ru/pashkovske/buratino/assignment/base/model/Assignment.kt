@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.base.model
 
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingInfo
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
 
@@ -11,6 +11,7 @@ abstract class Assignment(
     var status: AssignmentStatus = AssignmentStatus.QUEUED,
     val refreshSchedulingProperties: SchedulingProperties?
 ) {
+
     private var refreshSchedulingInfo: SchedulingInfo? = null
 
     fun initRefreshScheduling(schedulingInfo: SchedulingInfo) {

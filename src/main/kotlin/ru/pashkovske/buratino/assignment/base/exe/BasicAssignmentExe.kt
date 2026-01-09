@@ -4,10 +4,11 @@ import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingAssignmentTask
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingInfo
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import java.util.UUID
@@ -17,26 +18,65 @@ abstract class BasicAssignmentExe<A: Assignment>(
     protected val assignmentScheduler: AssignmentTaskScheduler
 ): AssignmentExe<A> {
 
-    private val logger: KLogger = KotlinLogging.logger {}
+    private val log: KLogger = KotlinLogging.logger {}
 
-    protected fun createInRepo(assignment: A) {
-        assignmentRepo.create(assignment)
+    final override fun start(assignment: A): A {
+        val ctx = preStart(assignment)
+        doStart(ctx)
+        postStart(ctx)
+        return assignment
     }
-    protected fun getFromRepo(id: UUID): A {
-        return assignmentRepo.get(id)
+    protected open fun preStart(assignment: A): AssignmentCommandExeCtx<A> {
+        log.info("Starting assignment: $assignment")
+        return AssignmentCommandExeCtx(assignment)
     }
-    protected fun updateInRepo(assignment: A) {
-        assignmentRepo.update(assignment)
+    protected abstract fun doStart(ctx: AssignmentCommandExeCtx<A>)
+    protected open fun postStart(ctx: AssignmentCommandExeCtx<A>) {
+        val assignment: A = ctx.assignment
+        if (ctx.isMutated()) {
+            assignmentRepo.create(assignment)
+        }
+        log.info("Assignment started: $assignment")
     }
 
-    protected fun logStart(assignment: A) {
-        logger.info("Starting assignment: $assignment")
+    final override fun refresh(id: UUID): A {
+        val ctx = preRefresh(id)
+        doRefresh(ctx)
+        postRefresh(ctx)
+        return ctx.assignment
     }
-    protected fun logRefresh(assignment: A) {
-        logger.info("Refreshing assignment: $assignment")
+    protected open fun preRefresh(id: UUID): AssignmentCommandExeCtx<A> {
+        val assignment: A = assignmentRepo.get(id)
+        log.info("Refreshing assignment: $assignment")
+        return AssignmentCommandExeCtx(assignment)
     }
-    protected fun logCancel(assignment: A) {
-        logger.info("Canceling assignment: $assignment")
+    protected abstract fun doRefresh(ctx: AssignmentCommandExeCtx<A>)
+    protected open fun postRefresh(ctx: AssignmentCommandExeCtx<A>) {
+        val assignment: A = ctx.assignment
+        if (ctx.isMutated()) {
+            assignmentRepo.update(assignment)
+        }
+        log.info("Assignment refreshed: $assignment")
+    }
+
+    final override fun cancel(id: UUID): A {
+        val ctx: AssignmentCommandExeCtx<A> = preCancel(id)
+        doCancel(ctx)
+        postCancel(ctx)
+        return ctx.assignment
+    }
+    protected open fun preCancel(id: UUID): AssignmentCommandExeCtx<A> {
+        val assignment: A = assignmentRepo.get(id)
+        log.info("Canceling assignment: $assignment")
+        return AssignmentCommandExeCtx(assignment)
+    }
+    protected abstract fun doCancel(ctx: AssignmentCommandExeCtx<A>)
+    protected open fun postCancel(ctx: AssignmentCommandExeCtx<A>) {
+        val assignment: A = ctx.assignment
+        if (ctx.isMutated()) {
+            assignmentRepo.update(assignment)
+        }
+        log.info("Assignment canceled: $assignment")
     }
 
     protected fun setStatusInProgress(assignment: A) {
