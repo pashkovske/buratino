@@ -17,7 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
+import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.repo.TopPriceAssignmentRepoInMemory
 import ru.pashkovske.buratino.instrument.model.InstrumentId

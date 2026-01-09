@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.controller.dto.BasicStartAssignmentDto
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.exe.TopPriceAssignmentExe
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo

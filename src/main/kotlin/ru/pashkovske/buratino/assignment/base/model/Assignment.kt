@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.base.model
 
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingInfo
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
 

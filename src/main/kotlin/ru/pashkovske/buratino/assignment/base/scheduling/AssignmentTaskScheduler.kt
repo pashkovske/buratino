@@ -1,8 +1,7 @@
-package ru.pashkovske.buratino.assignment.base.service
+package ru.pashkovske.buratino.assignment.base.scheduling
 
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.stereotype.Component
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingAssignmentTask
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID

@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.model.scheduling
+package ru.pashkovske.buratino.assignment.base.scheduling
 
 import java.time.Duration
 
