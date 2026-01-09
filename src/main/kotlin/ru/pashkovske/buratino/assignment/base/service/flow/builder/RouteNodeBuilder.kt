@@ -52,7 +52,7 @@ class RouteNodeBuilder(
         return RouteNode(
             name = name,
             id = id,
-            previous = previousNode!!,
+            previous = previous!!,
             router = router,
             routes = routes.mapValues { it.value!! }
         )
@@ -60,7 +60,7 @@ class RouteNodeBuilder(
     
     override fun validateUndefinedEdges(): BuilderReadiness {
         val issues = mutableListOf<NodeNotReadyMessage>()
-        if (previousNode == null) {
+        if (previous == null) {
             issues.add(
                 NodeNotReadyMessage(
                     message = "Previous node is not set",

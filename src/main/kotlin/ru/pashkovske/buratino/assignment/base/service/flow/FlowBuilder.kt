@@ -25,15 +25,7 @@ class FlowBuilder(
         start = startNodeBuilder.id
     }
 
-    fun getStart(): UUID {
-        return start
-    }
-
-    operator fun get(id: UUID): NodeBuilder? {
-        return nodes[id]
-    }
-
-    override fun build(): Flow {
+    override fun build(): Node {
         val readiness: BuilderReadiness = validateUndefinedEdges()
         if (!readiness.isReady) {
             throw FlowIsNotReadyException(readiness.issues)
@@ -63,23 +55,24 @@ class FlowBuilder(
 
     fun addNodeToRoute(
         node: NodeBuilder,
-        after: UUID,
-        before: UUID? = null,
+        after: UUID?,
+        before: UUID?,
         route: String
-    ): FlowBuilder {
-        node.setPrevious(after)
+    ) {
+        if (after != null) {
+            node.setPrevious(after)
+        }
         if (before != null) {
             node.setNext(before)
         }
         addNode(node, route)
-        return this
     }
 
     fun addNode(
         node: NodeBuilder,
-        after: UUID? = null,
-        before: UUID? = null
-    ): FlowBuilder {
+        after: UUID?,
+        before: UUID?
+    ) {
         if (after != null) {
             node.setPrevious(after)
         }
@@ -87,7 +80,6 @@ class FlowBuilder(
             node.setNext(before)
         }
         addNode(node)
-        return this
     }
 
     private fun addNode(

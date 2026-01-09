@@ -11,8 +11,4 @@ class Flow(
 ): Node(
     name = name,
     id = id
-) {
-    operator fun get(id: UUID): Node? {
-        return nodes[id]
-    }
-}
+)

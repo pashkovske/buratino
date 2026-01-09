@@ -18,13 +18,13 @@ class StartNodeBuilder : NodeBuilder(
         
         return StartNode(
             id = id,
-            next = nextNode!!
+            next = next!!
         )
     }
     
     override fun validateUndefinedEdges(): BuilderReadiness {
         val issues = mutableListOf<NodeNotReadyMessage>()
-        if (nextNode == null) {
+        if (next == null) {
             issues.add(
                 NodeNotReadyMessage(
                     message = "Next node is not set",
