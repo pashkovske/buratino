@@ -1,13 +1,18 @@
-package ru.pashkovske.buratino.flow.builder
+package ru.pashkovske.buratino.assignment.base.service.flow
 
 import mu.KLogger
 import mu.KotlinLogging
-import ru.pashkovske.buratino.flow.exception.BuildNodeException
-import ru.pashkovske.buratino.flow.exception.FlowIsNotReadyException
-import ru.pashkovske.buratino.flow.model.Flow
-import ru.pashkovske.buratino.flow.model.nodes.Node
-import ru.pashkovske.buratino.flow.readiness.BuilderReadiness
-import ru.pashkovske.buratino.flow.readiness.NotReadyMessage
+import ru.pashkovske.buratino.assignment.base.model.flow.Flow
+import ru.pashkovske.buratino.assignment.base.model.flow.nodes.Node
+import ru.pashkovske.buratino.assignment.base.service.flow.builder.EndNodeBuilder
+import ru.pashkovske.buratino.assignment.base.service.flow.builder.ExeNodeBuilder
+import ru.pashkovske.buratino.assignment.base.service.flow.builder.NodeBuilder
+import ru.pashkovske.buratino.assignment.base.service.flow.builder.RouteNodeBuilder
+import ru.pashkovske.buratino.assignment.base.service.flow.builder.StartNodeBuilder
+import ru.pashkovske.buratino.assignment.base.service.flow.exception.BuildNodeException
+import ru.pashkovske.buratino.assignment.base.service.flow.exception.FlowIsNotReadyException
+import ru.pashkovske.buratino.assignment.base.service.flow.readiness.BuilderReadiness
+import ru.pashkovske.buratino.assignment.base.service.flow.readiness.NotReadyMessage
 import java.util.UUID
 
 class FlowBuilder(
@@ -22,8 +27,6 @@ class FlowBuilder(
     private val usedActions: MutableSet<String> = mutableSetOf()
     private val resolutions : MutableSet<String> = mutableSetOf()
     private val usedResolutions: MutableSet<String> = mutableSetOf()
-    private val routers: MutableMap<String, Set<String>> = mutableMapOf()
-    private val usedRouters: MutableSet<String> = mutableSetOf()
     private val start: UUID
 
     init {
@@ -131,24 +134,6 @@ class FlowBuilder(
         return this
     }
 
-    fun registerRouter(
-        router: String,
-        routes: Set<String>
-    ): FlowBuilder {
-        if (routes.isEmpty()) {
-            throwWithMessage("Cannot register router $router with empty routes")
-        }
-        if (router in routers) {
-            log.warn("Router $router is already registered in flow $name")
-            if (routers[router]!! != routes) {
-                throwWithMessage("Cannot rewrite routes of router $router. Different routes are already registered")
-            }
-            return this
-        }
-        routers[router] = routes
-        return this
-    }
-
     private fun addNode(
         node: NodeBuilder,
         route: String? = null
@@ -180,7 +165,6 @@ class FlowBuilder(
         when (node) {
             is ExeNodeBuilder -> addExeNode(node)
             is EndNodeBuilder -> addEndNode(node)
-            is RouteNodeBuilder -> addRouteNode(node)
         }
 
         nodes[node.id] = node
@@ -227,13 +211,6 @@ class FlowBuilder(
             throwWithMessage("Resolution ${node.resolution} of node ${node.id} with name ${node.name} is not registered")
         }
         usedResolutions.add(node.resolution)
-    }
-
-    private fun addRouteNode(node: RouteNodeBuilder) {
-        if (node.router !in routers) {
-            throwWithMessage("Router ${node.router} of node ${node.id} with name ${node.name} is not registered")
-        }
-        usedRouters.add(node.router)
     }
 
     private fun throwWithMessage(message: String) {

@@ -1,6 +1,6 @@
-package ru.pashkovske.buratino.flow.exception
+package ru.pashkovske.buratino.assignment.base.service.flow.exception
 
-import ru.pashkovske.buratino.flow.readiness.NotReadyMessage
+import ru.pashkovske.buratino.assignment.base.service.flow.readiness.NotReadyMessage
 
 class FlowIsNotReadyException(
     messages: List<NotReadyMessage>

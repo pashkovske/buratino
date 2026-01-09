@@ -1,6 +1,6 @@
-package ru.pashkovske.buratino.flow.exception
+package ru.pashkovske.buratino.assignment.base.service.flow.exception
 
-import ru.pashkovske.buratino.flow.builder.NodeBuilder
+import ru.pashkovske.buratino.assignment.base.service.flow.builder.NodeBuilder
 import java.util.UUID
 import kotlin.reflect.KClass
 

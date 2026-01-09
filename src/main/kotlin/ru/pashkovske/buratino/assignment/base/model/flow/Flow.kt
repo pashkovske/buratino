@@ -1,6 +1,6 @@
-package ru.pashkovske.buratino.flow.model
+package ru.pashkovske.buratino.assignment.base.model.flow
 
-import ru.pashkovske.buratino.flow.model.nodes.Node
+import ru.pashkovske.buratino.assignment.base.model.flow.nodes.Node
 import java.util.UUID
 
 class Flow(
