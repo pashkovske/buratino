@@ -45,6 +45,7 @@ abstract class BasicContinuousAssignmentExe<
     }
     protected abstract fun doContinue(ctx: ExeCtx<CA>)
     protected open fun postContinue(ctx: ExeCtx<CA>) {
+        stopSchedulingContinuation(ctx)
         if (ctx.isMutated()) {
             assignmentRepo.update(ctx.assignment)
         }
@@ -72,12 +73,13 @@ abstract class BasicContinuousAssignmentExe<
         }
         return assignment
     }
-    protected fun stopSchedulingContinuation(assignment: CA): CA {
-        val schedulingInfo: SchedulingInfo? = assignment.getContinueSchedulingInfo()
-        if (schedulingInfo != null) {
-            assignmentScheduler.stop(schedulingInfo.taskId)
-            schedulingInfo.status = SchedulingStatus.COMPLETED
-        }
-        return assignment
+
+    private fun stopSchedulingContinuation(ctx: ExeCtx<CA>) {
+        val schedulingInfo: SchedulingInfo = ctx.assignment.getContinueSchedulingInfo() ?: return
+
+        assignmentScheduler.stop(schedulingInfo.taskId)
+        schedulingInfo.status = SchedulingStatus.COMPLETED
+
+        ctx.setMutated()
     }
 }

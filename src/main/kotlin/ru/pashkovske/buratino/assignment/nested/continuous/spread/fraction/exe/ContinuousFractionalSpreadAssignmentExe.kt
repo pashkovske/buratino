@@ -80,7 +80,6 @@ final class ContinuousFractionalSpreadAssignmentExe(
             log.warn("Assignment ${assignment.id} is already completed. Skipping cancel")
             return
         }
-        stopSchedulingContinuation(assignment)
         cancelNested(assignment)
         setStatusCompleted(assignment)
 
