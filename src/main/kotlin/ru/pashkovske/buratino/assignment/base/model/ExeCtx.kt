@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.base.model
 
-class AssignmentCommandExeCtx<A : Assignment>(
+class ExeCtx<A : Assignment>(
     val assignment: A
 ) {
 

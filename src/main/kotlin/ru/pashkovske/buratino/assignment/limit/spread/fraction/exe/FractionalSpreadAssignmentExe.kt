@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.limit.spread.fraction.exe
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
+import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.executor.LimitOrderAssignmentExe
@@ -62,16 +62,16 @@ final class FractionalSpreadAssignmentExe(
         }
     }
 
-    override fun doStart(ctx: AssignmentCommandExeCtx<FractionalSpreadAssignment>) {
+    override fun doStart(ctx: ExeCtx<FractionalSpreadAssignment>) {
         val assignment: FractionalSpreadAssignment = ctx.assignment
         startLimitOrder(assignment)
-        scheduleRefresh(assignment)
+        scheduleRefresh(ctx)
         setStatusInProgress(assignment)
 
         ctx.setMutated()
     }
 
-    override fun doRefresh(ctx: AssignmentCommandExeCtx<FractionalSpreadAssignment>) {
+    override fun doRefresh(ctx: ExeCtx<FractionalSpreadAssignment>) {
         val assignment: FractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
         if (isCompleted) {
@@ -84,14 +84,13 @@ final class FractionalSpreadAssignmentExe(
         ctx.setMutated()
     }
 
-    override fun doCancel(ctx: AssignmentCommandExeCtx<FractionalSpreadAssignment>) {
+    override fun doCancel(ctx: ExeCtx<FractionalSpreadAssignment>) {
         val assignment: FractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
         if (isCompleted) {
             log.warn("Assignment ${assignment.id} is already completed. Skipping cancel")
             return
         }
-        stopSchedulingRefresh(assignment)
         cancelLimitOrder(assignment)
         setStatusCompleted(assignment)
 

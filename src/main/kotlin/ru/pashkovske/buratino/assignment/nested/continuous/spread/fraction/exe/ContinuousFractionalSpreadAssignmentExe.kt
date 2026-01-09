@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.exe
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
+import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.nested.continuous.base.exe.BasicContinuousAssignmentExe
@@ -41,19 +41,19 @@ final class ContinuousFractionalSpreadAssignmentExe(
     }
 
     override fun doStart(
-        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
         val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         checkAndStartNested(assignment)
         scheduleContinue(assignment)
-        scheduleRefresh(assignment)
+        scheduleRefresh(ctx)
         setStatusInProgress(assignment)
 
         ctx.setMutated()
     }
 
     override fun doRefresh(
-        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
         val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
@@ -72,7 +72,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
     }
 
     override fun doCancel(
-        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
         val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)
@@ -81,7 +81,6 @@ final class ContinuousFractionalSpreadAssignmentExe(
             return
         }
         stopSchedulingContinuation(assignment)
-        stopSchedulingRefresh(assignment)
         cancelNested(assignment)
         setStatusCompleted(assignment)
 
@@ -89,7 +88,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
     }
 
     override fun doContinue(
-        ctx: AssignmentCommandExeCtx<ContinuousFractionalSpreadAssignment>
+        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
         val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         val isCompleted: Boolean = checkCompleted(assignment)

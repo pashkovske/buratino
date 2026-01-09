@@ -8,7 +8,7 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingPropert
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
-import ru.pashkovske.buratino.assignment.base.model.AssignmentCommandExeCtx
+import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.nested.base.exe.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.continuous.base.model.ContinuousAssignment
@@ -33,18 +33,18 @@ abstract class BasicContinuousAssignmentExe<
     private val log = KotlinLogging.logger {}
 
     final override fun continueAssignment(id: UUID): CA {
-        val ctx: AssignmentCommandExeCtx<CA> = preContinue(id)
+        val ctx: ExeCtx<CA> = preContinue(id)
         doContinue(ctx)
         postContinue(ctx)
         return ctx.assignment
     }
-    protected open fun preContinue(id: UUID): AssignmentCommandExeCtx<CA> {
+    protected open fun preContinue(id: UUID): ExeCtx<CA> {
         val assignment: CA = assignmentRepo.get(id)
         log.info("Continuing assignment: $assignment")
-        return AssignmentCommandExeCtx(assignment)
+        return ExeCtx(assignment)
     }
-    protected abstract fun doContinue(ctx: AssignmentCommandExeCtx<CA>)
-    protected open fun postContinue(ctx: AssignmentCommandExeCtx<CA>) {
+    protected abstract fun doContinue(ctx: ExeCtx<CA>)
+    protected open fun postContinue(ctx: ExeCtx<CA>) {
         if (ctx.isMutated()) {
             assignmentRepo.update(ctx.assignment)
         }
