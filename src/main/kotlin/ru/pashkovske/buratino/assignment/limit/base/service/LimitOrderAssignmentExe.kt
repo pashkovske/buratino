@@ -1,8 +1,7 @@
 package ru.pashkovske.buratino.assignment.limit.base.service
 
+import mu.KLogger
 import mu.KotlinLogging
-import ru.pashkovske.buratino.assignment.base.model.action.AssignmentAction
-import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
@@ -14,8 +13,6 @@ import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
-private val logger = KotlinLogging.logger {}
-
 abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
     private val orderService: OrderService,
     assignmentRepo: AssignmentRepo<LA>,
@@ -24,27 +21,49 @@ abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
     assignmentRepo = assignmentRepo,
     assignmentScheduler = assignmentScheduler
 ) {
-    init {
-        addStartOrderToChain()
-        addRefreshOrderToChain()
-        addCancelOrderToChain()
+
+    private val log: KLogger = KotlinLogging.logger {}
+
+    protected fun startLimitOrder(assignment: LA): LA {
+        val order: Order = orderService.createOrder(
+            orderRequest = buildLimitReq(assignment)
+        )
+        assignment.info.orderId = order.id
+        return assignment
     }
 
-    private fun addStartOrderToChain() {
-        startAssignmentChain["log_start"] = AssignmentAction(
-            name = "start_limit_order",
-            action = { assignment: LA ->
-                val order: Order = orderService.createOrder(
-                    orderRequest = buildLimitReq(assignment)
-                )
-                assignment.info.orderId = order.id
-                AssignmentActionResult(
-                    assignment = assignment,
-                    shouldContinue = true
-                )
-            }
-        )
+    protected fun refreshLimitOrder(assignment: LA): LA {
+        val orderId: String = getOrderId(assignment)
+        if (orderService.isOrderCompleted(orderId)) {
+            log.info("Order of assignment ${assignment.id} is already completed, skipping order refresh")
+            assignment.status = AssignmentStatus.COMPLETED
+        }
+        else {
+            val newOrder: Order = orderService.replaceOrder(
+                orderId = orderId,
+                newOrderRequest = buildLimitReq(assignment)
+            )
+            log.info("Refreshed order: $orderId")
+            assignment.status = AssignmentStatus.IN_PROGRESS
+            assignment.info.orderId = newOrder.id
+        }
+        return assignment
     }
+
+    protected fun cancelLimitOrder(assignment: LA): LA {
+        val orderId: String = getOrderId(assignment)
+        if (orderService.isOrderCompleted(orderId)) {
+            log.info("Order of assignment ${assignment.id} is already completed, skipping order cancel")
+        }
+        else {
+            orderService.cancelOrder(orderId)
+            log.info("Canceled order: $orderId")
+            assignment.status = AssignmentStatus.COMPLETED
+        }
+        return assignment
+    }
+
+    protected abstract fun getPrice(assignment: LA): Price
 
     private fun buildLimitReq(assignment: LA): LimitOrderRequest {
         return LimitOrderRequest(
@@ -55,55 +74,6 @@ abstract class LimitOrderAssignmentExe<LA : LimitedOrderAssignment>(
             price = getPrice(assignment)
         )
     }
-
-    private fun addRefreshOrderToChain() {
-        refreshAssignmentChain["check_completed"] = AssignmentAction(
-            name = "refresh_limit_order",
-            action = { assignment: LA ->
-                val orderId: String = getOrderId(assignment)
-                if (orderService.isOrderCompleted(orderId)) {
-                    logger.info("Order of assignment ${assignment.id} is already completed, skipping order refresh")
-                    assignment.status = AssignmentStatus.COMPLETED
-                }
-                else {
-                    val newOrder: Order = orderService.replaceOrder(
-                        orderId = orderId,
-                        newOrderRequest = buildLimitReq(assignment)
-                    )
-                    logger.info("Refreshed order: $orderId")
-                    assignment.status = AssignmentStatus.IN_PROGRESS
-                    assignment.info.orderId = newOrder.id
-                }
-                AssignmentActionResult(
-                    assignment = assignment,
-                    shouldContinue = true
-                )
-            }
-        )
-    }
-
-    private fun addCancelOrderToChain() {
-        cancelAssignmentChain["stop_scheduling_refresh"] = AssignmentAction(
-            name = "cancel_limit_order",
-            action = { assignment: LA ->
-                val orderId: String = getOrderId(assignment)
-                if (orderService.isOrderCompleted(orderId)) {
-                    logger.info("Order of assignment ${assignment.id} is already completed, skipping order cancel")
-                }
-                else {
-                    orderService.cancelOrder(orderId)
-                    logger.info("Canceled order: $orderId")
-                    assignment.status = AssignmentStatus.COMPLETED
-                }
-                AssignmentActionResult(
-                    assignment = assignment,
-                    shouldContinue = true
-                )
-            }
-        )
-    }
-
-    protected abstract fun getPrice(assignment: LA): Price
 
     private fun getOrderId(assignment: LA): String {
         return assignment.info.orderId

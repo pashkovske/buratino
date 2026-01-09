@@ -1,13 +1,14 @@
 package ru.pashkovske.buratino.assignment.base.model.scheduling
 
-import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionChain
+import java.util.UUID
+import java.util.function.Consumer
 
-class SchedulingAssignmentTask<T: Assignment>(
-    private val actionChain: AssignmentActionChain<T>,
-    private val assignment: T
+class SchedulingAssignmentTask(
+    private val action: Consumer<UUID>,
+    private val assignmentId: UUID
 ): Runnable {
+
     override fun run() {
-        actionChain(assignment)
+        action.accept(assignmentId)
     }
 }

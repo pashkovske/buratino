@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.assignment.limit.spread.fraction.service
 
+import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
@@ -12,8 +13,7 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.service.MarketPriceService
-
-private val logger = KotlinLogging.logger {}
+import java.util.UUID
 
 @Service
 final class FractionalSpreadAssignmentExe(
@@ -27,6 +27,9 @@ final class FractionalSpreadAssignmentExe(
     assignmentRepo = assignmentRepo,
     assignmentScheduler = assignmentScheduler
 ) {
+
+    private val log: KLogger = KotlinLogging.logger {}
+
     override fun getPrice(assignment: FractionalSpreadAssignment): Price {
         val instrument: Instrument = instrumentService.get(assignment.iid)
         val step: Price = instrument.minPriceIncrement
@@ -49,13 +52,51 @@ final class FractionalSpreadAssignmentExe(
         } else {
             oppositeTopPrice + adjustedMinSpreadDelta
         }
-        logger.info { "topSpreadPrice: $topSpreadPrice" }
-        logger.info { "directTopPrice: $directTopPrice" }
-        logger.info { "adjustedMinSpreadDelta: $adjustedMinSpreadDelta" }
+        log.info { "topSpreadPrice: $topSpreadPrice" }
+        log.info { "directTopPrice: $directTopPrice" }
+        log.info { "adjustedMinSpreadDelta: $adjustedMinSpreadDelta" }
         return if (assignment.direction == OrderDirection.BUY) {
             minOf(topSpreadPrice, directTopPrice)
         } else {
             maxOf(topSpreadPrice, directTopPrice)
         }
+    }
+
+    override fun start(assignment: FractionalSpreadAssignment): FractionalSpreadAssignment {
+        logStart(assignment)
+        startLimitOrder(assignment)
+        scheduleRefresh(assignment)
+        setStatusInProgress(assignment)
+        createInRepo(assignment)
+        return assignment
+    }
+
+    override fun refresh(id: UUID): FractionalSpreadAssignment {
+        val assignment: FractionalSpreadAssignment = getFromRepo(id)
+        logRefresh(assignment)
+        val isCompleted: Boolean = checkCompleted(assignment)
+        if (isCompleted) {
+            log.warn("Assignment $id is already completed. Skipping refresh")
+            return assignment
+        }
+        refreshLimitOrder(assignment)
+        setStatusInProgress(assignment)
+        updateInRepo(assignment)
+        return assignment
+    }
+
+    override fun cancel(id: UUID): FractionalSpreadAssignment {
+        val assignment: FractionalSpreadAssignment = getFromRepo(id)
+        logCancel(assignment)
+        val isCompleted: Boolean = checkCompleted(assignment)
+        if (isCompleted) {
+            log.warn("Assignment $id is already completed. Skipping cancel")
+            return assignment
+        }
+        stopSchedulingRefresh(assignment)
+        cancelLimitOrder(assignment)
+        setStatusCompleted(assignment)
+        updateInRepo(assignment)
+        return assignment
     }
 }

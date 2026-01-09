@@ -1,17 +1,14 @@
 package ru.pashkovske.buratino.assignment.nested.base.service
 
+import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.action.AssignmentAction
-import ru.pashkovske.buratino.assignment.base.model.action.AssignmentActionResult
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.service.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.nested.base.model.SuperAssignment
-
-private val logger = KotlinLogging.logger {}
 
 abstract class BasicSuperAssignmentExe<
     A : SuperAssignment<Nested>,
@@ -25,72 +22,38 @@ abstract class BasicSuperAssignmentExe<
     assignmentScheduler = assignmentScheduler
 ) {
 
-    init {
-        addStartNestedToChain()
-        addRefreshNestedToChain()
-        addCancelNestedToChain()
+    private val log: KLogger = KotlinLogging.logger {}
+
+    protected fun checkNestedCompleted(assignment: A): Boolean {
+        return assignment.nested.status == AssignmentStatus.COMPLETED
     }
 
-    private fun addStartNestedToChain() {
-        startAssignmentChain["log_start"] = AssignmentAction(
-            name = "check_and_start_nested",
-            action = { assignment ->
-                when (assignment.nested.status) {
-                    AssignmentStatus.QUEUED -> {
-                        logger.info("Starting nested assignment: ${assignment.nested.id}")
-                        assignment.nested = nestedAssignmentExe.start(assignment.nested)
-                    }
-                    else ->
-                        logger.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping start")
-                }
-                AssignmentActionResult(
-                    assignment = assignment,
-                    shouldContinue = true
-                )
+    protected fun checkAndStartNested(assignment: A): A {
+        when (assignment.nested.status) {
+            AssignmentStatus.QUEUED -> {
+                log.info("Starting nested assignment: ${assignment.nested.id}")
+                assignment.nested = nestedAssignmentExe.start(assignment.nested)
             }
-        )
+            else ->
+                log.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping start")
+        }
+        return assignment
     }
 
-    private fun addRefreshNestedToChain() {
-        refreshAssignmentChain["check_completed"] = AssignmentAction(
-            name = "refresh_nested",
-            action = { assignment ->
-                when (assignment.nested.status) {
-                    AssignmentStatus.IN_PROGRESS -> {
-                        assignment.nested = nestedAssignmentExe.refresh(assignment.nested.id)
-                        logger.info("Nested assignment ${assignment.nested.id} refreshed")
-                    }
-                    AssignmentStatus.COMPLETED ->
-                        logger.info("Nested assignment ${assignment.nested.id} is completed, skipping refresh nested")
-                    else ->
-                        logger.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping refresh nested")
-                }
-                AssignmentActionResult(
-                    assignment = assignment,
-                    shouldContinue = true
-                )
-            }
-        )
+    protected fun refreshNested(assignment: A): A {
+        assignment.nested = nestedAssignmentExe.refresh(assignment.nested.id)
+        return assignment
     }
 
-    private fun addCancelNestedToChain() {
-        cancelAssignmentChain["stop_scheduling_refresh"] = AssignmentAction(
-            name = "cancel_nested",
-            action = { assignment ->
-                when (assignment.nested.status) {
-                    AssignmentStatus.COMPLETED -> logger.info(
-                        "Nested assignment ${assignment.nested.id} is already completed, skipping cancel nested"
-                    )
-                    else -> {
-                        assignment.nested = nestedAssignmentExe.cancel(assignment.nested.id)
-                        logger.info("Nested assignment ${assignment.nested.id} cancelled")
-                    }
-                }
-                AssignmentActionResult(
-                    assignment = assignment,
-                    shouldContinue = true
-                )
+    protected fun cancelNested(assignment: A): A {
+        when (assignment.nested.status) {
+            AssignmentStatus.IN_PROGRESS -> {
+                log.info("Canceling nested assignment: ${assignment.nested.id}")
+                assignment.nested = nestedAssignmentExe.cancel(assignment.nested.id)
             }
-        )
+            else ->
+                log.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping cancel")
+        }
+        return assignment
     }
 }

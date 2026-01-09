@@ -2,7 +2,6 @@ package ru.pashkovske.buratino.assignment.base.service
 
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.stereotype.Component
-import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingAssignmentTask
 import java.time.Duration
 import java.time.Instant
@@ -21,7 +20,7 @@ class AssignmentTaskScheduler(
     }
 
     fun start(
-        task: SchedulingAssignmentTask<out Assignment>,
+        task: SchedulingAssignmentTask,
         taskId: UUID,
         interval: Duration
     ) {
