@@ -45,7 +45,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
     ) {
         val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
         checkAndStartNested(assignment)
-        scheduleContinue(assignment)
+        scheduleContinue(ctx)
         scheduleRefresh(ctx)
         setStatusInProgress(assignment)
 

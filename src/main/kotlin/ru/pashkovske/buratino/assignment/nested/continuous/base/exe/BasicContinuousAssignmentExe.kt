@@ -52,26 +52,32 @@ abstract class BasicContinuousAssignmentExe<
         log.info("Assignment continued: ${ctx.assignment}")
     }
 
-    protected fun scheduleContinue(assignment: CA): CA {
-        val schedulingProps: SchedulingProperties? = assignment.continueSchedulingProperties
-        if (schedulingProps != null) {
-            val task = SchedulingAssignmentTask(
-                action = this::continueAssignment,
-                assignmentId = assignment.id
-            )
-            val schedulingInfo = SchedulingInfo(
-                properties = schedulingProps,
-                taskId = UUID.randomUUID()
-            )
-            assignmentScheduler.start(
-                task = task,
-                taskId = schedulingInfo.taskId,
-                interval = schedulingProps.interval
-            )
-            schedulingInfo.status = SchedulingStatus.ACTIVE
-            assignment.initContinueScheduling(schedulingInfo)
-        }
-        return assignment
+    override fun postCancel(ctx: ExeCtx<CA>) {
+        stopSchedulingContinuation(ctx)
+        super.postCancel(ctx)
+    }
+
+    protected fun scheduleContinue(ctx: ExeCtx<CA>) {
+        val assignment: CA = ctx.assignment
+        val schedulingProps: SchedulingProperties = assignment.continueSchedulingProperties ?: return
+
+        val task = SchedulingAssignmentTask(
+            action = this::continueAssignment,
+            assignmentId = assignment.id
+        )
+        val schedulingInfo = SchedulingInfo(
+            properties = schedulingProps,
+            taskId = UUID.randomUUID()
+        )
+        assignmentScheduler.start(
+            task = task,
+            taskId = schedulingInfo.taskId,
+            interval = schedulingProps.interval
+        )
+        schedulingInfo.status = SchedulingStatus.ACTIVE
+        assignment.initContinueScheduling(schedulingInfo)
+
+        ctx.setMutated()
     }
 
     private fun stopSchedulingContinuation(ctx: ExeCtx<CA>) {
