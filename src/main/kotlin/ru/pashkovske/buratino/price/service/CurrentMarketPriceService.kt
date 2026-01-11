@@ -19,6 +19,7 @@ class CurrentMarketPriceService(
     private val offerBookRepo: OfferBookRepo,
     private val instrumentService: InstrumentService
 ) : MarketPriceService {
+
     override fun getTopOfBook(
         iid: InstrumentId,
         direction: OrderDirection
@@ -28,11 +29,9 @@ class CurrentMarketPriceService(
             depth = DEPTH_CHECK
         )
         val offerBook: OfferBook = offerBookRepo.read(iid)!!
-        @Suppress("REDUNDANT_ELSE_IN_WHEN")
         return when (direction) {
             OrderDirection.BUY -> getTopOfBookBuyPrice(offerBook)
             OrderDirection.SELL -> getTopOfBookSellPrice(offerBook)
-            else -> throw IllegalArgumentException("Определение лучшей цены не зависимо от направления сделки не реализовано")
         }
     }
 
@@ -45,16 +44,12 @@ class CurrentMarketPriceService(
             iid = iid,
             direction = direction
         )!!
-        @Suppress("REDUNDANT_ELSE_IN_WHEN")
         when (direction) {
             OrderDirection.BUY -> {
                 topPrice += instrument.minPriceIncrement
             }
             OrderDirection.SELL -> {
                 topPrice -= instrument.minPriceIncrement
-            }
-            else -> {
-                throw IllegalArgumentException("Unsupported direction: $direction")
             }
         }
         return topPrice
