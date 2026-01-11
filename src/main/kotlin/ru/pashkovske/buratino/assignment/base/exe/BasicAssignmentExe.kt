@@ -21,32 +21,44 @@ abstract class BasicAssignmentExe<A: Assignment>(
     private val log: KLogger = KotlinLogging.logger {}
 
     final override fun start(assignment: A): A {
-        val ctx = preStart(assignment)
-        doStart(ctx)
+        val ctx: ExeCtx<A> = preStart(assignment)
+        if (!ctx.shouldSkip()) {
+            doStart(ctx)
+        }
         postStart(ctx)
         return assignment
     }
     protected open fun preStart(assignment: A): ExeCtx<A> {
         log.info("Starting assignment: $assignment")
-        return ExeCtx(assignment)
+        val ctx: ExeCtx<A> = ExeCtx(assignment)
+        return ctx
     }
     protected abstract fun doStart(ctx: ExeCtx<A>)
     protected open fun postStart(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
+        scheduleRefresh(ctx)
+        toInProgress(ctx)
         assignmentRepo.create(assignment)
         log.info("Assignment started: $assignment")
     }
 
     final override fun refresh(id: UUID): A {
-        val ctx = preRefresh(id)
-        doRefresh(ctx)
+        val ctx: ExeCtx<A> = preRefresh(id)
+        if (!ctx.shouldSkip()) {
+            doRefresh(ctx)
+        }
         postRefresh(ctx)
         return ctx.assignment
     }
     protected open fun preRefresh(id: UUID): ExeCtx<A> {
         val assignment: A = assignmentRepo.get(id)
         log.info("Refreshing assignment: $assignment")
-        return ExeCtx(assignment)
+        val ctx: ExeCtx<A> = ExeCtx(assignment)
+        if (isCompleted(ctx)) {
+            log.warn("Assignment ${ctx.assignment.id} is already completed. Skipping refresh")
+            ctx.setShouldSkip()
+        }
+        return ctx
     }
     protected abstract fun doRefresh(ctx: ExeCtx<A>)
     protected open fun postRefresh(ctx: ExeCtx<A>) {
@@ -59,36 +71,46 @@ abstract class BasicAssignmentExe<A: Assignment>(
 
     final override fun cancel(id: UUID): A {
         val ctx: ExeCtx<A> = preCancel(id)
-        doCancel(ctx)
+        if (!ctx.shouldSkip()) {
+            doCancel(ctx)
+        }
         postCancel(ctx)
         return ctx.assignment
     }
     protected open fun preCancel(id: UUID): ExeCtx<A> {
         val assignment: A = assignmentRepo.get(id)
         log.info("Canceling assignment: $assignment")
-        return ExeCtx(assignment)
+        val ctx: ExeCtx<A> = ExeCtx(assignment)
+        if (isCompleted(ctx)) {
+            log.warn("Assignment ${ctx.assignment.id} is already completed. Skipping cancel")
+            ctx.setShouldSkip()
+        }
+        return ctx
     }
     protected abstract fun doCancel(ctx: ExeCtx<A>)
     protected open fun postCancel(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
         stopSchedulingRefresh(ctx)
+        toCompleted(ctx)
         if (ctx.isMutated()) {
             assignmentRepo.update(assignment)
         }
         log.info("Assignment canceled: $assignment")
     }
 
-    protected fun setStatusInProgress(assignment: A) {
-        assignment.status = AssignmentStatus.IN_PROGRESS
+    protected fun toInProgress(ctx: ExeCtx<A>) {
+        StatusStateMachine.toInProgress(ctx.assignment)
+        ctx.setMutated()
     }
-    protected fun setStatusCompleted(assignment: A) {
-        assignment.status = AssignmentStatus.COMPLETED
+    protected fun toCompleted(ctx: ExeCtx<A>) {
+        StatusStateMachine.toCompleted(ctx.assignment)
+        ctx.setMutated()
     }
-    protected fun checkCompleted(assignment: A): Boolean {
-        return assignment.status == AssignmentStatus.COMPLETED
+    protected fun isCompleted(ctx: ExeCtx<A>): Boolean {
+        return ctx.assignment.status == AssignmentStatus.COMPLETED
     }
 
-    protected fun scheduleRefresh(ctx: ExeCtx<A>) {
+    private fun scheduleRefresh(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
         val schedulingProps: SchedulingProperties = assignment.refreshSchedulingProperties ?: return
 

@@ -8,52 +8,56 @@ import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.base.exe.BasicAssignmentExe
+import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.nested.base.model.SuperAssignment
 
 abstract class BasicSuperAssignmentExe<
-    A : SuperAssignment<Nested>,
+    SuperA : SuperAssignment<Nested>,
     Nested : Assignment
     >(
-    assignmentRepo: AssignmentRepo<A>,
+    assignmentRepo: AssignmentRepo<SuperA>,
     assignmentScheduler: AssignmentTaskScheduler,
     protected val nestedAssignmentExe: AssignmentExe<Nested>
-): BasicAssignmentExe<A>(
+): BasicAssignmentExe<SuperA>(
     assignmentRepo = assignmentRepo,
     assignmentScheduler = assignmentScheduler
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}
 
-    protected fun checkNestedCompleted(assignment: A): Boolean {
-        return assignment.nested.status == AssignmentStatus.COMPLETED
+    protected fun isNestedCompleted(ctx: ExeCtx<SuperA>): Boolean {
+        return ctx.assignment.nested.status == AssignmentStatus.COMPLETED
     }
 
-    protected fun checkAndStartNested(assignment: A): A {
-        when (assignment.nested.status) {
-            AssignmentStatus.QUEUED -> {
-                log.info("Starting nested assignment: ${assignment.nested.id}")
-                assignment.nested = nestedAssignmentExe.start(assignment.nested)
-            }
-            else ->
-                log.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping start")
+    protected fun checkAndStartNested(ctx: ExeCtx<SuperA>) {
+        val assignment: SuperA = ctx.assignment
+        if (assignment.nested.status != AssignmentStatus.QUEUED) {
+            log.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping start")
+            return
         }
-        return assignment
+        log.info("Starting nested assignment: ${assignment.nested.id}")
+        assignment.nested = nestedAssignmentExe.start(assignment.nested)
+        ctx.setMutated()
     }
 
-    protected fun refreshNested(assignment: A): A {
+    protected fun refreshNested(ctx: ExeCtx<SuperA>) {
+        val assignment: SuperA = ctx.assignment
         assignment.nested = nestedAssignmentExe.refresh(assignment.nested.id)
-        return assignment
+        ctx.setMutated()
     }
 
-    protected fun cancelNested(assignment: A): A {
-        when (assignment.nested.status) {
-            AssignmentStatus.IN_PROGRESS -> {
-                log.info("Canceling nested assignment: ${assignment.nested.id}")
-                assignment.nested = nestedAssignmentExe.cancel(assignment.nested.id)
-            }
-            else ->
-                log.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping cancel")
+    protected fun cancelNested(ctx: ExeCtx<SuperA>) {
+        val assignment: SuperA = ctx.assignment
+        if (assignment.nested.status == AssignmentStatus.COMPLETED) {
+            log.warn("Nested assignment ${assignment.nested.id} is already completed, skipping cancel nested")
+            return
         }
-        return assignment
+        if (assignment.nested.status == AssignmentStatus.QUEUED) {
+            log.warn("Nested assignment ${assignment.nested.id} is not started, skipping cancel nested")
+            return
+        }
+        log.info("Canceling nested assignment: ${assignment.nested.id}")
+        assignment.nested = nestedAssignmentExe.cancel(assignment.nested.id)
+        ctx.setMutated()
     }
 }

@@ -26,8 +26,8 @@ final class ContinuousFractionalSpreadAssignmentExe(
 
     private val log = KotlinLogging.logger {}
 
-    private fun startNewSpreadFractionAssignment(assignment: ContinuousFractionalSpreadAssignment): ContinuousFractionalSpreadAssignment {
-        val completedAssignment = assignment.nested
+    private fun startNewSpreadFractionAssignment(ctx: ExeCtx<ContinuousFractionalSpreadAssignment>) {
+        val completedAssignment: FractionalSpreadAssignment = ctx.assignment.nested
         val nextAssignment = FractionalSpreadAssignment(
             iid = completedAssignment.iid,
             refreshSchedulingProperties = null,
@@ -35,73 +35,40 @@ final class ContinuousFractionalSpreadAssignmentExe(
             rate = completedAssignment.rate
         )
         nestedAssignmentExe.start(nextAssignment)
-        assignment.nested = nextAssignment
+        ctx.assignment.nested = nextAssignment
         log.info("Started new spread fraction assignment: ${nextAssignment.id}")
-        return assignment
+        ctx.setMutated()
     }
 
     override fun doStart(
         ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
-        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
-        checkAndStartNested(assignment)
-        scheduleContinue(ctx)
-        scheduleRefresh(ctx)
-        setStatusInProgress(assignment)
-
-        ctx.setMutated()
+        checkAndStartNested(ctx)
     }
 
     override fun doRefresh(
         ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
-        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
-        val isCompleted: Boolean = checkCompleted(assignment)
-        if (isCompleted) {
-            log.warn("Assignment ${assignment.id} is already completed. Skipping refresh")
+        if (isNestedCompleted(ctx)) {
+            log.info("Nested assignment ${ctx.assignment.nested.id} is completed. Skipping refresh")
             return
         }
-        val isNestedCompleted: Boolean = checkNestedCompleted(assignment)
-        if (isNestedCompleted) {
-            log.info("Nested assignment ${assignment.nested.id} is completed. Skipping refresh")
-        }
-        refreshNested(assignment)
-        setStatusInProgress(assignment)
-
-        ctx.setMutated()
+        refreshNested(ctx)
     }
 
     override fun doCancel(
         ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
-        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
-        val isCompleted: Boolean = checkCompleted(assignment)
-        if (isCompleted) {
-            log.warn("Assignment ${assignment.id} is already completed. Skipping cancel")
-            return
-        }
-        cancelNested(assignment)
-        setStatusCompleted(assignment)
-
-        ctx.setMutated()
+        cancelNested(ctx)
     }
 
     override fun doContinue(
         ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
-        val assignment: ContinuousFractionalSpreadAssignment = ctx.assignment
-        val isCompleted: Boolean = checkCompleted(assignment)
-        if (isCompleted) {
-            log.warn("Assignment ${assignment.id} is already completed. Skipping continue")
+        if (!isNestedCompleted(ctx)) {
+            log.warn("Nested assignment ${ctx.assignment.nested.id} is not completed. Skipping continue")
             return
         }
-        val isNestedCompleted: Boolean = checkNestedCompleted(assignment)
-        if (!isNestedCompleted) {
-            log.warn("Nested assignment ${assignment.nested.id} is not completed. Skipping continue")
-            return
-        }
-        startNewSpreadFractionAssignment(assignment)
-
-        ctx.setMutated()
+        startNewSpreadFractionAssignment(ctx)
     }
 }

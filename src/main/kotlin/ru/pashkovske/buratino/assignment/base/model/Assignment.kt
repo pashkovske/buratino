@@ -24,4 +24,14 @@ abstract class Assignment(
     fun getRefreshSchedulingInfo(): SchedulingInfo? {
         return refreshSchedulingInfo
     }
+
+    override fun toString(): String {
+        return """
+            {
+                id = $id,
+                iid = $iid,
+                status = $status
+            }
+        """.trimIndent()
+    }
 }

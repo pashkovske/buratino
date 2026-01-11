@@ -15,50 +15,61 @@ import ru.pashkovske.buratino.assignment.nested.continuous.base.model.Continuous
 import java.util.UUID
 
 abstract class BasicContinuousAssignmentExe<
-    CA : ContinuousAssignment<Nested>,
+    ContinuousA : ContinuousAssignment<Nested>,
     Nested : Assignment
     >(
-    assignmentRepo: AssignmentRepo<CA>,
+    assignmentRepo: AssignmentRepo<ContinuousA>,
     assignmentScheduler: AssignmentTaskScheduler,
     nestedAssignmentExe: AssignmentExe<Nested>
 ):
-    BasicSuperAssignmentExe<CA, Nested>(
+    BasicSuperAssignmentExe<ContinuousA, Nested>(
         assignmentRepo = assignmentRepo,
         nestedAssignmentExe = nestedAssignmentExe,
         assignmentScheduler = assignmentScheduler
     ),
-    ContinuousAssignmentExe<CA>
+    ContinuousAssignmentExe<ContinuousA>
 {
 
     private val log = KotlinLogging.logger {}
 
-    final override fun continueAssignment(id: UUID): CA {
-        val ctx: ExeCtx<CA> = preContinue(id)
-        doContinue(ctx)
+    final override fun continueAssignment(id: UUID): ContinuousA {
+        val ctx: ExeCtx<ContinuousA> = preContinue(id)
+        if (!ctx.shouldSkip()) {
+            doContinue(ctx)
+        }
         postContinue(ctx)
         return ctx.assignment
     }
-    protected open fun preContinue(id: UUID): ExeCtx<CA> {
-        val assignment: CA = assignmentRepo.get(id)
+    protected open fun preContinue(id: UUID): ExeCtx<ContinuousA> {
+        val assignment: ContinuousA = assignmentRepo.get(id)
         log.info("Continuing assignment: $assignment")
-        return ExeCtx(assignment)
+        val ctx: ExeCtx<ContinuousA> = ExeCtx(assignment)
+        if (isCompleted(ctx)) {
+            log.warn("Assignment ${ctx.assignment.id} is already completed. Skipping continue")
+            ctx.setShouldSkip()
+        }
+        return ctx
     }
-    protected abstract fun doContinue(ctx: ExeCtx<CA>)
-    protected open fun postContinue(ctx: ExeCtx<CA>) {
-        stopSchedulingContinuation(ctx)
+    protected abstract fun doContinue(ctx: ExeCtx<ContinuousA>)
+    protected open fun postContinue(ctx: ExeCtx<ContinuousA>) {
         if (ctx.isMutated()) {
             assignmentRepo.update(ctx.assignment)
         }
         log.info("Assignment continued: ${ctx.assignment}")
     }
 
-    override fun postCancel(ctx: ExeCtx<CA>) {
+    override fun postStart(ctx: ExeCtx<ContinuousA>) {
+        scheduleContinue(ctx)
+        super.postStart(ctx)
+    }
+
+    override fun postCancel(ctx: ExeCtx<ContinuousA>) {
         stopSchedulingContinuation(ctx)
         super.postCancel(ctx)
     }
 
-    protected fun scheduleContinue(ctx: ExeCtx<CA>) {
-        val assignment: CA = ctx.assignment
+    private fun scheduleContinue(ctx: ExeCtx<ContinuousA>) {
+        val assignment: ContinuousA = ctx.assignment
         val schedulingProps: SchedulingProperties = assignment.continueSchedulingProperties ?: return
 
         val task = SchedulingAssignmentTask(
@@ -80,7 +91,7 @@ abstract class BasicContinuousAssignmentExe<
         ctx.setMutated()
     }
 
-    private fun stopSchedulingContinuation(ctx: ExeCtx<CA>) {
+    private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
         val schedulingInfo: SchedulingInfo = ctx.assignment.getContinueSchedulingInfo() ?: return
 
         assignmentScheduler.stop(schedulingInfo.taskId)
