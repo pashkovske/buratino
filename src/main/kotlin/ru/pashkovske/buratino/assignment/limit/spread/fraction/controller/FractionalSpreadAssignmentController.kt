@@ -30,7 +30,7 @@ class FractionalSpreadAssignmentController(
         @PathVariable direction: String,
         @RequestBody body: StartFractionalSpreadAssignmentDto
     ): FractionalSpreadAssignment {
-        val assignment = FractionalSpreadAssignment(
+        val assignment = FractionalSpreadAssignment.newAssignment(
             iid = InstrumentId(id = instrumentId),
             refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
                 SchedulingProperties(

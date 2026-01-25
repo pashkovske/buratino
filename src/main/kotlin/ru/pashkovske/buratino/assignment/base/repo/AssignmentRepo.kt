@@ -8,4 +8,5 @@ interface AssignmentRepo<A : Assignment> {
     fun get(id: UUID): A
     fun create(assignment: A)
     fun update(assignment: A)
+    fun deleteAll()
 }

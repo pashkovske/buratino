@@ -6,11 +6,18 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
 
 abstract class Assignment(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
     val iid: InstrumentId,
-    var status: AssignmentStatus = AssignmentStatus.QUEUED,
+    var status: AssignmentStatus,
     val refreshSchedulingProperties: SchedulingProperties?
 ) {
+
+    companion object {
+        val initialStatus: AssignmentStatus = AssignmentStatus.QUEUED
+        fun generateId(): UUID {
+            return UUID.randomUUID()
+        }
+    }
 
     private var refreshSchedulingInfo: SchedulingInfo? = null
 

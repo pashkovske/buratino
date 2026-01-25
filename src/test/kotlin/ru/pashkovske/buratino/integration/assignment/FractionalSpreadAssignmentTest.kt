@@ -1,18 +1,21 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import com.jayway.jsonpath.JsonPath
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.FractionalSpreadAssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
@@ -23,7 +26,8 @@ import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
 @Import(IntegrationStubsConfiguration::class)
 @DirtiesContext
 class FractionalSpreadAssignmentTest(
@@ -34,9 +38,16 @@ class FractionalSpreadAssignmentTest(
 
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
+    @Autowired
+    private lateinit var fractionalAssignmentRepo: FractionalSpreadAssignmentRepo
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
+
+    @BeforeEach
+    fun setup() {
+        fractionalAssignmentRepo.deleteAll()
+    }
 
     @Test
     fun `create, skip refresh and cancel buy`() {

@@ -20,12 +20,14 @@ abstract class BasicContinuousAssignmentExe<
     >(
     assignmentRepo: AssignmentRepo<ContinuousA>,
     assignmentScheduler: AssignmentTaskScheduler,
-    nestedAssignmentExe: AssignmentExe<Nested>
+    nestedAssignmentExe: AssignmentExe<Nested>,
+    nestedAssignmentRepo: AssignmentRepo<Nested>
 ):
     BasicSuperAssignmentExe<ContinuousA, Nested>(
         assignmentRepo = assignmentRepo,
         nestedAssignmentExe = nestedAssignmentExe,
-        assignmentScheduler = assignmentScheduler
+        assignmentScheduler = assignmentScheduler,
+        nestedAssignmentRepo = nestedAssignmentRepo
     ),
     ContinuousAssignmentExe<ContinuousA>
 {
@@ -44,6 +46,7 @@ abstract class BasicContinuousAssignmentExe<
         val assignment: ContinuousA = assignmentRepo.get(id)
         log.info("Continuing assignment: $assignment")
         val ctx: ExeCtx<ContinuousA> = ExeCtx(assignment)
+        syncNested(ctx)
         if (isCompleted(ctx)) {
             log.warn("Assignment ${ctx.assignment.id} is already completed. Skipping continue")
             ctx.setShouldSkip()

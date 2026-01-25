@@ -83,4 +83,13 @@ curl -X POST http://localhost:8080/api/spreads/update-all-from-market
 - Пароль: `buratino_password`
 - Порт: `5432`
 
+```bash
+psql -U buratino_user -d buratino_db -c "
+SELECT
+    *
+FROM
+    fractional_spread_assignment_row
+"
+```
+
 Схема базы данных управляется миграциями Flyway.

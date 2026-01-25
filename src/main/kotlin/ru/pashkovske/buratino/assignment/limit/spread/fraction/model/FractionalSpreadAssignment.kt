@@ -1,17 +1,46 @@
 package ru.pashkovske.buratino.assignment.limit.spread.fraction.model
 
+import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
+import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
+import java.util.UUID
 
 class FractionalSpreadAssignment(
+    id: UUID,
     iid: InstrumentId,
+    status: AssignmentStatus,
     refreshSchedulingProperties: SchedulingProperties?,
     direction: OrderDirection,
+    info: OrderInfo,
     val rate: Double
 ): LimitedOrderAssignment(
+    id = id,
     iid = iid,
+    status = status,
+    refreshSchedulingProperties = refreshSchedulingProperties,
     direction = direction,
-    refreshSchedulingProperties = refreshSchedulingProperties
-)
+    info = info
+) {
+
+    companion object {
+        fun newAssignment(
+            iid: InstrumentId,
+            direction: OrderDirection,
+            refreshSchedulingProperties: SchedulingProperties?,
+            rate: Double
+        ): FractionalSpreadAssignment {
+            return FractionalSpreadAssignment(
+                id = generateId(),
+                iid = iid,
+                status = initialStatus,
+                refreshSchedulingProperties = refreshSchedulingProperties,
+                direction = direction,
+                info = OrderInfo(),
+                rate = rate
+            )
+        }
+    }
+}

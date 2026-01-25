@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.FractionalSpreadAssignmentRepo
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.repo.ContinuousFractionalSpreadAssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -45,9 +47,16 @@ class ContinuousFractionalSpreadAssignmentTest(
     private lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
     @Autowired
     private lateinit var continuousAssignmentRepo: ContinuousFractionalSpreadAssignmentRepo
+    @Autowired
+    private lateinit var fractionalAssignmentRepo: FractionalSpreadAssignmentRepo
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
+
+    @BeforeEach
+    fun setup() {
+        fractionalAssignmentRepo.deleteAll()
+    }
 
     @Test
     fun `create, skip refresh, cancel nested, continue and cancel buy`() {

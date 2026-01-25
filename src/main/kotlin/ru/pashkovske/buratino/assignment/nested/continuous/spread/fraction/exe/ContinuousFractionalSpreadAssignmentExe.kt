@@ -14,21 +14,23 @@ import ru.pashkovske.buratino.assignment.limit.spread.fraction.exe.FractionalSpr
 final class ContinuousFractionalSpreadAssignmentExe(
     assignmentRepo: AssignmentRepo<ContinuousFractionalSpreadAssignment>,
     nestedAssignmentExe: FractionalSpreadAssignmentExe,
-    assignmentScheduler: AssignmentTaskScheduler
+    assignmentScheduler: AssignmentTaskScheduler,
+    nestedAssignmentRepo: AssignmentRepo<FractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment
     >(
     assignmentRepo = assignmentRepo,
     nestedAssignmentExe = nestedAssignmentExe,
-    assignmentScheduler = assignmentScheduler
+    assignmentScheduler = assignmentScheduler,
+    nestedAssignmentRepo = nestedAssignmentRepo
 ) {
 
     private val log = KotlinLogging.logger {}
 
     private fun startNewSpreadFractionAssignment(ctx: ExeCtx<ContinuousFractionalSpreadAssignment>) {
         val completedAssignment: FractionalSpreadAssignment = ctx.assignment.nested
-        val nextAssignment = FractionalSpreadAssignment(
+        val nextAssignment = FractionalSpreadAssignment.newAssignment(
             iid = completedAssignment.iid,
             refreshSchedulingProperties = null,
             direction = completedAssignment.direction.getOpposite(),

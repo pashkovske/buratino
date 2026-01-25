@@ -30,4 +30,8 @@ abstract class AssignmentRepoInMemory<A : Assignment> : AssignmentRepo<A> {
         }
         assignments[assignment.id] = assignment
     }
+
+    override fun deleteAll() {
+        assignments.clear()
+    }
 }

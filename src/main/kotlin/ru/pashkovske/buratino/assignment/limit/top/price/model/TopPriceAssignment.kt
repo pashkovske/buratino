@@ -1,17 +1,46 @@
 package ru.pashkovske.buratino.assignment.limit.top.price.model
 
+import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
+import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
+import java.util.UUID
 
 class TopPriceAssignment(
+    id: UUID,
     iid: InstrumentId,
+    status: AssignmentStatus,
     refreshSchedulingProperties: SchedulingProperties?,
     direction: OrderDirection,
+    info: OrderInfo,
     val oneStepOver: Boolean = false
 ) :  LimitedOrderAssignment(
+    id = id,
     iid = iid,
+    status = status,
     refreshSchedulingProperties = refreshSchedulingProperties,
-    direction = direction
-)
+    direction = direction,
+    info = info
+) {
+
+    companion object {
+        fun newAssignment(
+            iid: InstrumentId,
+            direction: OrderDirection,
+            refreshSchedulingProperties: SchedulingProperties?,
+            oneStepOver: Boolean = false
+        ): TopPriceAssignment {
+            return TopPriceAssignment(
+                id = generateId(),
+                iid = iid,
+                status = initialStatus,
+                refreshSchedulingProperties = refreshSchedulingProperties,
+                direction = direction,
+                info = initialOrderInfo(),
+                oneStepOver = oneStepOver
+            )
+        }
+    }
+}

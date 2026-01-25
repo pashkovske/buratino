@@ -32,7 +32,7 @@ class TopPriceAssignmentController(
         @RequestParam oneStepOver: Boolean?,
         @RequestBody body: BasicStartAssignmentDto
     ): TopPriceAssignment {
-        val assignment = TopPriceAssignment(
+        val assignment = TopPriceAssignment.newAssignment(
             iid = InstrumentId(id = instrumentId),
             refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
                 SchedulingProperties(

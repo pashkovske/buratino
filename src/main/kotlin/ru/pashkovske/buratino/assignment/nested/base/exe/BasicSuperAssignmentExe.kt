@@ -2,14 +2,15 @@ package ru.pashkovske.buratino.assignment.nested.base.exe
 
 import mu.KLogger
 import mu.KotlinLogging
+import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.exe.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
-import ru.pashkovske.buratino.assignment.base.exe.AssignmentExe
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
-import ru.pashkovske.buratino.assignment.base.exe.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
+import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.nested.base.model.SuperAssignment
+import java.util.UUID
 
 abstract class BasicSuperAssignmentExe<
     SuperA : SuperAssignment<Nested>,
@@ -17,13 +18,30 @@ abstract class BasicSuperAssignmentExe<
     >(
     assignmentRepo: AssignmentRepo<SuperA>,
     assignmentScheduler: AssignmentTaskScheduler,
-    protected val nestedAssignmentExe: AssignmentExe<Nested>
-): BasicAssignmentExe<SuperA>(
+    protected val nestedAssignmentExe: AssignmentExe<Nested>,
+    protected val nestedAssignmentRepo: AssignmentRepo<Nested>
+) : BasicAssignmentExe<SuperA>(
     assignmentRepo = assignmentRepo,
     assignmentScheduler = assignmentScheduler
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}
+
+    override fun preRefresh(id: UUID): ExeCtx<SuperA> {
+        val ctx: ExeCtx<SuperA> = super.preRefresh(id)
+        syncNested(ctx)
+        return ctx
+    }
+
+    override fun preCancel(id: UUID): ExeCtx<SuperA> {
+        val ctx: ExeCtx<SuperA> = super.preCancel(id)
+        syncNested(ctx)
+        return ctx
+    }
+
+    protected fun syncNested(ctx: ExeCtx<SuperA>) {
+        ctx.assignment.nested = nestedAssignmentRepo.get(ctx.assignment.nested.id)
+    }
 
     protected fun isNestedCompleted(ctx: ExeCtx<SuperA>): Boolean {
         return ctx.assignment.nested.status == AssignmentStatus.COMPLETED

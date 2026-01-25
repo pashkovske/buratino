@@ -34,13 +34,13 @@ class ContinuousFractionalSpreadAssignmentController(
         @RequestBody body: StartFractionalSpreadAssignmentDto
     ): ContinuousFractionalSpreadAssignment {
         val iid = InstrumentId(id = instrumentId)
-        val nestedAssignment = FractionalSpreadAssignment(
+        val nestedAssignment = FractionalSpreadAssignment.newAssignment(
             iid = iid,
             refreshSchedulingProperties = null,
             direction = OrderDirection.fromString(direction),
             rate = body.rate
         )
-        val assignment = ContinuousFractionalSpreadAssignment(
+        val assignment = ContinuousFractionalSpreadAssignment.newAssignment(
             iid = iid,
             nested = nestedAssignment,
             refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
