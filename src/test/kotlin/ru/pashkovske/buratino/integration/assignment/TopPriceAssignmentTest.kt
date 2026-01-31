@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
@@ -19,7 +20,7 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.limit.top.price.repo.TopPriceAssignmentRepoInMemory
+import ru.pashkovske.buratino.assignment.limit.top.price.repo.postgre.TopPriceAssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
@@ -43,10 +44,15 @@ class TopPriceAssignmentTest(
     @Autowired
     private lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
     @Autowired
-    private lateinit var topPriceAssignmentRepo: TopPriceAssignmentRepoInMemory
+    private lateinit var topPriceAssignmentRepo: TopPriceAssignmentRepo
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
+
+    @BeforeEach
+    fun setup() {
+        topPriceAssignmentRepo.deleteAll()
+    }
 
     @Test
     fun `create, skip refresh and cancel sell share`() {
