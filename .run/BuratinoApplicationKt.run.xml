@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BuratinoApplicationKt" type="JetRunConfigurationType" nameIsGenerated="true">
+    <envs>
+      <env name="ACCOUNT_NAME" value="Основной брокерский счет" />
+      <env name="ANONYMOUS_PASSWORD" value="from-the-peaks-to-the-mountains-they-go" />
+      <env name="TINKOFF_API_TOKEN" value="t.K7CZ4RP8iM4pgizS3tTeyNHSvcwcgRE6JywG_kajIQrQFAhsWtJEU3EUSwrDkYNwz_lk3JqZfYz8cXL_bfpUtQ" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="ru.pashkovske.buratino.BuratinoApplicationKt" />
+    <module name="buratino" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
