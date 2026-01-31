@@ -1,9 +1,7 @@
 package ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.postgre
 
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
 import ru.pashkovske.buratino.assignment.limit.base.repo.postgre.LimitOrderAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 
@@ -24,17 +22,7 @@ class FractionalSpreadAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
             info = mapOrderInfo(row),
             rate = row.rate,
         )
-        if (refreshSchedulingProperties != null) {
-            val refreshSchedulingInfo: SchedulingInfo? = mapRefreshSchedulingInfo(
-                row = row,
-                properties = refreshSchedulingProperties
-            )
-            if (refreshSchedulingInfo != null) {
-                assignment.initRefreshScheduling(
-                    schedulingInfo = refreshSchedulingInfo
-                )
-            }
-        }
+        initRefreshSchedulingInfo(row, assignment, refreshSchedulingProperties)
         return assignment
     }
 
@@ -50,21 +38,6 @@ class FractionalSpreadAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
             refreshSchedulingStatus = assignment.getRefreshSchedulingInfo()?.status,
             orderId = assignment.info.orderId,
             lastOrderUpdate = assignment.info.lastUpdate
-        )
-    }
-
-    override fun mapRefreshSchedulingProperties(row: FractionalSpreadAssignmentRow): SchedulingProperties? {
-        return row.refreshSchedulingPeriod?.let {
-            SchedulingProperties(
-                interval = it
-            )
-        }
-    }
-
-    override fun mapOrderInfo(row: FractionalSpreadAssignmentRow): OrderInfo {
-        return OrderInfo(
-            orderId = row.orderId,
-            lastUpdate = row.lastOrderUpdate
         )
     }
 }

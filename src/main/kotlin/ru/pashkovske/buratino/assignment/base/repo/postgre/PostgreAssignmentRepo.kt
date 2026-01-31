@@ -8,7 +8,7 @@ import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepoOperationExcept
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import java.util.UUID
 
-abstract class PostgreAssignmentRepo<A : Assignment, Row>(
+abstract class PostgreAssignmentRepo<A : Assignment, Row : AssignmentPostgreRow<A>>(
     private val mapper: AssignmentToPostgreMapper<A, Row>,
     private val r2dbcRepository: ReactiveCrudRepository<Row, UUID>,
     private val r2dbcEntityTemplate: R2dbcEntityTemplate

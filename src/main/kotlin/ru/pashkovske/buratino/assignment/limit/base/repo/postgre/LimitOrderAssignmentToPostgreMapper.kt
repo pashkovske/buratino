@@ -6,8 +6,13 @@ import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
 
 abstract class LimitOrderAssignmentToPostgreMapper<
     A : LimitOrderAssignment,
-    Row
+    Row : LimitOrderAssignmentPostgreRow<A>
     >: BasicAssignmentToPostgreMapper<A, Row>() {
 
-    abstract fun mapOrderInfo(row: Row): OrderInfo
+    protected fun mapOrderInfo(row: Row): OrderInfo {
+        return OrderInfo(
+            orderId = row.orderId,
+            lastUpdate = row.lastOrderUpdate
+        )
+    }
 }
