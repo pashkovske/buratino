@@ -1,6 +1,7 @@
-package ru.pashkovske.buratino.assignment.base.repo
+package ru.pashkovske.buratino.assignment.base.repo.inmemory
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import java.util.UUID
 
 abstract class AssignmentRepoInMemory<A : Assignment> : AssignmentRepo<A> {

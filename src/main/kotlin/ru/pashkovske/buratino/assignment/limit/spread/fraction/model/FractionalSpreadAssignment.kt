@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.limit.spread.fraction.model
 
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.limit.base.model.LimitedOrderAssignment
+import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -16,7 +16,7 @@ class FractionalSpreadAssignment(
     direction: OrderDirection,
     info: OrderInfo,
     val rate: Double
-): LimitedOrderAssignment(
+): LimitOrderAssignment(
     id = id,
     iid = iid,
     status = status,
