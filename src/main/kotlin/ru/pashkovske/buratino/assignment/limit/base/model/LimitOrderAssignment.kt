@@ -7,7 +7,7 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 import java.util.UUID
 
-abstract class LimitedOrderAssignment(
+abstract class LimitOrderAssignment(
     id: UUID,
     iid: InstrumentId,
     status: AssignmentStatus,

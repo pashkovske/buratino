@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.limit.spread.fraction.repo
+package ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.postgre
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table

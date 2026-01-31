@@ -1,14 +1,19 @@
-package ru.pashkovske.buratino.assignment.limit.spread.fraction.repo
+package ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.postgre
 
+import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
+import ru.pashkovske.buratino.assignment.limit.base.repo.postgre.LimitOrderAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
-import ru.pashkovske.buratino.instrument.model.InstrumentId
 
-object FractionalSpreadAssignmentMapper {
+@Service
+class FractionalSpreadAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
+    FractionalSpreadAssignment,
+    FractionalSpreadAssignmentRow
+    >() {
 
-    fun map(row: FractionalSpreadAssignmentRow): FractionalSpreadAssignment {
+    override fun map(row: FractionalSpreadAssignmentRow): FractionalSpreadAssignment {
         val refreshSchedulingProperties: SchedulingProperties? = mapRefreshSchedulingProperties(row)
         val assignment = FractionalSpreadAssignment(
             id = row.id,
@@ -33,7 +38,7 @@ object FractionalSpreadAssignmentMapper {
         return assignment
     }
 
-    fun map(assignment: FractionalSpreadAssignment): FractionalSpreadAssignmentRow {
+    override fun map(assignment: FractionalSpreadAssignment): FractionalSpreadAssignmentRow {
         return FractionalSpreadAssignmentRow(
             id = assignment.id,
             instrumentId = assignment.iid.id,
@@ -48,11 +53,7 @@ object FractionalSpreadAssignmentMapper {
         )
     }
 
-    private fun mapIid(iid: String): InstrumentId {
-        return InstrumentId(iid)
-    }
-
-    private fun mapRefreshSchedulingProperties(row: FractionalSpreadAssignmentRow): SchedulingProperties? {
+    override fun mapRefreshSchedulingProperties(row: FractionalSpreadAssignmentRow): SchedulingProperties? {
         return row.refreshSchedulingPeriod?.let {
             SchedulingProperties(
                 interval = it
@@ -60,27 +61,10 @@ object FractionalSpreadAssignmentMapper {
         }
     }
 
-    private fun mapOrderInfo(row: FractionalSpreadAssignmentRow): OrderInfo {
+    override fun mapOrderInfo(row: FractionalSpreadAssignmentRow): OrderInfo {
         return OrderInfo(
             orderId = row.orderId,
             lastUpdate = row.lastOrderUpdate
         )
-    }
-
-    private fun mapRefreshSchedulingInfo(
-        row: FractionalSpreadAssignmentRow,
-        properties: SchedulingProperties
-    ): SchedulingInfo? {
-        return if (row.refreshSchedulingTaskId == null && row.refreshSchedulingStatus == null) {
-            null
-        } else if (row.refreshSchedulingTaskId != null && row.refreshSchedulingStatus != null) {
-            SchedulingInfo(
-                properties = properties,
-                taskId = row.refreshSchedulingTaskId,
-                status = row.refreshSchedulingStatus
-            )
-        } else {
-            throw IllegalStateException("Refresh scheduling task id and status are not consistent")
-        }
     }
 }
