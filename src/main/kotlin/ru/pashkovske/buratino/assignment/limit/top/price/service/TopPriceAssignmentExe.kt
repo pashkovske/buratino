@@ -1,10 +1,10 @@
-package ru.pashkovske.buratino.assignment.limit.top.price.exe
+package ru.pashkovske.buratino.assignment.limit.top.price.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
-import ru.pashkovske.buratino.assignment.limit.base.executor.LimitOrderAssignmentExe
+import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
 import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.service.MarketPriceService

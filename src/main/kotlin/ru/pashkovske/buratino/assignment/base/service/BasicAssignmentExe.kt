@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.exe
+package ru.pashkovske.buratino.assignment.base.service
 
 import mu.KLogger
 import mu.KotlinLogging

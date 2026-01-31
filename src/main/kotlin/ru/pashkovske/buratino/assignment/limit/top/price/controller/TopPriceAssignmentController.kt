@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentControll
 import ru.pashkovske.buratino.assignment.base.controller.dto.BasicStartAssignmentDto
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.limit.top.price.exe.TopPriceAssignmentExe
+import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
