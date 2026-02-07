@@ -17,7 +17,12 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 
 @Configuration
-@EnableR2dbcRepositories("ru.pashkovske.buratino.assignment")
+@EnableR2dbcRepositories(
+    value = [
+        "ru.pashkovske.buratino.assignment",
+        "ru.pashkovske.buratino.order.repo"
+    ]
+)
 class DatabaseConfiguration : AbstractR2dbcConfiguration() {
 
     override fun connectionFactory(): ConnectionFactory {

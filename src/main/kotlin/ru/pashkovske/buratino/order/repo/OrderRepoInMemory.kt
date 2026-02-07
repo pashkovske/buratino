@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.order.repo
 import org.springframework.stereotype.Repository
 import ru.pashkovske.buratino.order.model.Order
 
-@Repository
+//@Repository
 class OrderRepoInMemory : OrderRepo {
     private val orders: MutableMap<String, Order> = mutableMapOf()
 
