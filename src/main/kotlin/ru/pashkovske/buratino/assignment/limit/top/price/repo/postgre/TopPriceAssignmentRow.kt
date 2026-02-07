@@ -8,10 +8,9 @@ import ru.pashkovske.buratino.assignment.limit.base.repo.postgre.LimitOrderAssig
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.order.model.OrderDirection
 import java.time.Duration
-import java.time.Instant
 import java.util.UUID
 
-@Table("top_price_assignments")
+@Table("assignment.top_price")
 data class TopPriceAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,
@@ -21,7 +20,6 @@ data class TopPriceAssignmentRow(
     override val refreshSchedulingStatus: SchedulingStatus?,
     override val orderDirection: OrderDirection,
     override val orderId: String?,
-    override val lastOrderUpdate: Instant,
     val oneStepOver: Boolean
 ) : LimitOrderAssignmentPostgreRow<TopPriceAssignment>(
     id = id,
@@ -31,6 +29,5 @@ data class TopPriceAssignmentRow(
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingStatus = refreshSchedulingStatus,
     orderDirection = orderDirection,
-    orderId = orderId,
-    lastOrderUpdate = lastOrderUpdate
+    orderId = orderId
 )

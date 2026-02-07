@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS fractional_spread_assignments
+CREATE SCHEMA IF NOT EXISTS assignment;
+
+CREATE TABLE IF NOT EXISTS assignment.fractional_spread
 (
     id                         UUID PRIMARY KEY,
     instrument_id              VARCHAR(255)     NOT NULL,
@@ -8,6 +10,5 @@ CREATE TABLE IF NOT EXISTS fractional_spread_assignments
     refresh_scheduling_period  VARCHAR(255),
     refresh_scheduling_task_id UUID,
     refresh_scheduling_status  VARCHAR(50),
-    order_id                   VARCHAR(255),
-    last_order_update          TIMESTAMP        NOT NULL
+    order_id                   VARCHAR(255)
 );

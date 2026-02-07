@@ -73,7 +73,6 @@ class ContinuousFractionalSpreadAssignmentTest(
             .andExpect(jsonPath("$.nested.direction").value(direction.toString()))
             .andExpect(jsonPath("$.nested.rate").value(rate))
             .andExpect(jsonPath("$.nested.info.orderId").isString())
-            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
             .andReturn()
 
         verify(extOrderServiceAdapter).createOrder(any())
@@ -107,7 +106,6 @@ class ContinuousFractionalSpreadAssignmentTest(
         )
             .andExpect(jsonPath("$.nested.status").value("IN_PROGRESS"))
             .andExpect(jsonPath("$.nested.info.orderId").isString())
-            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
@@ -118,7 +116,6 @@ class ContinuousFractionalSpreadAssignmentTest(
             iid = iid
         )
             .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter).cancelOrder(createdOrderId)
 
@@ -131,7 +128,6 @@ class ContinuousFractionalSpreadAssignmentTest(
             .andExpect(jsonPath("$.nested.direction").value(direction.getOpposite().toString()))
             .andExpect(jsonPath("$.nested.rate").value(rate))
             .andExpect(jsonPath("$.nested.info.orderId").isString())
-            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
             .andReturn()
 
         val continuedOrderId: String = JsonPath.parse(continueResult.response.contentAsString).read("$.nested.info.orderId")
@@ -145,7 +141,6 @@ class ContinuousFractionalSpreadAssignmentTest(
             iid = iid
         )
             .andExpect(jsonPath("$.nested.info.orderId").value(continuedOrderId))
-            .andExpect(jsonPath("$.nested.info.lastUpdate").exists())
 
         assertAllAssignmentsCancelled(
             path = "/assignment/continuous/fractional-spread/",

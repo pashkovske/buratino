@@ -11,8 +11,7 @@ abstract class LimitOrderAssignmentToPostgreMapper<
 
     protected fun mapOrderInfo(row: Row): OrderInfo {
         return OrderInfo(
-            orderId = row.orderId,
-            lastUpdate = row.lastOrderUpdate
+            orderId = row.orderId
         )
     }
 }

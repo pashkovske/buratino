@@ -36,8 +36,7 @@ class TopPriceAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
             refreshSchedulingPeriod = assignment.refreshSchedulingProperties?.interval,
             refreshSchedulingTaskId = assignment.getRefreshSchedulingInfo()?.taskId,
             refreshSchedulingStatus = assignment.getRefreshSchedulingInfo()?.status,
-            orderId = assignment.info.orderId,
-            lastOrderUpdate = assignment.info.lastUpdate
+            orderId = assignment.info.orderId
         )
     }
 }

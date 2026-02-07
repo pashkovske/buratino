@@ -61,7 +61,6 @@ class FractionalSpreadAssignmentTest(
             .andExpect(jsonPath("$.direction").value(direction.toString()))
             .andExpect(jsonPath("$.rate").value(rate))
             .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
             .andReturn()
 
         verify(extOrderServiceAdapter).createOrder(any())
@@ -93,7 +92,6 @@ class FractionalSpreadAssignmentTest(
             iid = iid
         )
             .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
@@ -104,7 +102,6 @@ class FractionalSpreadAssignmentTest(
             iid = iid
         )
             .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter).cancelOrder(orderId)
 

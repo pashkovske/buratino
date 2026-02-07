@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS continuous_fractional_spread_assignments
+CREATE TABLE IF NOT EXISTS assignment.continuous_fractional_spread
 (
     id                          UUID PRIMARY KEY,
     instrument_id               VARCHAR(255) NOT NULL,

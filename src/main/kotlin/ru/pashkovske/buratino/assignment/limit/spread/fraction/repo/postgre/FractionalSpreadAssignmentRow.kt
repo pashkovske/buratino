@@ -8,10 +8,9 @@ import ru.pashkovske.buratino.assignment.limit.base.repo.postgre.LimitOrderAssig
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.order.model.OrderDirection
 import java.time.Duration
-import java.time.Instant
 import java.util.UUID
 
-@Table("fractional_spread_assignments")
+@Table("assignment.fractional_spread")
 data class FractionalSpreadAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,
@@ -21,7 +20,6 @@ data class FractionalSpreadAssignmentRow(
     override val refreshSchedulingStatus: SchedulingStatus?,
     override val orderDirection: OrderDirection,
     override val orderId: String?,
-    override val lastOrderUpdate: Instant,
     val rate: Double
 ) : LimitOrderAssignmentPostgreRow<FractionalSpreadAssignment>(
     id = id,
@@ -31,6 +29,5 @@ data class FractionalSpreadAssignmentRow(
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingStatus = refreshSchedulingStatus,
     orderDirection = orderDirection,
-    orderId = orderId,
-    lastOrderUpdate = lastOrderUpdate
+    orderId = orderId
 )

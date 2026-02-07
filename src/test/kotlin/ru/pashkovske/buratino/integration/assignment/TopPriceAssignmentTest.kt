@@ -68,7 +68,6 @@ class TopPriceAssignmentTest(
             .andExpect(jsonPath("$.direction").value(direction.toString()))
             .andExpect(jsonPath("$.oneStepOver").value(oneStepOver))
             .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
             .andReturn()
 
         verify(extOrderServiceAdapter).createOrder(any())
@@ -100,7 +99,6 @@ class TopPriceAssignmentTest(
             iid = iid
         )
             .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
@@ -111,7 +109,6 @@ class TopPriceAssignmentTest(
             iid = iid
         )
             .andExpect(jsonPath("$.info.orderId").isString())
-            .andExpect(jsonPath("$.info.lastUpdate").exists())
 
         verify(extOrderServiceAdapter).cancelOrder(orderId)
 

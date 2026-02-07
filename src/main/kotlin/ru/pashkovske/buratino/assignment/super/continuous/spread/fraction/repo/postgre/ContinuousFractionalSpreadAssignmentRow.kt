@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.mode
 import java.time.Duration
 import java.util.UUID
 
-@Table("continuous_fractional_spread_assignments")
+@Table("assignment.continuous_fractional_spread")
 data class ContinuousFractionalSpreadAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,

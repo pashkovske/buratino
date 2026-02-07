@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS top_price_assignments
+CREATE TABLE IF NOT EXISTS assignment.top_price
 (
     id                         UUID PRIMARY KEY,
     instrument_id              VARCHAR(255)     NOT NULL,
@@ -8,6 +8,5 @@ CREATE TABLE IF NOT EXISTS top_price_assignments
     refresh_scheduling_period  VARCHAR(255),
     refresh_scheduling_task_id UUID,
     refresh_scheduling_status  VARCHAR(50),
-    order_id                   VARCHAR(255),
-    last_order_update          TIMESTAMP        NOT NULL
+    order_id                   VARCHAR(255)
 );
