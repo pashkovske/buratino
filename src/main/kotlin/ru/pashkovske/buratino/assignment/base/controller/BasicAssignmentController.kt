@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import java.util.UUID
 
 @Suppress("unused")
 abstract class BasicAssignmentController<A: Assignment>(
-    open val repo: AssignmentRepo<A>,
+    open val dao: AssignmentDao<A>,
     open val exe: AssignmentExe<A>
 ) {
     protected fun doStart(assignment: A): A {
@@ -31,12 +31,12 @@ abstract class BasicAssignmentController<A: Assignment>(
 
     @GetMapping("/")
     fun getAll(): List<A> {
-        return repo.getAll()
+        return dao.getAll()
     }
 
     @PatchMapping("/refresh-all")
     fun refreshAll(): List<A> {
-        val activeAssignments: List<A> = repo.getAll()
+        val activeAssignments: List<A> = dao.getAll()
             .filter { it.status == AssignmentStatus.IN_PROGRESS }
         activeAssignments
             .map(Assignment::id)

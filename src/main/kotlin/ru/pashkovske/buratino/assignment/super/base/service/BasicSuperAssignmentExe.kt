@@ -7,7 +7,7 @@ import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.base.model.SuperAssignment
 import java.util.UUID
@@ -16,12 +16,12 @@ abstract class BasicSuperAssignmentExe<
     SuperA : SuperAssignment<Nested>,
     Nested : Assignment
     >(
-    assignmentRepo: AssignmentRepo<SuperA>,
+    assignmentDao: AssignmentDao<SuperA>,
     assignmentScheduler: AssignmentTaskScheduler,
     protected val nestedAssignmentExe: AssignmentExe<Nested>,
-    protected val nestedAssignmentRepo: AssignmentRepo<Nested>
+    protected val nestedAssignmentDao: AssignmentDao<Nested>
 ) : BasicAssignmentExe<SuperA>(
-    assignmentRepo = assignmentRepo,
+    assignmentDao = assignmentDao,
     assignmentScheduler = assignmentScheduler
 ) {
 
@@ -40,7 +40,7 @@ abstract class BasicSuperAssignmentExe<
     }
 
     protected fun syncNested(ctx: ExeCtx<SuperA>) {
-        ctx.assignment.nested = nestedAssignmentRepo.get(ctx.assignment.nested.id)
+        ctx.assignment.nested = nestedAssignmentDao.get(ctx.assignment.nested.id)
     }
 
     protected fun isNestedCompleted(ctx: ExeCtx<SuperA>): Boolean {

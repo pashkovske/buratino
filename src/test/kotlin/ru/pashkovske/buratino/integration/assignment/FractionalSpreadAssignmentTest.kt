@@ -11,13 +11,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.postgre.FractionalSpreadAssignmentRepo
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.order.repo.OrderRepo
+import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
@@ -31,17 +31,17 @@ class FractionalSpreadAssignmentTest(
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
     @Autowired
-    private lateinit var fractionalAssignmentRepo: FractionalSpreadAssignmentRepo
+    private lateinit var fractionalSpreadAssignmentDao: FractionalSpreadAssignmentDao
     @Autowired
-    private lateinit var orderRepo: OrderRepo
+    private lateinit var orderDao: OrderDao
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @BeforeEach
     fun setup() {
-        orderRepo.deleteAll()
-        fractionalAssignmentRepo.deleteAll()
+        orderDao.deleteAll()
+        fractionalSpreadAssignmentDao.deleteAll()
     }
 
     @Test

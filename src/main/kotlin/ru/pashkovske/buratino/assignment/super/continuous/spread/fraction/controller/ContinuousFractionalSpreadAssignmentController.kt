@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.service.ContinuousFractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
@@ -21,10 +21,10 @@ import java.util.UUID
 @RestController
 @RequestMapping("/assignment/continuous/fractional-spread")
 class ContinuousFractionalSpreadAssignmentController(
-    repo: AssignmentRepo<ContinuousFractionalSpreadAssignment>,
+    dao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     override val exe: ContinuousFractionalSpreadAssignmentExe
 ): BasicAssignmentController<ContinuousFractionalSpreadAssignment>(
-    repo = repo,
+    dao = dao,
     exe = exe
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")

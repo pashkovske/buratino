@@ -1,0 +1,46 @@
+package ru.pashkovske.buratino.assignment.base.dao.postgre
+
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDaoOperationException
+import java.util.UUID
+
+abstract class PostgreAssignmentDao<A : Assignment, Row : AssignmentPostgreRow<A>>(
+    protected open val mapper: AssignmentToPostgreMapper<A, Row>,
+    protected val r2dbcRepository: ReactiveCrudRepository<Row, UUID>,
+    protected val r2dbcEntityTemplate: R2dbcEntityTemplate
+) : AssignmentDao<A> {
+
+    override fun getAll(): List<A> {
+        return r2dbcRepository.findAll()
+            .map(mapper::map)
+            .collectList()
+            .block() ?: emptyList()
+    }
+
+    override fun get(id: UUID): A {
+        return r2dbcRepository.findById(id)
+            .map(mapper::map)
+            .block() ?: throw AssignmentDaoOperationException(
+                message = "Assignment not found in PostgreSQL",
+                assignmentId = id
+            )
+    }
+
+    override fun create(assignment: A) {
+        r2dbcEntityTemplate.insert(mapper.map(assignment))
+            .block()
+    }
+
+    override fun update(assignment: A) {
+        r2dbcEntityTemplate.update(mapper.map(assignment))
+            .block()
+    }
+
+    override fun deleteAll() {
+        r2dbcRepository.deleteAll()
+            .block()
+    }
+}

@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.ser
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
@@ -12,18 +12,18 @@ import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.Fractiona
 
 @Service
 final class ContinuousFractionalSpreadAssignmentExe(
-    assignmentRepo: AssignmentRepo<ContinuousFractionalSpreadAssignment>,
+    assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     nestedAssignmentExe: FractionalSpreadAssignmentExe,
     assignmentScheduler: AssignmentTaskScheduler,
-    nestedAssignmentRepo: AssignmentRepo<FractionalSpreadAssignment>
+    nestedAssignmentDao: AssignmentDao<FractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment
     >(
-    assignmentRepo = assignmentRepo,
+    assignmentDao = assignmentDao,
     nestedAssignmentExe = nestedAssignmentExe,
     assignmentScheduler = assignmentScheduler,
-    nestedAssignmentRepo = nestedAssignmentRepo
+    nestedAssignmentDao = nestedAssignmentDao
 ) {
 
     private val log = KotlinLogging.logger {}

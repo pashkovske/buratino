@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.dto.StartFractionalSpreadAssignmentDto
@@ -18,10 +18,10 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 @RestController
 @RequestMapping("/assignment/fractional-spread")
 class FractionalSpreadAssignmentController(
-    repo: AssignmentRepo<FractionalSpreadAssignment>,
+    dao: AssignmentDao<FractionalSpreadAssignment>,
     exe: FractionalSpreadAssignmentExe
 ): BasicAssignmentController<FractionalSpreadAssignment>(
-    repo = repo,
+    dao = dao,
     exe = exe
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")

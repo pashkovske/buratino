@@ -17,13 +17,13 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.limit.top.price.repo.postgre.TopPriceAssignmentRepo
+import ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.order.repo.OrderRepo
+import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
@@ -38,17 +38,17 @@ class TopPriceAssignmentTest(
     @Autowired
     private lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
     @Autowired
-    private lateinit var topPriceAssignmentRepo: TopPriceAssignmentRepo
+    private lateinit var topPriceAssignmentDao: TopPriceAssignmentDao
     @Autowired
-    private lateinit var orderRepo: OrderRepo
+    private lateinit var orderDao: OrderDao
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @BeforeEach
     fun setup() {
-        orderRepo.deleteAll()
-        topPriceAssignmentRepo.deleteAll()
+        orderDao.deleteAll()
+        topPriceAssignmentDao.deleteAll()
     }
 
     @Test
@@ -136,7 +136,7 @@ class TopPriceAssignmentTest(
 
         assertEquals(1, assignmentTaskScheduler.getScheduled().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
-        val assignment: TopPriceAssignment = topPriceAssignmentRepo.get(assignmentId)
+        val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
         assertNotNull(assignment.getRefreshSchedulingInfo())
         assertEquals(
             assignmentTaskScheduler.getScheduled().first(),

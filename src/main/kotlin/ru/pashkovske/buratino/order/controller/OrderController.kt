@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.order.model.Order
-import ru.pashkovske.buratino.order.repo.OrderRepo
+import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.order.service.OrderService
 
 @Suppress("unused")
@@ -13,15 +13,15 @@ import ru.pashkovske.buratino.order.service.OrderService
 @RequestMapping("/order")
 class OrderController(
     private val orderService: OrderService,
-    private val orderRepo: OrderRepo
+    private val orderDao: OrderDao
 ) {
     @GetMapping("/")
     fun getAll(): List<Order> {
-        return orderRepo.getAll()
+        return orderDao.getAll()
     }
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String): Order {
-        return orderRepo.get(id)
+        return orderDao.get(id)
     }
 }

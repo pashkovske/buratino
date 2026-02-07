@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.limit.base.service
 import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
@@ -15,10 +15,10 @@ import java.util.UUID
 
 abstract class LimitOrderAssignmentExe<LimitA : LimitOrderAssignment>(
     private val orderService: OrderService,
-    assignmentRepo: AssignmentRepo<LimitA>,
+    assignmentDao: AssignmentDao<LimitA>,
     assignmentScheduler: AssignmentTaskScheduler
 ): BasicAssignmentExe<LimitA>(
-    assignmentRepo = assignmentRepo,
+    assignmentDao = assignmentDao,
     assignmentScheduler = assignmentScheduler
 ) {
 

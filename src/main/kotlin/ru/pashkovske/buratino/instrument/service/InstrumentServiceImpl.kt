@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.instrument.adapter.InstrumentServiceAdapter
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.model.InstrumentId
-import ru.pashkovske.buratino.instrument.repo.InstrumentRepo
+import ru.pashkovske.buratino.instrument.dao.InstrumentDao
 import java.time.Instant
 
 private val CACHE_TTL_SECONDS = 300L
@@ -12,20 +12,20 @@ private val CACHE_TTL_SECONDS = 300L
 @Service
 class InstrumentServiceImpl(
     private val instrumentServiceAdapter: InstrumentServiceAdapter,
-    private val instrumentRepo: InstrumentRepo
+    private val instrumentDao: InstrumentDao
 ) : InstrumentService {
     override fun getByTicker(ticker: String): Instrument {
         return instrumentServiceAdapter.getByTicker(ticker)
     }
 
     override fun get(iid: InstrumentId): Instrument {
-        val lastUpdate = instrumentRepo.getLastUpdate(iid)
+        val lastUpdate = instrumentDao.getLastUpdate(iid)
         if (lastUpdate == null) {
-            instrumentRepo.create(instrumentServiceAdapter.get(iid))
+            instrumentDao.create(instrumentServiceAdapter.get(iid))
         }
         else if (lastUpdate.plusSeconds(CACHE_TTL_SECONDS).isBefore(Instant.now())) {
-            instrumentRepo.update(instrumentServiceAdapter.get(iid))
+            instrumentDao.update(instrumentServiceAdapter.get(iid))
         }
-        return instrumentRepo.get(iid)
+        return instrumentDao.get(iid)
     }
 }

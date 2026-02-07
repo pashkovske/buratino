@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.limit.spread.fraction.service
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
@@ -17,13 +17,13 @@ import ru.pashkovske.buratino.price.service.MarketPriceService
 @Service
 final class FractionalSpreadAssignmentExe(
     orderService: OrderService,
-    assignmentRepo: AssignmentRepo<FractionalSpreadAssignment>,
+    assignmentDao: AssignmentDao<FractionalSpreadAssignment>,
     assignmentScheduler: AssignmentTaskScheduler,
     val marketDataService: MarketPriceService,
     val instrumentService: InstrumentService
 ): LimitOrderAssignmentExe<FractionalSpreadAssignment>(
     orderService = orderService,
-    assignmentRepo = assignmentRepo,
+    assignmentDao = assignmentDao,
     assignmentScheduler = assignmentScheduler
 ) {
 

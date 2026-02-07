@@ -11,7 +11,7 @@ import ru.pashkovske.buratino.assignment.base.controller.dto.BasicStartAssignmen
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 
@@ -19,10 +19,10 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 @RestController
 @RequestMapping("/assignment/top-price")
 class TopPriceAssignmentController(
-    repo: AssignmentRepo<TopPriceAssignment>,
+    dao: AssignmentDao<TopPriceAssignment>,
     exe: TopPriceAssignmentExe
 ): BasicAssignmentController<TopPriceAssignment>(
-    repo = repo,
+    dao = dao,
     exe = exe
 ) {
     @PostMapping("/{instrumentId}/start/{direction}")

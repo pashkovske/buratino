@@ -9,12 +9,12 @@ import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingAssignmentTas
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import java.util.UUID
 
 abstract class BasicAssignmentExe<A: Assignment>(
-    protected val assignmentRepo: AssignmentRepo<A>,
+    protected val assignmentDao: AssignmentDao<A>,
     protected val assignmentScheduler: AssignmentTaskScheduler
 ): AssignmentExe<A> {
 
@@ -38,7 +38,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         val assignment: A = ctx.assignment
         scheduleRefresh(ctx)
         toInProgress(ctx)
-        assignmentRepo.create(assignment)
+        assignmentDao.create(assignment)
         log.info("Assignment started: $assignment")
     }
 
@@ -51,7 +51,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         return ctx.assignment
     }
     protected open fun preRefresh(id: UUID): ExeCtx<A> {
-        val assignment: A = assignmentRepo.get(id)
+        val assignment: A = assignmentDao.get(id)
         log.info("Refreshing assignment: $assignment")
         val ctx: ExeCtx<A> = ExeCtx(assignment)
         if (isCompleted(ctx)) {
@@ -64,7 +64,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
     protected open fun postRefresh(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
         if (ctx.isMutated()) {
-            assignmentRepo.update(assignment)
+            assignmentDao.update(assignment)
         }
         log.info("Assignment refreshed: $assignment")
     }
@@ -78,7 +78,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         return ctx.assignment
     }
     protected open fun preCancel(id: UUID): ExeCtx<A> {
-        val assignment: A = assignmentRepo.get(id)
+        val assignment: A = assignmentDao.get(id)
         log.info("Canceling assignment: $assignment")
         val ctx: ExeCtx<A> = ExeCtx(assignment)
         if (isCompleted(ctx)) {
@@ -93,7 +93,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         stopSchedulingRefresh(ctx)
         toCompleted(ctx)
         if (ctx.isMutated()) {
-            assignmentRepo.update(assignment)
+            assignmentDao.update(assignment)
         }
         log.info("Assignment canceled: $assignment")
     }

@@ -20,7 +20,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 @EnableR2dbcRepositories(
     value = [
         "ru.pashkovske.buratino.assignment",
-        "ru.pashkovske.buratino.order.repo"
+        "ru.pashkovske.buratino.order.dao"
     ]
 )
 class DatabaseConfiguration : AbstractR2dbcConfiguration() {

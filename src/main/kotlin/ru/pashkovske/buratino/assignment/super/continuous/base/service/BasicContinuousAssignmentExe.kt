@@ -6,7 +6,7 @@ import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingAssignmentTas
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
-import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
+import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
@@ -18,16 +18,16 @@ abstract class BasicContinuousAssignmentExe<
     ContinuousA : ContinuousAssignment<Nested>,
     Nested : Assignment
     >(
-    assignmentRepo: AssignmentRepo<ContinuousA>,
+    assignmentDao: AssignmentDao<ContinuousA>,
     assignmentScheduler: AssignmentTaskScheduler,
     nestedAssignmentExe: AssignmentExe<Nested>,
-    nestedAssignmentRepo: AssignmentRepo<Nested>
+    nestedAssignmentDao: AssignmentDao<Nested>
 ):
     BasicSuperAssignmentExe<ContinuousA, Nested>(
-        assignmentRepo = assignmentRepo,
+        assignmentDao = assignmentDao,
         nestedAssignmentExe = nestedAssignmentExe,
         assignmentScheduler = assignmentScheduler,
-        nestedAssignmentRepo = nestedAssignmentRepo
+        nestedAssignmentDao = nestedAssignmentDao
     ),
     ContinuousAssignmentExe<ContinuousA>
 {
@@ -43,7 +43,7 @@ abstract class BasicContinuousAssignmentExe<
         return ctx.assignment
     }
     protected open fun preContinue(id: UUID): ExeCtx<ContinuousA> {
-        val assignment: ContinuousA = assignmentRepo.get(id)
+        val assignment: ContinuousA = assignmentDao.get(id)
         log.info("Continuing assignment: $assignment")
         val ctx: ExeCtx<ContinuousA> = ExeCtx(assignment)
         syncNested(ctx)
@@ -56,7 +56,7 @@ abstract class BasicContinuousAssignmentExe<
     protected abstract fun doContinue(ctx: ExeCtx<ContinuousA>)
     protected open fun postContinue(ctx: ExeCtx<ContinuousA>) {
         if (ctx.isMutated()) {
-            assignmentRepo.update(ctx.assignment)
+            assignmentDao.update(ctx.assignment)
         }
         log.info("Assignment continued: ${ctx.assignment}")
     }

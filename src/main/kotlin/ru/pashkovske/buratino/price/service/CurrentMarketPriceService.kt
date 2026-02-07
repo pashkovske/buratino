@@ -8,7 +8,7 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.model.Spread
 import ru.pashkovske.buratino.price.offer.model.OfferBook
-import ru.pashkovske.buratino.price.offer.repo.OfferBookRepo
+import ru.pashkovske.buratino.price.offer.dao.OfferBookDao
 import ru.pashkovske.buratino.price.offer.service.MarketScrapper
 
 private const val DEPTH_CHECK = 5
@@ -16,7 +16,7 @@ private const val DEPTH_CHECK = 5
 @Service
 class CurrentMarketPriceService(
     private val marketScrapper: MarketScrapper,
-    private val offerBookRepo: OfferBookRepo,
+    private val offerBookDao: OfferBookDao,
     private val instrumentService: InstrumentService
 ) : MarketPriceService {
 
@@ -28,7 +28,7 @@ class CurrentMarketPriceService(
             iid = iid,
             depth = DEPTH_CHECK
         )
-        val offerBook: OfferBook = offerBookRepo.read(iid)!!
+        val offerBook: OfferBook = offerBookDao.read(iid)!!
         return when (direction) {
             OrderDirection.BUY -> getTopOfBookBuyPrice(offerBook)
             OrderDirection.SELL -> getTopOfBookSellPrice(offerBook)
