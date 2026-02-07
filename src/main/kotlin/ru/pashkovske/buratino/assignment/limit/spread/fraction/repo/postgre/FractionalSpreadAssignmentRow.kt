@@ -11,7 +11,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 
-@Table("fractional_spread_assignment_row")
+@Table("fractional_spread_assignments")
 data class FractionalSpreadAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,

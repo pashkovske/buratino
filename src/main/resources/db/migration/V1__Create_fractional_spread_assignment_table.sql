@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS fractional_spread_assignment_row
+CREATE TABLE IF NOT EXISTS fractional_spread_assignments
 (
     id                         UUID PRIMARY KEY,
     instrument_id              VARCHAR(255)     NOT NULL,
