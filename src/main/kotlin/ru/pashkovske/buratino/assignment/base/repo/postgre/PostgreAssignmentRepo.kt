@@ -5,13 +5,12 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepo
 import ru.pashkovske.buratino.assignment.base.repo.AssignmentRepoOperationException
-import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import java.util.UUID
 
 abstract class PostgreAssignmentRepo<A : Assignment, Row : AssignmentPostgreRow<A>>(
-    private val mapper: AssignmentToPostgreMapper<A, Row>,
-    private val r2dbcRepository: ReactiveCrudRepository<Row, UUID>,
-    private val r2dbcEntityTemplate: R2dbcEntityTemplate
+    protected open val mapper: AssignmentToPostgreMapper<A, Row>,
+    protected val r2dbcRepository: ReactiveCrudRepository<Row, UUID>,
+    protected val r2dbcEntityTemplate: R2dbcEntityTemplate
 ) : AssignmentRepo<A> {
 
     override fun getAll(): List<A> {
@@ -26,8 +25,7 @@ abstract class PostgreAssignmentRepo<A : Assignment, Row : AssignmentPostgreRow<
             .map(mapper::map)
             .block() ?: throw AssignmentRepoOperationException(
                 message = "Assignment not found in PostgreSQL",
-                assignmentId = id,
-                assignmentClass = FractionalSpreadAssignment::class
+                assignmentId = id
             )
     }
 

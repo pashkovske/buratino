@@ -11,9 +11,6 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
@@ -21,20 +18,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.postgre.FractionalSpreadAssignmentRepo
 import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.repo.ContinuousFractionalSpreadAssignmentRepo
+import ru.pashkovske.buratino.assignment.nested.continuous.spread.fraction.repo.postgre.ContinuousFractionalSpreadAssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
-import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
+import ru.pashkovske.buratino.order.repo.OrderRepo
 import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
-@WebMvcTest
-@Import(IntegrationStubsConfiguration::class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ContinuousFractionalSpreadAssignmentTest(
     @Autowired mockMvc: MockMvc
 ): BasicAssignmentTest(
@@ -49,13 +43,17 @@ class ContinuousFractionalSpreadAssignmentTest(
     private lateinit var continuousAssignmentRepo: ContinuousFractionalSpreadAssignmentRepo
     @Autowired
     private lateinit var fractionalAssignmentRepo: FractionalSpreadAssignmentRepo
+    @Autowired
+    private lateinit var orderRepo: OrderRepo
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @BeforeEach
     fun setup() {
+        orderRepo.deleteAll()
         fractionalAssignmentRepo.deleteAll()
+        continuousAssignmentRepo.deleteAll()
     }
 
     @Test

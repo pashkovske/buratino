@@ -7,29 +7,21 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.repo.postgre.FractionalSpreadAssignmentRepo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
-import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
+import ru.pashkovske.buratino.order.repo.OrderRepo
 import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Import(IntegrationStubsConfiguration::class)
-@DirtiesContext
 class FractionalSpreadAssignmentTest(
     @Autowired mockMvc: MockMvc
 ): BasicAssignmentTest(
@@ -40,12 +32,15 @@ class FractionalSpreadAssignmentTest(
     private lateinit var bootstrapper: AssignmentTestBootstrapper
     @Autowired
     private lateinit var fractionalAssignmentRepo: FractionalSpreadAssignmentRepo
+    @Autowired
+    private lateinit var orderRepo: OrderRepo
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @BeforeEach
     fun setup() {
+        orderRepo.deleteAll()
         fractionalAssignmentRepo.deleteAll()
     }
 

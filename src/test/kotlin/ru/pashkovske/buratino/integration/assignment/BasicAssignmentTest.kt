@@ -3,6 +3,9 @@ package ru.pashkovske.buratino.integration.assignment
 import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -12,12 +15,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.util.MultiValueMap
 import ru.pashkovske.buratino.instrument.model.InstrumentId
+import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import java.util.Locale.getDefault
 import java.util.UUID
 
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
+@Import(IntegrationStubsConfiguration::class)
+@SpringBootTest
 abstract class BasicAssignmentTest(
     protected val mockMvc: MockMvc
 ) {

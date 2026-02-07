@@ -7,4 +7,5 @@ interface OrderRepo {
     fun getAll(): List<Order>
     fun create(order: Order)
     fun update(order: Order)
+    fun deleteAll()
 }

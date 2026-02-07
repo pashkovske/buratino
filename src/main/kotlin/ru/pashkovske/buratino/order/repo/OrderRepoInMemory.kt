@@ -31,4 +31,8 @@ class OrderRepoInMemory : OrderRepo {
         }
         orders[order.id] = order
     }
+
+    override fun deleteAll() {
+        orders.clear()
+    }
 }
