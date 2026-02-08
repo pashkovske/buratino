@@ -1,6 +1,9 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.dao.postgre
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
-import java.util.UUID
+import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentR2dbcRepo
+import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 
-interface ContinuousFractionalSpreadAssignmentRepoPostgre : ReactiveCrudRepository<ContinuousFractionalSpreadAssignmentRow, UUID>
+interface ContinuousFractionalSpreadAssignmentRepoPostgre : AssignmentR2dbcRepo<
+    ContinuousFractionalSpreadAssignment,
+    ContinuousFractionalSpreadAssignmentRow
+    >

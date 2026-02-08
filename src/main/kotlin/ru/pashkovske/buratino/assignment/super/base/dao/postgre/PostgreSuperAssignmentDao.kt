@@ -1,10 +1,10 @@
 package ru.pashkovske.buratino.assignment.`super`.base.dao.postgre
 
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDaoOperationException
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentPostgreRow
+import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentR2dbcRepo
 import ru.pashkovske.buratino.assignment.base.dao.postgre.PostgreAssignmentDao
 import ru.pashkovske.buratino.assignment.`super`.base.model.SuperAssignment
 import java.util.UUID
@@ -16,7 +16,7 @@ abstract class PostgreSuperAssignmentDao<
     SuperRow : SuperAssignmentPostgreRow<SuperA>
     >(
     override val mapper: SuperAssignmentToPostgreMapper<NestedA, SuperA, SuperRow>,
-    r2dbcRepository: ReactiveCrudRepository<SuperRow, UUID>,
+    r2dbcRepository: AssignmentR2dbcRepo<SuperA, SuperRow>,
     r2dbcEntityTemplate: R2dbcEntityTemplate,
     private val nestedAssignmentDao: PostgreAssignmentDao<NestedA, NestedRow>
 ) : PostgreAssignmentDao<SuperA, SuperRow>(

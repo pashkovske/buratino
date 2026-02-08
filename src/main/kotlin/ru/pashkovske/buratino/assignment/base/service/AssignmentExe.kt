@@ -5,6 +5,7 @@ import java.util.UUID
 
 interface AssignmentExe<A: Assignment> {
 
+    fun recoverAssignments(): List<A>
     fun start(assignment: A): A
     fun refresh(id: UUID): A
     fun cancel(id: UUID): A

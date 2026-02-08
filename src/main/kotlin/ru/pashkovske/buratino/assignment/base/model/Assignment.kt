@@ -28,6 +28,10 @@ abstract class Assignment(
         refreshSchedulingInfo = schedulingInfo
     }
 
+    fun clearRefreshScheduling() {
+        refreshSchedulingInfo = null
+    }
+
     fun getRefreshSchedulingInfo(): SchedulingInfo? {
         return refreshSchedulingInfo
     }

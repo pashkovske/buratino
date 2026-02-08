@@ -5,7 +5,7 @@ import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 
 interface OrderService {
 
-    fun refreshOrders()
+    fun refreshOrders(): List<Order>
     fun createOrder(orderRequest: LimitOrderRequest): Order
     fun replaceOrder(
         orderId: String,

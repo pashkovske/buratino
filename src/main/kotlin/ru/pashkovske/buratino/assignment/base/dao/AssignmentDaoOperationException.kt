@@ -4,7 +4,7 @@ import java.util.UUID
 
 class AssignmentDaoOperationException(
     message: String,
-    assignmentId: UUID
+    assignmentId: UUID?
 ): IllegalArgumentException(
     """
         Assignment id: $assignmentId

@@ -1,6 +1,9 @@
 package ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
-import java.util.UUID
+import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentR2dbcRepo
+import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 
-interface TopPriceAssignmentRepoPostgre : ReactiveCrudRepository<TopPriceAssignmentRow, UUID>
+interface TopPriceAssignmentRepoPostgre : AssignmentR2dbcRepo<
+    TopPriceAssignment,
+    TopPriceAssignmentRow
+    >

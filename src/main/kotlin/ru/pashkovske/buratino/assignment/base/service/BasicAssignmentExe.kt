@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.assignment.base.service
 
+import jakarta.annotation.PostConstruct
 import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
@@ -19,6 +20,19 @@ abstract class BasicAssignmentExe<A: Assignment>(
 ): AssignmentExe<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
+
+    @PostConstruct
+    override fun recoverAssignments(): List<A> {
+        val activeAssignments: List<A> = assignmentDao.getByStatus(AssignmentStatus.IN_PROGRESS)
+        activeAssignments.filter { assignment: A ->
+            assignment.refreshSchedulingProperties != null
+        }.forEach { assignment: A ->
+            assignment.clearRefreshScheduling()
+            scheduleRefresh(assignment)
+            refresh(assignment.id)
+        }
+        return activeAssignments
+    }
 
     final override fun start(assignment: A): A {
         val ctx: ExeCtx<A> = preStart(assignment)
@@ -112,6 +126,11 @@ abstract class BasicAssignmentExe<A: Assignment>(
 
     private fun scheduleRefresh(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
+        scheduleRefresh(assignment)
+        ctx.setMutated()
+    }
+
+    private fun scheduleRefresh(assignment: A) {
         val schedulingProps: SchedulingProperties = assignment.refreshSchedulingProperties ?: return
 
         val task = SchedulingAssignmentTask(
@@ -130,8 +149,6 @@ abstract class BasicAssignmentExe<A: Assignment>(
         )
         schedulingInfo.status = SchedulingStatus.ACTIVE
         assignment.initRefreshScheduling(schedulingInfo)
-
-        ctx.setMutated()
     }
 
     private fun stopSchedulingRefresh(ctx: ExeCtx<A>) {

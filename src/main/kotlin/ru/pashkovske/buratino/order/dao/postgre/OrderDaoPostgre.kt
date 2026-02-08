@@ -27,8 +27,8 @@ class OrderDaoPostgre(
             .block() ?: emptyList()
     }
 
-    override fun getAllNotCompleted(): Flux<Order> {
-        return orderRepoPostgre.findByStatus(OrderState.ACTIVE)
+    override fun getByState(state: OrderState): Flux<Order> {
+        return orderRepoPostgre.findByStatus(state)
             .map(mapper::toOrder)
     }
 
