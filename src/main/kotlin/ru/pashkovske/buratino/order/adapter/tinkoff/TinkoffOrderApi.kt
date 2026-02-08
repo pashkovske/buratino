@@ -13,6 +13,7 @@ import ru.tinkoff.piapi.contract.v1.PostOrderResponse
 import ru.tinkoff.piapi.contract.v1.PriceType
 import ru.tinkoff.piapi.contract.v1.TimeInForceType
 import ru.tinkoff.piapi.core.OrdersService
+import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 
@@ -23,8 +24,13 @@ class TinkoffOrderApi(
        private val tinkoffOrderService: OrdersService,
        private val account: Account
 ): ExtOrderServiceAdapter {
+
     private val priceMapper = TinkoffPriceMapper
     private val orderMapper = TinkoffOrderMapper
+
+    override fun getRequestsDelay(): Duration {
+        return Duration.ofMillis(30)
+    }
 
     override fun createOrder(orderRequest: LimitOrderRequest): Order {
         val response: PostOrderResponse = tinkoffOrderService.postLimitOrderSync(

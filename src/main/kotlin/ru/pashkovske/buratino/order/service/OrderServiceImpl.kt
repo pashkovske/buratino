@@ -1,5 +1,7 @@
 package ru.pashkovske.buratino.order.service
 
+import jakarta.annotation.PostConstruct
+import mu.KLogger
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.Order
@@ -9,15 +11,29 @@ import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.dao.OrderDao
 import java.time.Instant
 
-private val logger = mu.KotlinLogging.logger {}
-
 @Service
 class OrderServiceImpl(
     private val orderDao: OrderDao,
     private val extOrderService: ExtOrderServiceAdapter
 ) : OrderService {
+
+    private val log: KLogger = mu.KotlinLogging.logger {}
+
+    @PostConstruct
+    private fun refreshOrders() {
+        val requestsDelay = extOrderService.getRequestsDelay()
+        val notCompletedOrders: List<String> = orderDao.getAllNotCompleted()
+            .map(Order::id)
+            .collectList()
+            .block() ?: throw IllegalStateException("Failed to get not completed orders")
+        for (orderId in notCompletedOrders) {
+            refreshOrder(orderId)
+            Thread.sleep(requestsDelay.toMillis())
+        }
+    }
+
     override fun createOrder(orderRequest: LimitOrderRequest): Order {
-        logger.info("Creating order $orderRequest")
+        log.info("Creating order $orderRequest")
         val order = extOrderService.createOrder(orderRequest)
         orderDao.create(order)
         return order
@@ -27,10 +43,10 @@ class OrderServiceImpl(
         orderId: String,
         newOrderRequest: LimitOrderRequest
     ): Order {
-        logger.info("Replacing order $orderId with $newOrderRequest")
+        log.info("Replacing order $orderId with $newOrderRequest")
         val order = orderDao.get(orderId)
         if (order.request == newOrderRequest) {
-            logger.info("Skipping replacing order $orderId - new order is identical")
+            log.info("Skipping replacing order $orderId - new order is identical")
             return order
         }
         val newOrder = extOrderService.replaceOrder(
@@ -48,7 +64,7 @@ class OrderServiceImpl(
     }
 
     override fun refreshOrder(orderId: String): Order {
-        logger.info("Refreshing order $orderId")
+        log.info("Refreshing order $orderId")
         val order = orderDao.get(orderId)
         order.currentInfo = extOrderService.getOrderActualInfo(orderId)
         orderDao.update(order)
@@ -56,10 +72,10 @@ class OrderServiceImpl(
     }
 
     override fun cancelOrder(orderId: String): Order {
-        logger.info("Canceling order: $orderId")
+        log.info("Canceling order: $orderId")
         val order = orderDao.get(orderId)
         if (order.currentInfo.state == OrderState.COMPLETED) {
-            logger.info("Order is already completed: $orderId, skipping cancel")
+            log.info("Order is already completed: $orderId, skipping cancel")
             return order
         }
         extOrderService.cancelOrder(orderId)

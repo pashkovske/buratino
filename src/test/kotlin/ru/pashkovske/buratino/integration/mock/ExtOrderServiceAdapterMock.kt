@@ -12,13 +12,19 @@ import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferAffiliation
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
+import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 
 class ExtOrderServiceAdapterMock(
     private val offerBookMock: OfferBookMock
 ): ExtOrderServiceAdapter {
+
     private val orders = mutableMapOf<String, Order>()
+
+    override fun getRequestsDelay(): Duration {
+        return Duration.ofMillis(1)
+    }
 
     override fun createOrder(orderRequest: LimitOrderRequest): Order {
         val orderCommitResult = OrderCommitResult(

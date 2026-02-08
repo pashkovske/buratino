@@ -2,8 +2,10 @@ package ru.pashkovske.buratino.order.dao.postgre
 
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.dao.OrderDao
+import ru.pashkovske.buratino.order.model.OrderState
 
 @Repository
 class OrderDaoPostgre(
@@ -23,6 +25,11 @@ class OrderDaoPostgre(
             .map(mapper::toOrder)
             .collectList()
             .block() ?: emptyList()
+    }
+
+    override fun getAllNotCompleted(): Flux<Order> {
+        return orderRepoPostgre.findByStatus(OrderState.ACTIVE)
+            .map(mapper::toOrder)
     }
 
     override fun create(order: Order) {
