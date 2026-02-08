@@ -20,14 +20,19 @@ class OrderServiceImpl(
     private val log: KLogger = mu.KotlinLogging.logger {}
 
     @PostConstruct
-    private fun refreshOrders() {
+    override fun refreshOrders() {
         val requestsDelay = extOrderService.getRequestsDelay()
-        val notCompletedOrders: List<String> = orderDao.getAllNotCompleted()
-            .map(Order::id)
+        val notCompletedOrders: List<Order> = orderDao.getAllNotCompleted()
             .collectList()
             .block() ?: throw IllegalStateException("Failed to get not completed orders")
-        for (orderId in notCompletedOrders) {
-            refreshOrder(orderId)
+        for (order: Order in notCompletedOrders) {
+            try {
+                refreshOrder(order.id)
+            } catch (e: Exception) {
+                log.error(e) { "Failed to refresh order ${order.id} mark as completed" }
+                order.currentInfo = order.currentInfo.copy(state = OrderState.COMPLETED)
+                orderDao.update(order)
+            }
             Thread.sleep(requestsDelay.toMillis())
         }
     }
