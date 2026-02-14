@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.base.service
 
+import jakarta.annotation.PostConstruct
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingAssignmentTask
@@ -33,6 +34,21 @@ abstract class BasicContinuousAssignmentExe<
 {
 
     private val log = KotlinLogging.logger {}
+
+    @PostConstruct
+    override fun recoverAssignments(): List<ContinuousA> {
+        val assignmentsToRecover: List<ContinuousA> = super.recoverAssignments()
+
+        assignmentsToRecover.filter { assignment: ContinuousA ->
+            assignment.refreshSchedulingProperties != null
+        }.forEach { assignment: ContinuousA ->
+            assignment.clearContinueScheduling()
+            scheduleContinue(assignment)
+            assignmentDao.update(assignment)
+            continueAssignment(assignment.id)
+        }
+        return assignmentsToRecover
+    }
 
     final override fun continueAssignment(id: UUID): ContinuousA {
         val ctx: ExeCtx<ContinuousA> = preContinue(id)
@@ -73,7 +89,14 @@ abstract class BasicContinuousAssignmentExe<
 
     private fun scheduleContinue(ctx: ExeCtx<ContinuousA>) {
         val assignment: ContinuousA = ctx.assignment
-        val schedulingProps: SchedulingProperties = assignment.continueSchedulingProperties ?: return
+        val scheduled: Boolean = scheduleContinue(assignment)
+        if (scheduled) {
+            ctx.setMutated()
+        }
+    }
+
+    private fun scheduleContinue(assignment: ContinuousA): Boolean {
+        val schedulingProps: SchedulingProperties = assignment.continueSchedulingProperties ?: return false
 
         val task = SchedulingAssignmentTask(
             action = this::continueAssignment,
@@ -90,8 +113,7 @@ abstract class BasicContinuousAssignmentExe<
         )
         schedulingInfo.status = SchedulingStatus.ACTIVE
         assignment.initContinueScheduling(schedulingInfo)
-
-        ctx.setMutated()
+        return true
     }
 
     private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {

@@ -31,6 +31,10 @@ abstract class ContinuousAssignment<Nested: Assignment>(
         continueSchedulingInfo = schedulingInfo
     }
 
+    fun clearContinueScheduling() {
+        continueSchedulingInfo = null
+    }
+
     fun getContinueSchedulingInfo(): SchedulingInfo? {
         return continueSchedulingInfo
     }
