@@ -1,12 +1,12 @@
-package ru.pashkovske.buratino.integration.mock
+package ru.pashkovske.buratino.integration.mock.order
 
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.price.model.Price
+import ru.pashkovske.buratino.price.offer.adapter.OfferBookAdapter
 import ru.pashkovske.buratino.price.offer.model.Offer
 import ru.pashkovske.buratino.price.offer.model.OfferBook
 import ru.pashkovske.buratino.price.offer.model.OfferDirection
 import ru.pashkovske.buratino.price.offer.model.QuotationLevelOffers
-import ru.pashkovske.buratino.price.offer.adapter.OfferBookAdapter
 import ru.pashkovske.buratino.util.loader.FileLoader
 import java.time.Instant
 
@@ -32,14 +32,13 @@ class OfferBookMock: OfferBookAdapter {
                 ts = Instant.now()
             )
         }
-        @Suppress("REDUNDANT_ELSE_IN_WHEN")
-        when (offer.direction) {
+        val newOfferBook: OfferBook = when (offer.direction) {
             OfferDirection.SELL ->
                 offerBook.copy(asks = updateOfferBookProperty(offerBook.asks, offer))
             OfferDirection.BUY ->
                 offerBook.copy(bids = updateOfferBookProperty(offerBook.bids, offer))
-            else -> throw IllegalArgumentException("Unknown direction: ${offer.direction}")
         }
+        offerBooks[iid] = newOfferBook
     }
 
     private fun updateOfferBookProperty(

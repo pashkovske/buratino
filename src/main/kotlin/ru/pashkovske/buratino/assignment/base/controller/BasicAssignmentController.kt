@@ -34,6 +34,11 @@ abstract class BasicAssignmentController<A: Assignment>(
         return dao.getAll()
     }
 
+    @GetMapping("/{id}")
+    fun get(@PathVariable id: UUID): A {
+        return dao.get(id)
+    }
+
     @PatchMapping("/refresh-all")
     fun refreshAll(): List<A> {
         val activeAssignments: List<A> = dao.getAll()

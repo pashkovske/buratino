@@ -1,5 +1,6 @@
-package ru.pashkovske.buratino.integration.mock
+package ru.pashkovske.buratino.integration.mock.order
 
+import ru.pashkovske.buratino.integration.mock.order.exception.MockOrderApiNotFoundException
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.OrderCommitResult
@@ -82,7 +83,7 @@ class ExtOrderServiceAdapterMock(
     }
 
     override fun getOrderActualInfo(orderId: String): OrderInstantInfo {
-        return orders[orderId]?.currentInfo ?: throw IllegalArgumentException("Order not found")
+        return orders[orderId]?.currentInfo ?: throw MockOrderApiNotFoundException(orderId = orderId)
     }
 
     override fun cancelOrder(orderId: String) {

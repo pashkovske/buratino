@@ -29,6 +29,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         }.forEach { assignment: A ->
             assignment.clearRefreshScheduling()
             scheduleRefresh(assignment)
+            assignmentDao.update(assignment)
             refresh(assignment.id)
         }
         return activeAssignments

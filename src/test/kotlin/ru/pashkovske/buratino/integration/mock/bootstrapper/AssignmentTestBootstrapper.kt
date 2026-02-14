@@ -5,7 +5,7 @@ import ru.pashkovske.buratino.instrument.model.Future
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.instrument.model.Share
 import ru.pashkovske.buratino.integration.mock.InstrumentServiceMocker
-import ru.pashkovske.buratino.integration.mock.OfferBookMock
+import ru.pashkovske.buratino.integration.mock.order.OfferBookMock
 import ru.pashkovske.buratino.util.loader.FileLoader
 
 @Service

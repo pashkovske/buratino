@@ -9,6 +9,7 @@ import ru.pashkovske.buratino.order.model.OrderInstantInfo
 import ru.pashkovske.buratino.order.model.OrderState
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.dao.OrderDao
+import ru.pashkovske.buratino.order.exception.OrderApiNotFoundException
 import java.time.Instant
 
 @Service
@@ -72,7 +73,20 @@ class OrderServiceImpl(
     override fun refreshOrder(orderId: String): Order {
         log.info("Refreshing order $orderId")
         val order = orderDao.get(orderId)
-        order.currentInfo = extOrderService.getOrderActualInfo(orderId)
+        if (order.currentInfo.state == OrderState.COMPLETED) {
+            log.info("Order is already completed: $orderId, skipping refresh")
+            return order
+        }
+        try {
+            order.currentInfo = extOrderService.getOrderActualInfo(orderId)
+        } catch (e: OrderApiNotFoundException) {
+            log.error(e) { "Order not found while refreshing. Stubbing as completed" }
+            order.currentInfo = OrderInstantInfo(
+                state = OrderState.COMPLETED,
+                remainingLots = 0,
+                time = Instant.now()
+            )
+        }
         orderDao.update(order)
         return order
     }
