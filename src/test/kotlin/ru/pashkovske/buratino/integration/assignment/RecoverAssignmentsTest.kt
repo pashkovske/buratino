@@ -22,8 +22,11 @@ import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
+import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.dao.postgre.ContinuousFractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
@@ -40,7 +43,13 @@ class RecoverAssignmentsTest(
     @Autowired
     private lateinit var assignmentExe: AssignmentExe<TopPriceAssignment>
     @Autowired
+    private lateinit var continuousAssignmentExe: AssignmentExe<ContinuousFractionalSpreadAssignment>
+    @Autowired
     private lateinit var topPriceAssignmentDao: TopPriceAssignmentDao
+    @Autowired
+    private lateinit var continuousFractionalSpreadAssignmentDao: ContinuousFractionalSpreadAssignmentDao
+    @Autowired
+    private lateinit var fractionalSpreadAssignmentDao: FractionalSpreadAssignmentDao
     @Autowired
     private lateinit var orderDao: OrderDao
     @Autowired
@@ -54,6 +63,8 @@ class RecoverAssignmentsTest(
     fun setUp() {
         orderDao.deleteAll()
         topPriceAssignmentDao.deleteAll()
+        fractionalSpreadAssignmentDao.deleteAll()
+        continuousFractionalSpreadAssignmentDao.deleteAll()
         shutdownScheduler()
     }
 
@@ -64,7 +75,7 @@ class RecoverAssignmentsTest(
     }
 
     @Test
-    fun `recoverAssignments should restore refresh scheduling for IN_PROGRESS assignments`() {
+    fun `recoverAssignments should recover refresh scheduling for IN_PROGRESS assignments`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
 
         // Create assignment 1: IN_PROGRESS with refresh scheduling
@@ -194,7 +205,7 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment2AfterRecover = objectMapper.readValue(
+        val assignment2AfterRecover: TopPriceAssignment = objectMapper.readValue(
             getResult2After.response.contentAsString,
             TopPriceAssignment::class.java
         )
@@ -208,11 +219,164 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment3AfterRecover = objectMapper.readValue(
+        val assignment3AfterRecover: TopPriceAssignment = objectMapper.readValue(
             getResult3After.response.contentAsString,
             TopPriceAssignment::class.java
         )
         assertNotNull(assignment3AfterRecover.getRefreshSchedulingInfo())
         assertEquals(SchedulingStatus.COMPLETED, assignment3AfterRecover.getRefreshSchedulingInfo()!!.status)
+    }
+
+    @Test
+    fun `recoverAssignments should recover continue scheduling for IN_PROGRESS continuous assignments`() {
+        val iid: InstrumentId = bootstrapper.getIid("kzos")
+
+        // Create assignment 1: IN_PROGRESS with continue scheduling
+        val createResult1: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .post(
+                    "/assignment/continuous/fractional-spread/{instrumentId}/start/{direction}",
+                    iid.id,
+                    "sell"
+                )
+                .header("X-API-KEY", "test-api-key")
+                .content("{\"rate\": 0.007, \"continueSchedulingInterval\": \"PT10M\"}")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment1Id: String = objectMapper.readTree(createResult1.response.contentAsString)
+            .get("id").asText()
+
+        // Create assignment 2: IN_PROGRESS without continue scheduling
+        val createResult2: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .post(
+                    "/assignment/continuous/fractional-spread/{instrumentId}/start/{direction}",
+                    iid.id,
+                    "sell"
+                )
+                .header("X-API-KEY", "test-api-key")
+                .content("{\"rate\": 0.007}")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment2Id: String = objectMapper.readTree(createResult2.response.contentAsString)
+            .get("id").asText()
+
+        // Create assignment 3: IN_PROGRESS with continue scheduling, then cancel it
+        val createResult3: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .post(
+                    "/assignment/continuous/fractional-spread/{instrumentId}/start/{direction}",
+                    iid.id,
+                    "sell"
+                )
+                .header("X-API-KEY", "test-api-key")
+                .content("{\"rate\": 0.007, \"continueSchedulingInterval\": \"PT15M\"}")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment3Id: String = objectMapper.readTree(createResult3.response.contentAsString)
+            .get("id").asText()
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .delete("/assignment/continuous/fractional-spread/{id}", assignment3Id)
+                .header("X-API-KEY", "test-api-key")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+
+        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
+
+        val getResult1: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/assignment/continuous/fractional-spread/{id}", assignment1Id)
+                .header("X-API-KEY", "test-api-key")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment1BeforeRestart = objectMapper.readValue(
+            getResult1.response.contentAsString,
+            ContinuousFractionalSpreadAssignment::class.java
+        )
+        val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getContinueSchedulingInfo()?.taskId
+        assertNotNull(schedulingTaskIdBeforeRestart)
+        assertTrue(assignmentTaskScheduler.getScheduled().contains(schedulingTaskIdBeforeRestart))
+
+        shutdownScheduler()
+        assertEquals(0, assignmentTaskScheduler.getScheduled().size)
+        assignment1BeforeRestart.clearContinueScheduling()
+        continuousFractionalSpreadAssignmentDao.update(assignment1BeforeRestart)
+        val getResult2: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/assignment/continuous/fractional-spread/{id}", assignment2Id)
+                .header("X-API-KEY", "test-api-key")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment2BeforeRestart = objectMapper.readValue(
+            getResult2.response.contentAsString,
+            ContinuousFractionalSpreadAssignment::class.java
+        )
+        assertNull(assignment2BeforeRestart.getContinueSchedulingInfo())
+
+        val recoveredAssignments: List<ContinuousFractionalSpreadAssignment> = continuousAssignmentExe.recoverAssignments()
+
+        assertEquals(2, recoveredAssignments.size)
+        assertTrue(recoveredAssignments.any { it.id.toString() == assignment1Id })
+        assertTrue(recoveredAssignments.any { it.id.toString() == assignment2Id })
+
+        val scheduledCountAfter: Int = assignmentTaskScheduler.getScheduled().size
+        assertEquals(1, scheduledCountAfter)
+
+        val getResult1After: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/assignment/continuous/fractional-spread/{id}", assignment1Id)
+                .header("X-API-KEY", "test-api-key")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment1AfterRecover: ContinuousFractionalSpreadAssignment = objectMapper.readValue(
+            getResult1After.response.contentAsString,
+            ContinuousFractionalSpreadAssignment::class.java
+        )
+        val schedulingInfoAfterRecover: SchedulingInfo? = assignment1AfterRecover.getContinueSchedulingInfo()
+        assertNotNull(schedulingInfoAfterRecover)
+        assertTrue(schedulingTaskIdBeforeRestart != schedulingInfoAfterRecover!!.taskId)
+        assertEquals(
+            assignmentTaskScheduler.getScheduled().first(),
+            schedulingInfoAfterRecover.taskId
+        )
+
+        val getResult2After: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/assignment/continuous/fractional-spread/{id}", assignment2Id)
+                .header("X-API-KEY", "test-api-key")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment2AfterRecover: ContinuousFractionalSpreadAssignment = objectMapper.readValue(
+            getResult2After.response.contentAsString,
+            ContinuousFractionalSpreadAssignment::class.java
+        )
+        assertNull(assignment2AfterRecover.getContinueSchedulingInfo())
+        assertEquals(AssignmentStatus.IN_PROGRESS, assignment2AfterRecover.status)
+
+        val getResult3After: MvcResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/assignment/continuous/fractional-spread/{id}", assignment3Id)
+                .header("X-API-KEY", "test-api-key")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+        val assignment3AfterRecover: ContinuousFractionalSpreadAssignment = objectMapper.readValue(
+            getResult3After.response.contentAsString,
+            ContinuousFractionalSpreadAssignment::class.java
+        )
+        assertNotNull(assignment3AfterRecover.getContinueSchedulingInfo())
+        assertEquals(SchedulingStatus.COMPLETED, assignment3AfterRecover.getContinueSchedulingInfo()!!.status)
     }
 }

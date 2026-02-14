@@ -6,6 +6,7 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDaoOperationExceptio
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentPostgreRow
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentR2dbcRepo
 import ru.pashkovske.buratino.assignment.base.dao.postgre.PostgreAssignmentDao
+import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.`super`.base.model.SuperAssignment
 import java.util.UUID
 
@@ -30,6 +31,25 @@ abstract class PostgreSuperAssignmentDao<
             .collectList()
             .block() ?: emptyList()
         val nestedAssignmentsMap: Map<UUID, NestedA> = nestedAssignmentDao.getAll()
+            .associateBy { it.id }
+        return superAssignmentRows.map { superAssignmentRow ->
+            val nestedAssignment: NestedA = nestedAssignmentsMap[superAssignmentRow.nestedAssignmentId] ?:
+            throw AssignmentDaoOperationException(
+                message = "Nested assignment ${superAssignmentRow.nestedAssignmentId} not found in PostgreSQL",
+                assignmentId = superAssignmentRow.id
+            )
+            mapper.map(
+                superRow = superAssignmentRow,
+                nestedAssignment = nestedAssignment
+            )
+        }
+    }
+
+    override fun getByStatus(status: AssignmentStatus): List<SuperA> {
+        val superAssignmentRows: List<SuperRow> = r2dbcRepository.findByStatus(status)
+            .collectList()
+            .block() ?: emptyList()
+        val nestedAssignmentsMap: Map<UUID, NestedA> = nestedAssignmentDao.getByStatus(status)
             .associateBy { it.id }
         return superAssignmentRows.map { superAssignmentRow ->
             val nestedAssignment: NestedA = nestedAssignmentsMap[superAssignmentRow.nestedAssignmentId] ?:

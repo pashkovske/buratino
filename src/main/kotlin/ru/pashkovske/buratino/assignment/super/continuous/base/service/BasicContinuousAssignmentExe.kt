@@ -40,7 +40,7 @@ abstract class BasicContinuousAssignmentExe<
         val assignmentsToRecover: List<ContinuousA> = super.recoverAssignments()
 
         assignmentsToRecover.filter { assignment: ContinuousA ->
-            assignment.refreshSchedulingProperties != null
+            assignment.continueSchedulingProperties != null
         }.forEach { assignment: ContinuousA ->
             assignment.clearContinueScheduling()
             scheduleContinue(assignment)
