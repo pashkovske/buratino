@@ -15,7 +15,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.dao.postgre.ContinuousFractionalSpreadAssignmentDao
@@ -38,8 +37,6 @@ class ContinuousFractionalSpreadAssignmentTest(
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
     @Autowired
-    private lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
-    @Autowired
     private lateinit var continuousFractionalSpreadAssignmentDao: ContinuousFractionalSpreadAssignmentDao
     @Autowired
     private lateinit var fractionalSpreadAssignmentDao: FractionalSpreadAssignmentDao
@@ -54,6 +51,7 @@ class ContinuousFractionalSpreadAssignmentTest(
         orderDao.deleteAll()
         fractionalSpreadAssignmentDao.deleteAll()
         continuousFractionalSpreadAssignmentDao.deleteAll()
+
     }
 
     @Test

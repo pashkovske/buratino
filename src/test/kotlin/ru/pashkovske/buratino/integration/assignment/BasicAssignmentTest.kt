@@ -3,6 +3,8 @@ package ru.pashkovske.buratino.integration.assignment
 import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
+import org.junit.jupiter.api.BeforeEach
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -14,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.util.MultiValueMap
+import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -28,6 +31,15 @@ import java.util.UUID
 abstract class BasicAssignmentTest(
     protected val mockMvc: MockMvc
 ) {
+
+    @Autowired
+    protected lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
+
+    @BeforeEach
+    fun setUp() {
+        shutdownScheduler()
+    }
+
     protected fun assertAllAssignmentsCancelled(
         path: String,
         expectedCount: Int
@@ -171,5 +183,11 @@ abstract class BasicAssignmentTest(
             .andExpect(jsonPath("$.iid.id").value(iid.id))
             .andExpect(jsonPath("$.id").isString())
             .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
+    }
+
+    private fun shutdownScheduler() {
+        assignmentTaskScheduler.getScheduled().toList().forEach { taskId ->
+            assignmentTaskScheduler.stop(taskId)
+        }
     }
 }

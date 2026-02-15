@@ -15,7 +15,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -33,10 +32,9 @@ class TopPriceAssignmentTest(
 ): BasicAssignmentTest(
     mockMvc = mockMvc
 ) {
+
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
-    @Autowired
-    private lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
     @Autowired
     private lateinit var topPriceAssignmentDao: TopPriceAssignmentDao
     @Autowired
@@ -49,6 +47,7 @@ class TopPriceAssignmentTest(
     fun setup() {
         orderDao.deleteAll()
         topPriceAssignmentDao.deleteAll()
+
     }
 
     @Test
