@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.order.dao.postgre
 
+import org.springframework.context.annotation.DependsOn
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -8,6 +9,7 @@ import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.order.model.OrderState
 
 @Repository
+@DependsOn("flywayInitializer")
 class OrderDaoPostgre(
     private val orderRepoPostgre: OrderRepoPostgre,
     private val mapper: OrderMapper,

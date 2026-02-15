@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.assignment.base.dao.postgre
 
+import org.springframework.context.annotation.DependsOn
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
@@ -7,6 +8,7 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDaoOperationExceptio
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import java.util.UUID
 
+@DependsOn("flywayInitializer")
 abstract class PostgreAssignmentDao<A : Assignment, Row : AssignmentPostgreRow<A>>(
     protected open val mapper: AssignmentToPostgreMapper<A, Row>,
     protected val r2dbcRepository: AssignmentR2dbcRepo<A, Row>,
