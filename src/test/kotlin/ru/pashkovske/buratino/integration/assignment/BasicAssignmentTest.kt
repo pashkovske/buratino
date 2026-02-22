@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.util.MultiValueMap
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
+import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -33,7 +33,7 @@ abstract class BasicAssignmentTest(
 ) {
 
     @Autowired
-    protected lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
+    protected lateinit var taskSchedulerFacade: TaskSchedulerFacade
 
     @BeforeEach
     fun setUp() {
@@ -186,8 +186,8 @@ abstract class BasicAssignmentTest(
     }
 
     private fun shutdownScheduler() {
-        assignmentTaskScheduler.getScheduled().toList().forEach { taskId ->
-            assignmentTaskScheduler.stop(taskId)
+        taskSchedulerFacade.getScheduled().toList().forEach { taskId ->
+            taskSchedulerFacade.stop(taskId)
         }
     }
 }

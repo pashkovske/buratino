@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
+import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
@@ -53,7 +53,7 @@ class RecoverAssignmentsTest(
     @Autowired
     private lateinit var orderDao: OrderDao
     @Autowired
-    private lateinit var assignmentTaskScheduler: AssignmentTaskScheduler
+    private lateinit var taskSchedulerFacade: TaskSchedulerFacade
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
     @Autowired
@@ -69,8 +69,8 @@ class RecoverAssignmentsTest(
     }
 
     private fun shutdownScheduler() {
-        assignmentTaskScheduler.getScheduled().toList().forEach { taskId ->
-            assignmentTaskScheduler.stop(taskId)
+        taskSchedulerFacade.getScheduled().toList().forEach { taskId ->
+            taskSchedulerFacade.stop(taskId)
         }
     }
 
@@ -136,7 +136,7 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
 
-        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
+        assertEquals(1, taskSchedulerFacade.getScheduled().size)
 
         val getResult1: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -151,10 +151,10 @@ class RecoverAssignmentsTest(
         )
         val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getRefreshSchedulingInfo()?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
-        assertTrue(assignmentTaskScheduler.getScheduled().contains(schedulingTaskIdBeforeRestart))
+        assertTrue(taskSchedulerFacade.getScheduled().contains(schedulingTaskIdBeforeRestart))
 
         shutdownScheduler()
-        assertEquals(0, assignmentTaskScheduler.getScheduled().size)
+        assertEquals(0, taskSchedulerFacade.getScheduled().size)
         assignment1BeforeRestart.clearRefreshScheduling()
         topPriceAssignmentDao.update(assignment1BeforeRestart)
         val getResult2: MvcResult = mockMvc.perform(
@@ -176,7 +176,7 @@ class RecoverAssignmentsTest(
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment1Id })
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment2Id })
 
-        val scheduledCountAfter = assignmentTaskScheduler.getScheduled().size
+        val scheduledCountAfter = taskSchedulerFacade.getScheduled().size
         assertEquals(1, scheduledCountAfter)
 
         val getResult1After: MvcResult = mockMvc.perform(
@@ -194,7 +194,7 @@ class RecoverAssignmentsTest(
         assertNotNull(schedulingInfoAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != schedulingInfoAfterRecover!!.taskId)
         assertEquals(
-            assignmentTaskScheduler.getScheduled().first(),
+            taskSchedulerFacade.getScheduled().first(),
             schedulingInfoAfterRecover.taskId
         )
 
@@ -289,7 +289,7 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
 
-        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
+        assertEquals(1, taskSchedulerFacade.getScheduled().size)
 
         val getResult1: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -304,10 +304,10 @@ class RecoverAssignmentsTest(
         )
         val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getContinueSchedulingInfo()?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
-        assertTrue(assignmentTaskScheduler.getScheduled().contains(schedulingTaskIdBeforeRestart))
+        assertTrue(taskSchedulerFacade.getScheduled().contains(schedulingTaskIdBeforeRestart))
 
         shutdownScheduler()
-        assertEquals(0, assignmentTaskScheduler.getScheduled().size)
+        assertEquals(0, taskSchedulerFacade.getScheduled().size)
         assignment1BeforeRestart.clearContinueScheduling()
         continuousFractionalSpreadAssignmentDao.update(assignment1BeforeRestart)
         val getResult2: MvcResult = mockMvc.perform(
@@ -329,7 +329,7 @@ class RecoverAssignmentsTest(
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment1Id })
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment2Id })
 
-        val scheduledCountAfter: Int = assignmentTaskScheduler.getScheduled().size
+        val scheduledCountAfter: Int = taskSchedulerFacade.getScheduled().size
         assertEquals(1, scheduledCountAfter)
 
         val getResult1After: MvcResult = mockMvc.perform(
@@ -347,7 +347,7 @@ class RecoverAssignmentsTest(
         assertNotNull(schedulingInfoAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != schedulingInfoAfterRecover!!.taskId)
         assertEquals(
-            assignmentTaskScheduler.getScheduled().first(),
+            taskSchedulerFacade.getScheduled().first(),
             schedulingInfoAfterRecover.taskId
         )
 

@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
+import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
 import ru.pashkovske.buratino.assignment.`super`.base.service.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.model.ContinuousAssignment
 import java.util.UUID
@@ -20,14 +20,14 @@ abstract class BasicContinuousAssignmentExe<
     Nested : Assignment
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
-    assignmentScheduler: AssignmentTaskScheduler,
+    taskSchedulerFacade: TaskSchedulerFacade,
     nestedAssignmentExe: AssignmentExe<Nested>,
     nestedAssignmentDao: AssignmentDao<Nested>
 ):
     BasicSuperAssignmentExe<ContinuousA, Nested>(
         assignmentDao = assignmentDao,
         nestedAssignmentExe = nestedAssignmentExe,
-        assignmentScheduler = assignmentScheduler,
+        taskSchedulerFacade = taskSchedulerFacade,
         nestedAssignmentDao = nestedAssignmentDao
     ),
     ContinuousAssignmentExe<ContinuousA>
@@ -106,7 +106,7 @@ abstract class BasicContinuousAssignmentExe<
             properties = schedulingProps,
             taskId = UUID.randomUUID()
         )
-        assignmentScheduler.start(
+        this@BasicContinuousAssignmentExe.taskSchedulerFacade.startPeriodic(
             task = task,
             taskId = schedulingInfo.taskId,
             interval = schedulingProps.interval
@@ -119,7 +119,7 @@ abstract class BasicContinuousAssignmentExe<
     private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
         val schedulingInfo: SchedulingInfo = ctx.assignment.getContinueSchedulingInfo() ?: return
 
-        assignmentScheduler.stop(schedulingInfo.taskId)
+        this@BasicContinuousAssignmentExe.taskSchedulerFacade.stop(schedulingInfo.taskId)
         schedulingInfo.status = SchedulingStatus.COMPLETED
 
         ctx.setMutated()

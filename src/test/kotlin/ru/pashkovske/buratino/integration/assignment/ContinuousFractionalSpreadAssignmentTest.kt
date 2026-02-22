@@ -171,12 +171,12 @@ class ContinuousFractionalSpreadAssignmentTest(
             params = null
         ).andReturn()
 
-        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
+        assertEquals(1, taskSchedulerFacade.getScheduled().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
         assertNotNull(assignment.getContinueSchedulingInfo())
         assertEquals(
-            assignmentTaskScheduler.getScheduled().first(),
+            taskSchedulerFacade.getScheduled().first(),
             assignment.getContinueSchedulingInfo()!!.taskId
         )
 
@@ -185,7 +185,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-        assertTrue(assignmentTaskScheduler.getScheduled().isEmpty())
+        assertTrue(taskSchedulerFacade.getScheduled().isEmpty())
     }
 
     @Test
@@ -207,12 +207,12 @@ class ContinuousFractionalSpreadAssignmentTest(
             """.trimIndent(),
             params = null
         ).andReturn()
-        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
+        assertEquals(1, taskSchedulerFacade.getScheduled().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
         assertNotNull(assignment.getRefreshSchedulingInfo())
         assertEquals(
-            assignmentTaskScheduler.getScheduled().first(),
+            taskSchedulerFacade.getScheduled().first(),
             assignment.getRefreshSchedulingInfo()!!.taskId
         )
 
@@ -221,6 +221,6 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-        assertTrue(assignmentTaskScheduler.getScheduled().isEmpty())
+        assertTrue(taskSchedulerFacade.getScheduled().isEmpty())
     }
 }

@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
+import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
@@ -14,7 +14,7 @@ import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.Fractiona
 final class ContinuousFractionalSpreadAssignmentExe(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     nestedAssignmentExe: FractionalSpreadAssignmentExe,
-    assignmentScheduler: AssignmentTaskScheduler,
+    taskSchedulerFacade: TaskSchedulerFacade,
     nestedAssignmentDao: AssignmentDao<FractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
@@ -22,7 +22,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
     >(
     assignmentDao = assignmentDao,
     nestedAssignmentExe = nestedAssignmentExe,
-    assignmentScheduler = assignmentScheduler,
+    taskSchedulerFacade = taskSchedulerFacade,
     nestedAssignmentDao = nestedAssignmentDao
 ) {
 

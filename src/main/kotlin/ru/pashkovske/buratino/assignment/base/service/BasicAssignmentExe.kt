@@ -11,12 +11,12 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
+import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
 import java.util.UUID
 
 abstract class BasicAssignmentExe<A: Assignment>(
     protected val assignmentDao: AssignmentDao<A>,
-    protected val assignmentScheduler: AssignmentTaskScheduler
+    protected val taskSchedulerFacade: TaskSchedulerFacade
 ): AssignmentExe<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
@@ -143,7 +143,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
             taskId = UUID.randomUUID(),
             status = SchedulingStatus.QUEUED
         )
-        assignmentScheduler.start(
+        taskSchedulerFacade.startPeriodic(
             task = task,
             taskId = schedulingInfo.taskId,
             interval = schedulingProps.interval
@@ -157,7 +157,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         if (schedulingInfo.status == SchedulingStatus.COMPLETED) {
             return
         }
-        assignmentScheduler.stop(schedulingInfo.taskId)
+        taskSchedulerFacade.stop(schedulingInfo.taskId)
         schedulingInfo.status = SchedulingStatus.COMPLETED
 
         ctx.setMutated()

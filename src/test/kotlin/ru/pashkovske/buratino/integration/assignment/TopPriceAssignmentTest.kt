@@ -133,12 +133,12 @@ class TopPriceAssignmentTest(
             params = mapOf("oneStepOver" to oneStepOver.toString())
         ).andReturn()
 
-        assertEquals(1, assignmentTaskScheduler.getScheduled().size)
+        assertEquals(1, taskSchedulerFacade.getScheduled().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
         assertNotNull(assignment.getRefreshSchedulingInfo())
         assertEquals(
-            assignmentTaskScheduler.getScheduled().first(),
+            taskSchedulerFacade.getScheduled().first(),
             assignment.getRefreshSchedulingInfo()!!.taskId
         )
 
@@ -147,7 +147,7 @@ class TopPriceAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-        assertTrue(assignmentTaskScheduler.getScheduled().isEmpty())
+        assertTrue(taskSchedulerFacade.getScheduled().isEmpty())
     }
 
     @Test

@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.scheduling
+package ru.pashkovske.buratino.common.utils.scheduler
 
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.stereotype.Component
@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ScheduledFuture
 
 @Component
-class AssignmentTaskScheduler(
+class TaskSchedulerFacade(
     private val taskScheduler: TaskScheduler
 ) {
     private val scheduledTasks: MutableMap<UUID, ScheduledFuture<*>> = ConcurrentHashMap()
@@ -18,8 +18,8 @@ class AssignmentTaskScheduler(
         return scheduledTasks.keys
     }
 
-    fun start(
-        task: SchedulingAssignmentTask,
+    fun startPeriodic(
+        task: Runnable,
         taskId: UUID,
         interval: Duration
     ) {
@@ -30,6 +30,24 @@ class AssignmentTaskScheduler(
                 task,
                 Instant.now().plus(interval),
                 interval
+            )
+        }
+        if (!isNew) {
+            throw IllegalStateException("Task with id $taskId already exists")
+        }
+    }
+
+    fun startOneTime(
+        task: Runnable,
+        taskId: UUID,
+        interval: Duration
+    ) {
+        var isNew = false
+        scheduledTasks.computeIfAbsent(taskId) {
+            isNew = true
+            taskScheduler.schedule(
+                task,
+                Instant.now().plus(interval),
             )
         }
         if (!isNew) {

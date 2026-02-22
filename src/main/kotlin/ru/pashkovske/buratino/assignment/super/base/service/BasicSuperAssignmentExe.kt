@@ -8,7 +8,7 @@ import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentTaskScheduler
+import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
 import ru.pashkovske.buratino.assignment.`super`.base.model.SuperAssignment
 import java.util.UUID
 
@@ -17,12 +17,12 @@ abstract class BasicSuperAssignmentExe<
     Nested : Assignment
     >(
     assignmentDao: AssignmentDao<SuperA>,
-    assignmentScheduler: AssignmentTaskScheduler,
+    taskSchedulerFacade: TaskSchedulerFacade,
     protected val nestedAssignmentExe: AssignmentExe<Nested>,
     protected val nestedAssignmentDao: AssignmentDao<Nested>
 ) : BasicAssignmentExe<SuperA>(
     assignmentDao = assignmentDao,
-    assignmentScheduler = assignmentScheduler
+    taskSchedulerFacade = taskSchedulerFacade
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}
