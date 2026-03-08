@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import com.jayway.jsonpath.JsonPath
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
@@ -38,7 +38,7 @@ class FractionalSpreadAssignmentTest(
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
-    @BeforeEach
+    @AfterEach
     fun setup() {
         orderDao.deleteAll()
         fractionalSpreadAssignmentDao.deleteAll()

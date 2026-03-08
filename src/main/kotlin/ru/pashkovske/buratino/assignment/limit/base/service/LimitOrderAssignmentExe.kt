@@ -4,7 +4,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
+import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.order.model.Order
@@ -16,10 +16,10 @@ import java.util.UUID
 abstract class LimitOrderAssignmentExe<LimitA : LimitOrderAssignment>(
     private val orderService: OrderService,
     assignmentDao: AssignmentDao<LimitA>,
-    taskSchedulerFacade: TaskSchedulerFacade
+    taskScheduler: TaskScheduler
 ): BasicAssignmentExe<LimitA>(
     assignmentDao = assignmentDao,
-    taskSchedulerFacade = taskSchedulerFacade
+    taskScheduler = taskScheduler
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}

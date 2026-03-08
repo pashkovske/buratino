@@ -3,14 +3,14 @@ package ru.pashkovske.buratino.assignment.`super`.continuous.base.service
 import jakarta.annotation.PostConstruct
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingAssignmentTask
+import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
+import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.base.service.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.model.ContinuousAssignment
 import java.util.UUID
@@ -20,14 +20,14 @@ abstract class BasicContinuousAssignmentExe<
     Nested : Assignment
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
-    taskSchedulerFacade: TaskSchedulerFacade,
+    taskScheduler: TaskScheduler,
     nestedAssignmentExe: AssignmentExe<Nested>,
     nestedAssignmentDao: AssignmentDao<Nested>
 ):
     BasicSuperAssignmentExe<ContinuousA, Nested>(
         assignmentDao = assignmentDao,
         nestedAssignmentExe = nestedAssignmentExe,
-        taskSchedulerFacade = taskSchedulerFacade,
+        taskScheduler = taskScheduler,
         nestedAssignmentDao = nestedAssignmentDao
     ),
     ContinuousAssignmentExe<ContinuousA>
@@ -98,18 +98,17 @@ abstract class BasicContinuousAssignmentExe<
     private fun scheduleContinue(assignment: ContinuousA): Boolean {
         val schedulingProps: SchedulingProperties = assignment.continueSchedulingProperties ?: return false
 
-        val task = SchedulingAssignmentTask(
+        val subscriber = AssignmentSchedulingSubscriber(
             action = this::continueAssignment,
             assignmentId = assignment.id
         )
+        val taskId: UUID = taskScheduler.startNewPeriodic(
+            period = schedulingProps.interval,
+            subscriber = subscriber
+        )
         val schedulingInfo = SchedulingInfo(
             properties = schedulingProps,
-            taskId = UUID.randomUUID()
-        )
-        this@BasicContinuousAssignmentExe.taskSchedulerFacade.startPeriodic(
-            task = task,
-            taskId = schedulingInfo.taskId,
-            interval = schedulingProps.interval
+            taskId = taskId
         )
         schedulingInfo.status = SchedulingStatus.ACTIVE
         assignment.initContinueScheduling(schedulingInfo)
@@ -119,7 +118,7 @@ abstract class BasicContinuousAssignmentExe<
     private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
         val schedulingInfo: SchedulingInfo = ctx.assignment.getContinueSchedulingInfo() ?: return
 
-        this@BasicContinuousAssignmentExe.taskSchedulerFacade.stop(schedulingInfo.taskId)
+        this.taskScheduler.stopPeriodic(schedulingInfo.taskId)
         schedulingInfo.status = SchedulingStatus.COMPLETED
 
         ctx.setMutated()

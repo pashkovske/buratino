@@ -1,10 +1,10 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import com.jayway.jsonpath.JsonPath
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
@@ -43,11 +43,10 @@ class TopPriceAssignmentTest(
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
-    @BeforeEach
+    @AfterEach
     fun setup() {
         orderDao.deleteAll()
         topPriceAssignmentDao.deleteAll()
-
     }
 
     @Test
@@ -133,12 +132,12 @@ class TopPriceAssignmentTest(
             params = mapOf("oneStepOver" to oneStepOver.toString())
         ).andReturn()
 
-        assertEquals(1, taskSchedulerFacade.getScheduled().size)
+        assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
         assertNotNull(assignment.getRefreshSchedulingInfo())
         assertEquals(
-            taskSchedulerFacade.getScheduled().first(),
+            taskScheduler.getPeriodicScheduledTasks().first(),
             assignment.getRefreshSchedulingInfo()!!.taskId
         )
 
@@ -147,7 +146,7 @@ class TopPriceAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-        assertTrue(taskSchedulerFacade.getScheduled().isEmpty())
+        assertTrue(taskScheduler.getPeriodicScheduledTasks().isEmpty())
     }
 
     @Test

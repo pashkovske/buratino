@@ -2,10 +2,10 @@ package ru.pashkovske.buratino.integration.order
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -45,7 +45,7 @@ class RefreshOrdersTest(
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-    @BeforeEach
+    @AfterEach
     fun setUp() {
         orderDao.deleteAll()
     }

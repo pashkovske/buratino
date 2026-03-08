@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.limit.top.price.service
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
+import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
 import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.model.Price
@@ -14,11 +14,11 @@ final class TopPriceAssignmentExe(
     orderService: OrderService,
     assignmentDao: AssignmentDao<TopPriceAssignment>,
     val marketDataService: MarketPriceService,
-    taskSchedulerFacade: TaskSchedulerFacade
+    taskScheduler: TaskScheduler
 ) : LimitOrderAssignmentExe<TopPriceAssignment>(
     orderService = orderService,
     assignmentDao = assignmentDao,
-    taskSchedulerFacade = taskSchedulerFacade
+    taskScheduler = taskScheduler
 ) {
 
     override fun getPrice(assignment: TopPriceAssignment): Price {

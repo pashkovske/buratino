@@ -1,11 +1,11 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import com.jayway.jsonpath.JsonPath
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
@@ -46,12 +46,11 @@ class ContinuousFractionalSpreadAssignmentTest(
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
-    @BeforeEach
+    @AfterEach
     fun setup() {
         orderDao.deleteAll()
         fractionalSpreadAssignmentDao.deleteAll()
         continuousFractionalSpreadAssignmentDao.deleteAll()
-
     }
 
     @Test
@@ -171,12 +170,12 @@ class ContinuousFractionalSpreadAssignmentTest(
             params = null
         ).andReturn()
 
-        assertEquals(1, taskSchedulerFacade.getScheduled().size)
+        assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
         assertNotNull(assignment.getContinueSchedulingInfo())
         assertEquals(
-            taskSchedulerFacade.getScheduled().first(),
+            taskScheduler.getPeriodicScheduledTasks().first(),
             assignment.getContinueSchedulingInfo()!!.taskId
         )
 
@@ -185,7 +184,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-        assertTrue(taskSchedulerFacade.getScheduled().isEmpty())
+        assertTrue(taskScheduler.getPeriodicScheduledTasks().isEmpty())
     }
 
     @Test
@@ -207,12 +206,12 @@ class ContinuousFractionalSpreadAssignmentTest(
             """.trimIndent(),
             params = null
         ).andReturn()
-        assertEquals(1, taskSchedulerFacade.getScheduled().size)
+        assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
         assertNotNull(assignment.getRefreshSchedulingInfo())
         assertEquals(
-            taskSchedulerFacade.getScheduled().first(),
+            taskScheduler.getPeriodicScheduledTasks().first(),
             assignment.getRefreshSchedulingInfo()!!.taskId
         )
 
@@ -221,6 +220,6 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-        assertTrue(taskSchedulerFacade.getScheduled().isEmpty())
+        assertTrue(taskScheduler.getPeriodicScheduledTasks().isEmpty())
     }
 }

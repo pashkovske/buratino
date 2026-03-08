@@ -1,11 +1,11 @@
 package ru.pashkovske.buratino.integration.assignment
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
+import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
@@ -53,13 +53,13 @@ class RecoverAssignmentsTest(
     @Autowired
     private lateinit var orderDao: OrderDao
     @Autowired
-    private lateinit var taskSchedulerFacade: TaskSchedulerFacade
+    private lateinit var taskScheduler: TaskScheduler
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-    @BeforeEach
+    @AfterEach
     fun setUp() {
         orderDao.deleteAll()
         topPriceAssignmentDao.deleteAll()
@@ -69,8 +69,8 @@ class RecoverAssignmentsTest(
     }
 
     private fun shutdownScheduler() {
-        taskSchedulerFacade.getScheduled().toList().forEach { taskId ->
-            taskSchedulerFacade.stop(taskId)
+        taskScheduler.getPeriodicScheduledTasks().toList().forEach { taskId ->
+            taskScheduler.stopPeriodic(taskId)
         }
     }
 
@@ -136,7 +136,7 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
 
-        assertEquals(1, taskSchedulerFacade.getScheduled().size)
+        assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
 
         val getResult1: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -151,10 +151,10 @@ class RecoverAssignmentsTest(
         )
         val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getRefreshSchedulingInfo()?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
-        assertTrue(taskSchedulerFacade.getScheduled().contains(schedulingTaskIdBeforeRestart))
+        assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
         shutdownScheduler()
-        assertEquals(0, taskSchedulerFacade.getScheduled().size)
+        assertEquals(0, taskScheduler.getPeriodicScheduledTasks().size)
         assignment1BeforeRestart.clearRefreshScheduling()
         topPriceAssignmentDao.update(assignment1BeforeRestart)
         val getResult2: MvcResult = mockMvc.perform(
@@ -176,7 +176,7 @@ class RecoverAssignmentsTest(
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment1Id })
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment2Id })
 
-        val scheduledCountAfter = taskSchedulerFacade.getScheduled().size
+        val scheduledCountAfter = taskScheduler.getPeriodicScheduledTasks().size
         assertEquals(1, scheduledCountAfter)
 
         val getResult1After: MvcResult = mockMvc.perform(
@@ -194,7 +194,7 @@ class RecoverAssignmentsTest(
         assertNotNull(schedulingInfoAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != schedulingInfoAfterRecover!!.taskId)
         assertEquals(
-            taskSchedulerFacade.getScheduled().first(),
+            taskScheduler.getPeriodicScheduledTasks().first(),
             schedulingInfoAfterRecover.taskId
         )
 
@@ -289,7 +289,7 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
 
-        assertEquals(1, taskSchedulerFacade.getScheduled().size)
+        assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
 
         val getResult1: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -304,10 +304,10 @@ class RecoverAssignmentsTest(
         )
         val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getContinueSchedulingInfo()?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
-        assertTrue(taskSchedulerFacade.getScheduled().contains(schedulingTaskIdBeforeRestart))
+        assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
         shutdownScheduler()
-        assertEquals(0, taskSchedulerFacade.getScheduled().size)
+        assertEquals(0, taskScheduler.getPeriodicScheduledTasks().size)
         assignment1BeforeRestart.clearContinueScheduling()
         continuousFractionalSpreadAssignmentDao.update(assignment1BeforeRestart)
         val getResult2: MvcResult = mockMvc.perform(
@@ -329,7 +329,7 @@ class RecoverAssignmentsTest(
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment1Id })
         assertTrue(recoveredAssignments.any { it.id.toString() == assignment2Id })
 
-        val scheduledCountAfter: Int = taskSchedulerFacade.getScheduled().size
+        val scheduledCountAfter: Int = taskScheduler.getPeriodicScheduledTasks().size
         assertEquals(1, scheduledCountAfter)
 
         val getResult1After: MvcResult = mockMvc.perform(
@@ -347,7 +347,7 @@ class RecoverAssignmentsTest(
         assertNotNull(schedulingInfoAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != schedulingInfoAfterRecover!!.taskId)
         assertEquals(
-            taskSchedulerFacade.getScheduled().first(),
+            taskScheduler.getPeriodicScheduledTasks().first(),
             schedulingInfoAfterRecover.taskId
         )
 

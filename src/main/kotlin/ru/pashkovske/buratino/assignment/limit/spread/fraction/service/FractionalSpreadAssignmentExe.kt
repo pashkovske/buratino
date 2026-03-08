@@ -4,7 +4,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
+import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.instrument.model.Instrument
@@ -18,13 +18,13 @@ import ru.pashkovske.buratino.price.service.MarketPriceService
 final class FractionalSpreadAssignmentExe(
     orderService: OrderService,
     assignmentDao: AssignmentDao<FractionalSpreadAssignment>,
-    taskSchedulerFacade: TaskSchedulerFacade,
+    taskScheduler: TaskScheduler,
     val marketDataService: MarketPriceService,
     val instrumentService: InstrumentService
 ): LimitOrderAssignmentExe<FractionalSpreadAssignment>(
     orderService = orderService,
     assignmentDao = assignmentDao,
-    taskSchedulerFacade = taskSchedulerFacade
+    taskScheduler = taskScheduler
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}

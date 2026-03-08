@@ -6,17 +6,17 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.scheduling.SchedulingAssignmentTask
+import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.common.utils.scheduler.TaskSchedulerFacade
+import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
 abstract class BasicAssignmentExe<A: Assignment>(
     protected val assignmentDao: AssignmentDao<A>,
-    protected val taskSchedulerFacade: TaskSchedulerFacade
+    protected val taskScheduler: TaskScheduler
 ): AssignmentExe<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
@@ -134,19 +134,18 @@ abstract class BasicAssignmentExe<A: Assignment>(
     private fun scheduleRefresh(assignment: A) {
         val schedulingProps: SchedulingProperties = assignment.refreshSchedulingProperties ?: return
 
-        val task = SchedulingAssignmentTask(
+        val subscriber = AssignmentSchedulingSubscriber(
             action = this::refresh,
             assignmentId = assignment.id
         )
+        val taskId: UUID = taskScheduler.startNewPeriodic(
+            period = schedulingProps.interval,
+            subscriber = subscriber
+        )
         val schedulingInfo = SchedulingInfo(
             properties = schedulingProps,
-            taskId = UUID.randomUUID(),
-            status = SchedulingStatus.QUEUED
-        )
-        taskSchedulerFacade.startPeriodic(
-            task = task,
-            taskId = schedulingInfo.taskId,
-            interval = schedulingProps.interval
+            taskId = taskId,
+            status = SchedulingStatus.ACTIVE
         )
         schedulingInfo.status = SchedulingStatus.ACTIVE
         assignment.initRefreshScheduling(schedulingInfo)
@@ -157,7 +156,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         if (schedulingInfo.status == SchedulingStatus.COMPLETED) {
             return
         }
-        taskSchedulerFacade.stop(schedulingInfo.taskId)
+        taskScheduler.stopPeriodic(schedulingInfo.taskId)
         schedulingInfo.status = SchedulingStatus.COMPLETED
 
         ctx.setMutated()
