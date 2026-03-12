@@ -2,8 +2,8 @@ package ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.limit.base.dao.postgre.LimitOrderAssignmentPostgreRow
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -14,10 +14,10 @@ import java.util.UUID
 data class FractionalSpreadAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,
-    override val status: AssignmentStatus,
+    override val status: AssignmentState,
     override val refreshSchedulingPeriod: Duration?,
     override val refreshSchedulingTaskId: UUID?,
-    override val refreshSchedulingStatus: SchedulingStatus?,
+    override val refreshSchedulingState: SchedulingState?,
     override val orderDirection: OrderDirection,
     override val orderId: String?,
     val rate: Double
@@ -27,7 +27,7 @@ data class FractionalSpreadAssignmentRow(
     status = status,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
-    refreshSchedulingStatus = refreshSchedulingStatus,
+    refreshSchedulingState = refreshSchedulingState,
     orderDirection = orderDirection,
     orderId = orderId
 )

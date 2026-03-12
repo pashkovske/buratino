@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.base.scheduling.model
 
-enum class SchedulingStatus {
+enum class SchedulingState {
     QUEUED,
     ACTIVE,
     COMPLETED

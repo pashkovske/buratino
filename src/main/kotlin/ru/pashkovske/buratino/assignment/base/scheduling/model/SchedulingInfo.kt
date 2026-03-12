@@ -5,5 +5,5 @@ import java.util.UUID
 data class SchedulingInfo(
     val properties: SchedulingProperties,
     val taskId: UUID,
-    var status: SchedulingStatus = SchedulingStatus.QUEUED
+    var status: SchedulingState = SchedulingState.QUEUED
 )

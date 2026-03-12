@@ -6,7 +6,7 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDaoOperationExceptio
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentPostgreRow
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentR2dbcRepo
 import ru.pashkovske.buratino.assignment.base.dao.postgre.PostgreAssignmentDao
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.`super`.base.model.SuperAssignment
 import java.util.UUID
 
@@ -45,7 +45,7 @@ abstract class PostgreSuperAssignmentDao<
         }
     }
 
-    override fun getByStatus(status: AssignmentStatus): List<SuperA> {
+    override fun getByStatus(status: AssignmentState): List<SuperA> {
         val superAssignmentRows: List<SuperRow> = r2dbcRepository.findByStatus(status)
             .collectList()
             .block() ?: emptyList()

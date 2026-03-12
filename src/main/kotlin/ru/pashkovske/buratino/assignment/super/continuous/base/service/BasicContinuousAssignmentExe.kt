@@ -6,7 +6,7 @@ import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
@@ -110,7 +110,7 @@ abstract class BasicContinuousAssignmentExe<
             properties = schedulingProps,
             taskId = taskId
         )
-        schedulingInfo.status = SchedulingStatus.ACTIVE
+        schedulingInfo.status = SchedulingState.ACTIVE
         assignment.initContinueScheduling(schedulingInfo)
         return true
     }
@@ -119,7 +119,7 @@ abstract class BasicContinuousAssignmentExe<
         val schedulingInfo: SchedulingInfo = ctx.assignment.getContinueSchedulingInfo() ?: return
 
         this.taskScheduler.stopPeriodic(schedulingInfo.taskId)
-        schedulingInfo.status = SchedulingStatus.COMPLETED
+        schedulingInfo.status = SchedulingState.COMPLETED
 
         ctx.setMutated()
     }

@@ -17,10 +17,10 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre.TopPriceAssignmentDao
@@ -210,7 +210,7 @@ class RecoverAssignmentsTest(
             TopPriceAssignment::class.java
         )
         assertNull(assignment2AfterRecover.getRefreshSchedulingInfo())
-        assertEquals(AssignmentStatus.IN_PROGRESS, assignment2AfterRecover.status)
+        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.status)
 
         val getResult3After: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -224,7 +224,7 @@ class RecoverAssignmentsTest(
             TopPriceAssignment::class.java
         )
         assertNotNull(assignment3AfterRecover.getRefreshSchedulingInfo())
-        assertEquals(SchedulingStatus.COMPLETED, assignment3AfterRecover.getRefreshSchedulingInfo()!!.status)
+        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getRefreshSchedulingInfo()!!.status)
     }
 
     @Test
@@ -363,7 +363,7 @@ class RecoverAssignmentsTest(
             ContinuousFractionalSpreadAssignment::class.java
         )
         assertNull(assignment2AfterRecover.getContinueSchedulingInfo())
-        assertEquals(AssignmentStatus.IN_PROGRESS, assignment2AfterRecover.status)
+        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.status)
 
         val getResult3After: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -377,6 +377,6 @@ class RecoverAssignmentsTest(
             ContinuousFractionalSpreadAssignment::class.java
         )
         assertNotNull(assignment3AfterRecover.getContinueSchedulingInfo())
-        assertEquals(SchedulingStatus.COMPLETED, assignment3AfterRecover.getContinueSchedulingInfo()!!.status)
+        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getContinueSchedulingInfo()!!.status)
     }
 }

@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model
 
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.model.ContinuousAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
@@ -10,7 +10,7 @@ import java.util.UUID
 class ContinuousFractionalSpreadAssignment(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentStatus,
+    status: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     nested: FractionalSpreadAssignment,
     continueSchedulingProperties: SchedulingProperties?

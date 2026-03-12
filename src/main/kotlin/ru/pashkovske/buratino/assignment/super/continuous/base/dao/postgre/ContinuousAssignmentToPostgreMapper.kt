@@ -28,13 +28,13 @@ abstract class ContinuousAssignmentToPostgreMapper<
         row: ContinuousRow,
         properties: SchedulingProperties
     ): SchedulingInfo? {
-        return if (row.continueSchedulingTaskId == null && row.continueSchedulingStatus == null) {
+        return if (row.continueSchedulingTaskId == null && row.continueSchedulingState == null) {
             null
-        } else if (row.continueSchedulingTaskId != null && row.continueSchedulingStatus != null) {
+        } else if (row.continueSchedulingTaskId != null && row.continueSchedulingState != null) {
             SchedulingInfo(
                 properties = properties,
                 taskId = row.continueSchedulingTaskId!!,
-                status = row.continueSchedulingStatus!!
+                status = row.continueSchedulingState!!
             )
         } else {
             throw IllegalStateException("Continue scheduling task id and status are not consistent")

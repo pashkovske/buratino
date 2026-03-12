@@ -8,12 +8,12 @@ import java.util.UUID
 abstract class Assignment(
     val id: UUID,
     val iid: InstrumentId,
-    var status: AssignmentStatus,
+    var status: AssignmentState,
     val refreshSchedulingProperties: SchedulingProperties?
 ) {
 
     companion object {
-        val initialStatus: AssignmentStatus = AssignmentStatus.QUEUED
+        val initialStatus: AssignmentState = AssignmentState.QUEUED
         fun generateId(): UUID {
             return UUID.randomUUID()
         }

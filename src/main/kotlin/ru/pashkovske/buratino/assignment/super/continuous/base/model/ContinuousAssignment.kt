@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.base.model
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.`super`.base.model.SuperAssignment
@@ -11,7 +11,7 @@ import java.util.UUID
 abstract class ContinuousAssignment<Nested: Assignment>(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentStatus,
+    status: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     nested: Nested,
     val continueSchedulingProperties: SchedulingProperties?

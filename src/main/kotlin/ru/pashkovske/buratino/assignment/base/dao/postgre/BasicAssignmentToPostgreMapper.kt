@@ -26,13 +26,13 @@ abstract class BasicAssignmentToPostgreMapper<
         row: Row,
         properties: SchedulingProperties
     ): SchedulingInfo? {
-        return if (row.refreshSchedulingTaskId == null && row.refreshSchedulingStatus == null) {
+        return if (row.refreshSchedulingTaskId == null && row.refreshSchedulingState == null) {
             null
-        } else if (row.refreshSchedulingTaskId != null && row.refreshSchedulingStatus != null) {
+        } else if (row.refreshSchedulingTaskId != null && row.refreshSchedulingState != null) {
             SchedulingInfo(
                 properties = properties,
                 taskId = row.refreshSchedulingTaskId!!,
-                status = row.refreshSchedulingStatus!!
+                status = row.refreshSchedulingState!!
             )
         } else {
             throw IllegalStateException("Refresh scheduling task id and status are not consistent")

@@ -1,19 +1,19 @@
 package ru.pashkovske.buratino.assignment.`super`.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentPostgreRow
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import java.time.Duration
 import java.util.UUID
 
 abstract class SuperAssignmentPostgreRow<NestedA : Assignment>(
     id: UUID,
     instrumentId: String,
-    status: AssignmentStatus,
+    status: AssignmentState,
     refreshSchedulingPeriod: Duration?,
     refreshSchedulingTaskId: UUID?,
-    refreshSchedulingStatus: SchedulingStatus?,
+    refreshSchedulingState: SchedulingState?,
     open val nestedAssignmentId: UUID
 ) : AssignmentPostgreRow<NestedA>(
     id = id,
@@ -21,5 +21,5 @@ abstract class SuperAssignmentPostgreRow<NestedA : Assignment>(
     status = status,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
-    refreshSchedulingStatus = refreshSchedulingStatus
+    refreshSchedulingState = refreshSchedulingState
 )

@@ -2,8 +2,8 @@ package ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.dao
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.dao.postgre.ContinuousAssignmentPostgreRow
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
@@ -14,14 +14,14 @@ import java.util.UUID
 data class ContinuousFractionalSpreadAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,
-    override val status: AssignmentStatus,
+    override val status: AssignmentState,
     override val refreshSchedulingPeriod: Duration?,
     override val refreshSchedulingTaskId: UUID?,
-    override val refreshSchedulingStatus: SchedulingStatus?,
+    override val refreshSchedulingState: SchedulingState?,
     override val nestedAssignmentId: UUID,
     override val continueSchedulingPeriod: Duration?,
     override val continueSchedulingTaskId: UUID?,
-    override val continueSchedulingStatus: SchedulingStatus?
+    override val continueSchedulingState: SchedulingState?
 ) : ContinuousAssignmentPostgreRow<
     FractionalSpreadAssignment,
     ContinuousFractionalSpreadAssignment
@@ -31,9 +31,9 @@ data class ContinuousFractionalSpreadAssignmentRow(
     status = status,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
-    refreshSchedulingStatus = refreshSchedulingStatus,
+    refreshSchedulingState = refreshSchedulingState,
     nestedAssignmentId = nestedAssignmentId,
     continueSchedulingPeriod = continueSchedulingPeriod,
     continueSchedulingTaskId = continueSchedulingTaskId,
-    continueSchedulingStatus = continueSchedulingStatus
+    continueSchedulingState = continueSchedulingState
 )

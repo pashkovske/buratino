@@ -5,7 +5,7 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
@@ -44,12 +44,12 @@ abstract class BasicSuperAssignmentExe<
     }
 
     protected fun isNestedCompleted(ctx: ExeCtx<SuperA>): Boolean {
-        return ctx.assignment.nested.status == AssignmentStatus.COMPLETED
+        return ctx.assignment.nested.status == AssignmentState.COMPLETED
     }
 
     protected fun checkAndStartNested(ctx: ExeCtx<SuperA>) {
         val assignment: SuperA = ctx.assignment
-        if (assignment.nested.status != AssignmentStatus.QUEUED) {
+        if (assignment.nested.status != AssignmentState.QUEUED) {
             log.warn("Nested assignment ${assignment.nested.id} is in ${assignment.nested.status} status, skipping start")
             return
         }
@@ -66,11 +66,11 @@ abstract class BasicSuperAssignmentExe<
 
     protected fun cancelNested(ctx: ExeCtx<SuperA>) {
         val assignment: SuperA = ctx.assignment
-        if (assignment.nested.status == AssignmentStatus.COMPLETED) {
+        if (assignment.nested.status == AssignmentState.COMPLETED) {
             log.warn("Nested assignment ${assignment.nested.id} is already completed, skipping cancel nested")
             return
         }
-        if (assignment.nested.status == AssignmentStatus.QUEUED) {
+        if (assignment.nested.status == AssignmentState.QUEUED) {
             log.warn("Nested assignment ${assignment.nested.id} is not started, skipping cancel nested")
             return
         }

@@ -3,13 +3,13 @@ package ru.pashkovske.buratino.assignment.base.service
 import jakarta.annotation.PostConstruct
 import mu.KLogger
 import mu.KotlinLogging
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingStatus
+import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
@@ -23,7 +23,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
 
     @PostConstruct
     override fun recoverAssignments(): List<A> {
-        val activeAssignments: List<A> = assignmentDao.getByStatus(AssignmentStatus.IN_PROGRESS)
+        val activeAssignments: List<A> = assignmentDao.getByStatus(AssignmentState.IN_PROGRESS)
         activeAssignments.filter { assignment: A ->
             assignment.refreshSchedulingProperties != null
         }.forEach { assignment: A ->
@@ -122,7 +122,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         ctx.setMutated()
     }
     protected fun isCompleted(ctx: ExeCtx<A>): Boolean {
-        return ctx.assignment.status == AssignmentStatus.COMPLETED
+        return ctx.assignment.status == AssignmentState.COMPLETED
     }
 
     private fun scheduleRefresh(ctx: ExeCtx<A>) {
@@ -145,19 +145,19 @@ abstract class BasicAssignmentExe<A: Assignment>(
         val schedulingInfo = SchedulingInfo(
             properties = schedulingProps,
             taskId = taskId,
-            status = SchedulingStatus.ACTIVE
+            status = SchedulingState.ACTIVE
         )
-        schedulingInfo.status = SchedulingStatus.ACTIVE
+        schedulingInfo.status = SchedulingState.ACTIVE
         assignment.initRefreshScheduling(schedulingInfo)
     }
 
     private fun stopSchedulingRefresh(ctx: ExeCtx<A>) {
         val schedulingInfo: SchedulingInfo = ctx.assignment.getRefreshSchedulingInfo() ?: return
-        if (schedulingInfo.status == SchedulingStatus.COMPLETED) {
+        if (schedulingInfo.status == SchedulingState.COMPLETED) {
             return
         }
         taskScheduler.stopPeriodic(schedulingInfo.taskId)
-        schedulingInfo.status = SchedulingStatus.COMPLETED
+        schedulingInfo.status = SchedulingState.COMPLETED
 
         ctx.setMutated()
     }

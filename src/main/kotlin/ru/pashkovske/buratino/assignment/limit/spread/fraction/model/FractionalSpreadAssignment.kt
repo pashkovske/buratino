@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.limit.spread.fraction.model
 
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStatus
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
@@ -11,7 +11,7 @@ import java.util.UUID
 class FractionalSpreadAssignment(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentStatus,
+    status: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     direction: OrderDirection,
     info: OrderInfo,
