@@ -11,14 +11,14 @@ import java.util.UUID
 abstract class ContinuousAssignment<Nested: Assignment>(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     nested: Nested,
     val continueSchedulingProperties: SchedulingProperties?
 ): SuperAssignment<Nested>(
     id = id,
     iid = iid,
-    status = status,
+    state = state,
     nested = nested,
     refreshSchedulingProperties = refreshSchedulingProperties
 ) {
@@ -35,7 +35,7 @@ abstract class ContinuousAssignment<Nested: Assignment>(
         continueAssignmentScheduling = null
     }
 
-    fun getContinueSchedulingInfo(): AssignmentScheduling? {
+    fun getContinueAssignmentScheduling(): AssignmentScheduling? {
         return continueAssignmentScheduling
     }
 }

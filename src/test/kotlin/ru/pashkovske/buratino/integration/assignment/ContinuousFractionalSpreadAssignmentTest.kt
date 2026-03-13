@@ -101,7 +101,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-            .andExpect(jsonPath("$.nested.status").value("IN_PROGRESS"))
+            .andExpect(jsonPath("$.nested.state").value("IN_PROGRESS"))
             .andExpect(jsonPath("$.nested.info.orderId").isString())
 
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
@@ -173,10 +173,10 @@ class ContinuousFractionalSpreadAssignmentTest(
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
-        assertNotNull(assignment.getContinueSchedulingInfo())
+        assertNotNull(assignment.getContinueAssignmentScheduling())
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignment.getContinueSchedulingInfo()!!.taskId
+            assignment.getContinueAssignmentScheduling()!!.taskId
         )
 
         performAndCheckCancel(
@@ -209,10 +209,10 @@ class ContinuousFractionalSpreadAssignmentTest(
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
-        assertNotNull(assignment.getRefreshSchedulingInfo())
+        assertNotNull(assignment.getRefreshAssignmentScheduling())
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignment.getRefreshSchedulingInfo()!!.taskId
+            assignment.getRefreshAssignmentScheduling()!!.taskId
         )
 
         performAndCheckCancel(

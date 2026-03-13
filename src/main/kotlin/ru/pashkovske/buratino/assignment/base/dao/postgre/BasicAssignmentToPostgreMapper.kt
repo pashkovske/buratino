@@ -32,10 +32,10 @@ abstract class BasicAssignmentToPostgreMapper<
             AssignmentScheduling(
                 properties = properties,
                 taskId = row.refreshSchedulingTaskId!!,
-                status = row.refreshSchedulingState!!
+                state = row.refreshSchedulingState!!
             )
         } else {
-            throw IllegalStateException("Refresh scheduling task id and status are not consistent")
+            throw IllegalStateException("Refresh scheduling task id and state are not consistent")
         }
     }
 

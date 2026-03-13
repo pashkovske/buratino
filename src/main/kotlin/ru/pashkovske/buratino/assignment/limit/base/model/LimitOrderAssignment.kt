@@ -10,14 +10,14 @@ import java.util.UUID
 abstract class LimitOrderAssignment(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     val direction: OrderDirection,
     val info: OrderInfo
 ): Assignment(
     id = id,
     iid = iid,
-    status = status,
+    state = state,
     refreshSchedulingProperties = refreshSchedulingProperties
 ) {
 

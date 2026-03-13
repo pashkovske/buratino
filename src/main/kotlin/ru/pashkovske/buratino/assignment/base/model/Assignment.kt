@@ -8,12 +8,12 @@ import java.util.UUID
 abstract class Assignment(
     val id: UUID,
     val iid: InstrumentId,
-    var status: AssignmentState,
+    var state: AssignmentState,
     val refreshSchedulingProperties: SchedulingProperties?
 ) {
 
     companion object {
-        val initialStatus: AssignmentState = AssignmentState.QUEUED
+        val initialState: AssignmentState = AssignmentState.QUEUED
         fun generateId(): UUID {
             return UUID.randomUUID()
         }
@@ -32,7 +32,7 @@ abstract class Assignment(
         refreshAssignmentScheduling = null
     }
 
-    fun getRefreshSchedulingInfo(): AssignmentScheduling? {
+    fun getRefreshAssignmentScheduling(): AssignmentScheduling? {
         return refreshAssignmentScheduling
     }
 
@@ -41,7 +41,7 @@ abstract class Assignment(
             {
                 id = $id,
                 iid = $iid,
-                status = $status
+                state = $state
             }
         """.trimIndent()
     }

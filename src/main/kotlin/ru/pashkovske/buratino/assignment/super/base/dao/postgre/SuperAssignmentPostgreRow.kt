@@ -10,7 +10,7 @@ import java.util.UUID
 abstract class SuperAssignmentPostgreRow<NestedA : Assignment>(
     id: UUID,
     instrumentId: String,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingPeriod: Duration?,
     refreshSchedulingTaskId: UUID?,
     refreshSchedulingState: SchedulingState?,
@@ -18,7 +18,7 @@ abstract class SuperAssignmentPostgreRow<NestedA : Assignment>(
 ) : AssignmentPostgreRow<NestedA>(
     id = id,
     instrumentId = instrumentId,
-    status = status,
+    state = state,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState

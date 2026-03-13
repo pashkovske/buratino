@@ -11,15 +11,15 @@ import java.util.UUID
 class TopPriceAssignment(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     direction: OrderDirection,
     info: OrderInfo,
     val oneStepOver: Boolean = false
-) :  LimitOrderAssignment(
+) : LimitOrderAssignment(
     id = id,
     iid = iid,
-    status = status,
+    state = state,
     refreshSchedulingProperties = refreshSchedulingProperties,
     direction = direction,
     info = info
@@ -35,7 +35,7 @@ class TopPriceAssignment(
             return TopPriceAssignment(
                 id = generateId(),
                 iid = iid,
-                status = initialStatus,
+                state = initialState,
                 refreshSchedulingProperties = refreshSchedulingProperties,
                 direction = direction,
                 info = initialOrderInfo(),

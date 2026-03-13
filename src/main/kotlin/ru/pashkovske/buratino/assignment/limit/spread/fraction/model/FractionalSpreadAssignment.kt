@@ -11,7 +11,7 @@ import java.util.UUID
 class FractionalSpreadAssignment(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     direction: OrderDirection,
     info: OrderInfo,
@@ -19,7 +19,7 @@ class FractionalSpreadAssignment(
 ): LimitOrderAssignment(
     id = id,
     iid = iid,
-    status = status,
+    state = state,
     refreshSchedulingProperties = refreshSchedulingProperties,
     direction = direction,
     info = info
@@ -35,7 +35,7 @@ class FractionalSpreadAssignment(
             return FractionalSpreadAssignment(
                 id = generateId(),
                 iid = iid,
-                status = initialStatus,
+                state = initialState,
                 refreshSchedulingProperties = refreshSchedulingProperties,
                 direction = direction,
                 info = OrderInfo(),

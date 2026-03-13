@@ -14,7 +14,7 @@ import java.util.UUID
 data class FractionalSpreadAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,
-    override val status: AssignmentState,
+    override val state: AssignmentState,
     override val refreshSchedulingPeriod: Duration?,
     override val refreshSchedulingTaskId: UUID?,
     override val refreshSchedulingState: SchedulingState?,
@@ -24,7 +24,7 @@ data class FractionalSpreadAssignmentRow(
 ) : LimitOrderAssignmentPostgreRow<FractionalSpreadAssignment>(
     id = id,
     instrumentId = instrumentId,
-    status = status,
+    state = state,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,

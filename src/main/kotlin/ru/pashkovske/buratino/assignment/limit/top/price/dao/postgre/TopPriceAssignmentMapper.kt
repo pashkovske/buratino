@@ -16,7 +16,7 @@ class TopPriceAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
         val assignment = TopPriceAssignment(
             id = row.id,
             iid = mapIid(row.instrumentId),
-            status = row.status,
+            state = row.state,
             refreshSchedulingProperties = refreshSchedulingProperties,
             direction = row.orderDirection,
             info = mapOrderInfo(row),
@@ -30,12 +30,12 @@ class TopPriceAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
         return TopPriceAssignmentRow(
             id = assignment.id,
             instrumentId = assignment.iid.id,
-            status = assignment.status,
+            state = assignment.state,
             orderDirection = assignment.direction,
             oneStepOver = assignment.oneStepOver,
             refreshSchedulingPeriod = assignment.refreshSchedulingProperties?.interval,
-            refreshSchedulingTaskId = assignment.getRefreshSchedulingInfo()?.taskId,
-            refreshSchedulingState = assignment.getRefreshSchedulingInfo()?.status,
+            refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
+            refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
             orderId = assignment.info.orderId
         )
     }

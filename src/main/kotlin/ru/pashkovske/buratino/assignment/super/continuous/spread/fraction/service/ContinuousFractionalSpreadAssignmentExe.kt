@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
@@ -13,16 +14,18 @@ import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.Fractiona
 @Service
 final class ContinuousFractionalSpreadAssignmentExe(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
-    nestedAssignmentExe: FractionalSpreadAssignmentExe,
     taskScheduler: TaskScheduler,
+    assignmentRefresher: AssignmentRefresher<ContinuousFractionalSpreadAssignment>,
+    nestedAssignmentExe: FractionalSpreadAssignmentExe,
     nestedAssignmentDao: AssignmentDao<FractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment
     >(
     assignmentDao = assignmentDao,
-    nestedAssignmentExe = nestedAssignmentExe,
     taskScheduler = taskScheduler,
+    assignmentRefresher = assignmentRefresher,
+    nestedAssignmentExe = nestedAssignmentExe,
     nestedAssignmentDao = nestedAssignmentDao
 ) {
 
@@ -46,16 +49,6 @@ final class ContinuousFractionalSpreadAssignmentExe(
         ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
         checkAndStartNested(ctx)
-    }
-
-    override fun doRefresh(
-        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
-    ) {
-        if (isNestedCompleted(ctx)) {
-            log.info("Nested assignment ${ctx.assignment.nested.id} is completed. Skipping refresh")
-            return
-        }
-        refreshNested(ctx)
     }
 
     override fun doCancel(

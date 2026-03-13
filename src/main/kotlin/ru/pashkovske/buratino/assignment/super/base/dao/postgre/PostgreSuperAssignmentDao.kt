@@ -45,11 +45,11 @@ abstract class PostgreSuperAssignmentDao<
         }
     }
 
-    override fun getByStatus(status: AssignmentState): List<SuperA> {
-        val superAssignmentRows: List<SuperRow> = r2dbcRepository.findByStatus(status)
+    override fun getByState(state: AssignmentState): List<SuperA> {
+        val superAssignmentRows: List<SuperRow> = r2dbcRepository.findByState(state)
             .collectList()
             .block() ?: emptyList()
-        val nestedAssignmentsMap: Map<UUID, NestedA> = nestedAssignmentDao.getByStatus(status)
+        val nestedAssignmentsMap: Map<UUID, NestedA> = nestedAssignmentDao.getByState(state)
             .associateBy { it.id }
         return superAssignmentRows.map { superAssignmentRow ->
             val nestedAssignment: NestedA = nestedAssignmentsMap[superAssignmentRow.nestedAssignmentId] ?:

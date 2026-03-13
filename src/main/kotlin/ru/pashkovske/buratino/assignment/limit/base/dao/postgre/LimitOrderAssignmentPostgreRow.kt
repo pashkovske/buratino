@@ -11,7 +11,7 @@ import java.util.UUID
 abstract class LimitOrderAssignmentPostgreRow<LA : LimitOrderAssignment>(
     id: UUID,
     instrumentId: String,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingPeriod: Duration?,
     refreshSchedulingTaskId: UUID?,
     refreshSchedulingState: SchedulingState?,
@@ -20,7 +20,7 @@ abstract class LimitOrderAssignmentPostgreRow<LA : LimitOrderAssignment>(
 ) : AssignmentPostgreRow<LA>(
     id = id,
     instrumentId = instrumentId,
-    status = status,
+    state = state,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,

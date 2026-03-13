@@ -22,8 +22,8 @@ abstract class PostgreAssignmentDao<A : Assignment, Row : AssignmentPostgreRow<A
             .block() ?: emptyList()
     }
 
-    override fun getByStatus(status: AssignmentState): List<A> {
-        return r2dbcRepository.findByStatus(AssignmentState.IN_PROGRESS)
+    override fun getByState(state: AssignmentState): List<A> {
+        return r2dbcRepository.findByState(AssignmentState.IN_PROGRESS)
             .map(mapper::map)
             .collectList()
             .block() ?: throw AssignmentDaoOperationException(

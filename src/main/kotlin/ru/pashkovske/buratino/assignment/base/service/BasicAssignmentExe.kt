@@ -11,19 +11,21 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentSchedul
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
 abstract class BasicAssignmentExe<A: Assignment>(
     protected val assignmentDao: AssignmentDao<A>,
-    protected val taskScheduler: TaskScheduler
+    protected val taskScheduler: TaskScheduler,
+    protected val assignmentRefresher: AssignmentRefresher<A>
 ): AssignmentExe<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
 
     @PostConstruct
     override fun recoverAssignments(): List<A> {
-        val activeAssignments: List<A> = assignmentDao.getByStatus(AssignmentState.IN_PROGRESS)
+        val activeAssignments: List<A> = assignmentDao.getByState(AssignmentState.IN_PROGRESS)
         activeAssignments.filter { assignment: A ->
             assignment.refreshSchedulingProperties != null
         }.forEach { assignment: A ->
@@ -58,30 +60,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
     }
 
     final override fun refresh(id: UUID): A {
-        val ctx: ExeCtx<A> = preRefresh(id)
-        if (!ctx.shouldSkip()) {
-            doRefresh(ctx)
-        }
-        postRefresh(ctx)
-        return ctx.assignment
-    }
-    protected open fun preRefresh(id: UUID): ExeCtx<A> {
-        val assignment: A = assignmentDao.get(id)
-        log.info("Refreshing assignment: $assignment")
-        val ctx: ExeCtx<A> = ExeCtx(assignment)
-        if (isCompleted(ctx)) {
-            log.warn("Assignment ${ctx.assignment.id} is already completed. Skipping refresh")
-            ctx.setShouldSkip()
-        }
-        return ctx
-    }
-    protected abstract fun doRefresh(ctx: ExeCtx<A>)
-    protected open fun postRefresh(ctx: ExeCtx<A>) {
-        val assignment: A = ctx.assignment
-        if (ctx.isMutated()) {
-            assignmentDao.update(assignment)
-        }
-        log.info("Assignment refreshed: $assignment")
+        return assignmentRefresher.refresh(id)
     }
 
     final override fun cancel(id: UUID): A {
@@ -122,7 +101,7 @@ abstract class BasicAssignmentExe<A: Assignment>(
         ctx.setMutated()
     }
     protected fun isCompleted(ctx: ExeCtx<A>): Boolean {
-        return ctx.assignment.status == AssignmentState.COMPLETED
+        return ctx.assignment.state == AssignmentState.COMPLETED
     }
 
     private fun scheduleRefresh(ctx: ExeCtx<A>) {
@@ -145,19 +124,19 @@ abstract class BasicAssignmentExe<A: Assignment>(
         val assignmentScheduling = AssignmentScheduling(
             properties = schedulingProps,
             taskId = taskId,
-            status = SchedulingState.ACTIVE
+            state = SchedulingState.ACTIVE
         )
-        assignmentScheduling.status = SchedulingState.ACTIVE
+        assignmentScheduling.state = SchedulingState.ACTIVE
         assignment.initRefreshScheduling(assignmentScheduling)
     }
 
     private fun stopSchedulingRefresh(ctx: ExeCtx<A>) {
-        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getRefreshSchedulingInfo() ?: return
-        if (assignmentScheduling.status == SchedulingState.COMPLETED) {
+        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getRefreshAssignmentScheduling() ?: return
+        if (assignmentScheduling.state == SchedulingState.COMPLETED) {
             return
         }
         taskScheduler.stopPeriodic(assignmentScheduling.taskId)
-        assignmentScheduling.status = SchedulingState.COMPLETED
+        assignmentScheduling.state = SchedulingState.COMPLETED
 
         ctx.setMutated()
     }

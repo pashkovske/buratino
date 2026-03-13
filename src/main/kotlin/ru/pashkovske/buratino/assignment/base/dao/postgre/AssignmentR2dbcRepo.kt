@@ -13,6 +13,6 @@ interface AssignmentR2dbcRepo<
     Row : AssignmentPostgreRow<A>
     > : ReactiveCrudRepository<Row, UUID> {
 
-    @Query("SELECT * FROM #{#tableName} WHERE status = :status")
-    fun findByStatus(@Param("status") status: AssignmentState): Flux<Row>
+    @Query("SELECT * FROM #{#tableName} WHERE state = :state")
+    fun findByState(@Param("state") state: AssignmentState): Flux<Row>
 }

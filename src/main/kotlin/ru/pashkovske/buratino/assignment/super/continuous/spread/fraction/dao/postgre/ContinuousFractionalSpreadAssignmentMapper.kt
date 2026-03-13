@@ -23,7 +23,7 @@ class ContinuousFractionalSpreadAssignmentMapper : ContinuousAssignmentToPostgre
         val assignment = ContinuousFractionalSpreadAssignment(
             id = superRow.id,
             iid = mapIid(superRow.instrumentId),
-            status = superRow.status,
+            state = superRow.state,
             refreshSchedulingProperties = refreshSchedulingProperties,
             nested = nestedAssignment,
             continueSchedulingProperties = continueSchedulingProperties
@@ -41,14 +41,14 @@ class ContinuousFractionalSpreadAssignmentMapper : ContinuousAssignmentToPostgre
         return ContinuousFractionalSpreadAssignmentRow(
             id = assignment.id,
             instrumentId = assignment.iid.id,
-            status = assignment.status,
+            state = assignment.state,
             refreshSchedulingPeriod = assignment.refreshSchedulingProperties?.interval,
-            refreshSchedulingTaskId = assignment.getRefreshSchedulingInfo()?.taskId,
-            refreshSchedulingState = assignment.getRefreshSchedulingInfo()?.status,
+            refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
+            refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
             nestedAssignmentId = nested.id,
             continueSchedulingPeriod = assignment.continueSchedulingProperties?.interval,
-            continueSchedulingTaskId = assignment.getContinueSchedulingInfo()?.taskId,
-            continueSchedulingState = assignment.getContinueSchedulingInfo()?.status
+            continueSchedulingTaskId = assignment.getContinueAssignmentScheduling()?.taskId,
+            continueSchedulingState = assignment.getContinueAssignmentScheduling()?.state
         )
     }
 }

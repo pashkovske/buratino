@@ -1,27 +1,21 @@
-package ru.pashkovske.buratino.assignment.limit.top.price.service
+package ru.pashkovske.buratino.assignment.limit.top.price.service.refresh
 
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
-import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
+import ru.pashkovske.buratino.assignment.limit.base.service.refresh.LimitOrderAssignmentRefresher
+import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.order.service.OrderService
 import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.service.MarketPriceService
 
 @Service
-final class TopPriceAssignmentExe(
-    orderService: OrderService,
+class TopPriceAssignmentRefresher(
     assignmentDao: AssignmentDao<TopPriceAssignment>,
-    taskScheduler: TaskScheduler,
-    assignmentRefresher: AssignmentRefresher<TopPriceAssignment>,
-    val marketDataService: MarketPriceService
-) : LimitOrderAssignmentExe<TopPriceAssignment>(
-    orderService = orderService,
+    orderService: OrderService,
+    private val marketDataService: MarketPriceService
+) : LimitOrderAssignmentRefresher<TopPriceAssignment>(
     assignmentDao = assignmentDao,
-    taskScheduler = taskScheduler,
-    assignmentRefresher = assignmentRefresher
+    orderService = orderService
 ) {
 
     override fun getPrice(assignment: TopPriceAssignment): Price {

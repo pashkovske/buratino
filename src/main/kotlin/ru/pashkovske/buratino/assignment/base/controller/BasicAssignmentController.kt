@@ -42,7 +42,7 @@ abstract class BasicAssignmentController<A: Assignment>(
     @PatchMapping("/refresh-all")
     fun refreshAll(): List<A> {
         val activeAssignments: List<A> = dao.getAll()
-            .filter { it.status == AssignmentState.IN_PROGRESS }
+            .filter { it.state == AssignmentState.IN_PROGRESS }
         activeAssignments
             .map(Assignment::id)
             .forEach(exe::refresh)

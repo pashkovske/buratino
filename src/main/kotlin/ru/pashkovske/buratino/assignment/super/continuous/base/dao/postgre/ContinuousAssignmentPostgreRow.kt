@@ -14,7 +14,7 @@ abstract class ContinuousAssignmentPostgreRow<
     >(
     id: UUID,
     instrumentId: String,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingPeriod: Duration?,
     refreshSchedulingTaskId: UUID?,
     refreshSchedulingState: SchedulingState?,
@@ -25,7 +25,7 @@ abstract class ContinuousAssignmentPostgreRow<
 ) : SuperAssignmentPostgreRow<ContinuousA>(
     id = id,
     instrumentId = instrumentId,
-    status = status,
+    state = state,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,

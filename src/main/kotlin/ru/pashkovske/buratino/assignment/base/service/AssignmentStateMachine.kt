@@ -6,24 +6,24 @@ import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 object AssignmentStateMachine {
 
     fun isStartable(assignment: Assignment): Boolean {
-        return assignment.status == AssignmentState.QUEUED
+        return assignment.state == AssignmentState.QUEUED
     }
 
     fun isCompletable(assignment: Assignment): Boolean {
-        return assignment.status == AssignmentState.IN_PROGRESS
+        return assignment.state == AssignmentState.IN_PROGRESS
     }
 
     fun toInProgress(assignment: Assignment) {
         if (!isStartable(assignment)) {
-            throw IllegalStateException("Can't set status to IN_PROGRESS from ${assignment.status}")
+            throw IllegalStateException("Can't set state to IN_PROGRESS from ${assignment.state}")
         }
-        assignment.status = AssignmentState.IN_PROGRESS
+        assignment.state = AssignmentState.IN_PROGRESS
     }
 
     fun toCompleted(assignment: Assignment) {
         if (!isCompletable(assignment)) {
-            throw IllegalStateException("Can't set status to COMPLETED from ${assignment.status}")
+            throw IllegalStateException("Can't set state to COMPLETED from ${assignment.state}")
         }
-        assignment.status = AssignmentState.COMPLETED
+        assignment.state = AssignmentState.COMPLETED
     }
 }

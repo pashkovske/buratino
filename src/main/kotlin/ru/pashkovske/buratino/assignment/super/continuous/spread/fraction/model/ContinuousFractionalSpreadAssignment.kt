@@ -10,14 +10,14 @@ import java.util.UUID
 class ContinuousFractionalSpreadAssignment(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     nested: FractionalSpreadAssignment,
     continueSchedulingProperties: SchedulingProperties?
 ): ContinuousAssignment<FractionalSpreadAssignment>(
     id = id,
     iid = iid,
-    status = status,
+    state = state,
     refreshSchedulingProperties = refreshSchedulingProperties,
     nested = nested,
     continueSchedulingProperties = continueSchedulingProperties
@@ -33,7 +33,7 @@ class ContinuousFractionalSpreadAssignment(
             return ContinuousFractionalSpreadAssignment(
                 id = generateId(),
                 iid = iid,
-                status = initialStatus,
+                state = initialState,
                 refreshSchedulingProperties = refreshSchedulingProperties,
                 nested = nested,
                 continueSchedulingProperties = continueSchedulingProperties

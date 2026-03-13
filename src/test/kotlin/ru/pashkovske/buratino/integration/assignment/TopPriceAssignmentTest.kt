@@ -135,10 +135,10 @@ class TopPriceAssignmentTest(
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
-        assertNotNull(assignment.getRefreshSchedulingInfo())
+        assertNotNull(assignment.getRefreshAssignmentScheduling())
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignment.getRefreshSchedulingInfo()!!.taskId
+            assignment.getRefreshAssignmentScheduling()!!.taskId
         )
 
         performAndCheckCancel(

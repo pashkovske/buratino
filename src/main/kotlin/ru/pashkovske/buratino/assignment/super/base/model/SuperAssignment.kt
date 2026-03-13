@@ -9,12 +9,12 @@ import java.util.UUID
 abstract class SuperAssignment<Nested: Assignment>(
     id: UUID,
     iid: InstrumentId,
-    status: AssignmentState,
+    state: AssignmentState,
     refreshSchedulingProperties: SchedulingProperties?,
     var nested: Nested
 ): Assignment(
     id = id,
     iid = iid,
-    status = status,
+    state = state,
     refreshSchedulingProperties = refreshSchedulingProperties
 )

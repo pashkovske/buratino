@@ -10,6 +10,7 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
+import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.base.service.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.model.ContinuousAssignment
@@ -21,13 +22,15 @@ abstract class BasicContinuousAssignmentExe<
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
     taskScheduler: TaskScheduler,
+    assignmentRefresher: AssignmentRefresher<ContinuousA>,
     nestedAssignmentExe: AssignmentExe<Nested>,
     nestedAssignmentDao: AssignmentDao<Nested>
 ):
     BasicSuperAssignmentExe<ContinuousA, Nested>(
         assignmentDao = assignmentDao,
-        nestedAssignmentExe = nestedAssignmentExe,
         taskScheduler = taskScheduler,
+        assignmentRefresher = assignmentRefresher,
+        nestedAssignmentExe = nestedAssignmentExe,
         nestedAssignmentDao = nestedAssignmentDao
     ),
     ContinuousAssignmentExe<ContinuousA>
@@ -110,16 +113,16 @@ abstract class BasicContinuousAssignmentExe<
             properties = schedulingProps,
             taskId = taskId
         )
-        assignmentScheduling.status = SchedulingState.ACTIVE
+        assignmentScheduling.state = SchedulingState.ACTIVE
         assignment.initContinueScheduling(assignmentScheduling)
         return true
     }
 
     private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
-        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getContinueSchedulingInfo() ?: return
+        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getContinueAssignmentScheduling() ?: return
 
         this.taskScheduler.stopPeriodic(assignmentScheduling.taskId)
-        assignmentScheduling.status = SchedulingState.COMPLETED
+        assignmentScheduling.state = SchedulingState.COMPLETED
 
         ctx.setMutated()
     }

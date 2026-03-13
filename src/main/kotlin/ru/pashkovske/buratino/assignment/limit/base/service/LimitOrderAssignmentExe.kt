@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
+import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import ru.pashkovske.buratino.order.service.OrderService
@@ -16,20 +17,18 @@ import java.util.UUID
 abstract class LimitOrderAssignmentExe<LimitA : LimitOrderAssignment>(
     private val orderService: OrderService,
     assignmentDao: AssignmentDao<LimitA>,
-    taskScheduler: TaskScheduler
+    taskScheduler: TaskScheduler,
+    assignmentRefresher: AssignmentRefresher<LimitA>
 ): BasicAssignmentExe<LimitA>(
     assignmentDao = assignmentDao,
-    taskScheduler = taskScheduler
+    taskScheduler = taskScheduler,
+    assignmentRefresher = assignmentRefresher
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}
 
     override fun doStart(ctx: ExeCtx<LimitA>) {
         startLimitOrder(ctx)
-    }
-
-    override fun doRefresh(ctx: ExeCtx<LimitA>) {
-        refreshLimitOrder(ctx)
     }
 
     override fun doCancel(ctx: ExeCtx<LimitA>) {
@@ -42,24 +41,6 @@ abstract class LimitOrderAssignmentExe<LimitA : LimitOrderAssignment>(
             orderRequest = buildLimitReq(assignment)
         )
         assignment.info.orderId = order.id
-        ctx.setMutated()
-    }
-
-    protected fun refreshLimitOrder(ctx: ExeCtx<LimitA>) {
-        val assignment: LimitA = ctx.assignment
-        val orderId: String = getOrderId(assignment)
-        if (orderService.isOrderCompleted(orderId)) {
-            log.info("Order of assignment ${assignment.id} is already completed, skipping order refresh")
-            postCancel(ctx)
-            return
-        }
-        log.info("Refreshing order: $orderId in assignment ${assignment.id}")
-        val newOrder: Order = orderService.replaceOrder(
-            orderId = orderId,
-            newOrderRequest = buildLimitReq(assignment)
-        )
-        log.info("Refreshed order: $orderId in assignment ${assignment.id}")
-        assignment.info.orderId = newOrder.id
         ctx.setMutated()
     }
 

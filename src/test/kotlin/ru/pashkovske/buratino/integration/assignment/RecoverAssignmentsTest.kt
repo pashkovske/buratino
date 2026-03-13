@@ -149,7 +149,7 @@ class RecoverAssignmentsTest(
             getResult1.response.contentAsString,
             TopPriceAssignment::class.java
         )
-        val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getRefreshSchedulingInfo()?.taskId
+        val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getRefreshAssignmentScheduling()?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
         assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
@@ -168,7 +168,7 @@ class RecoverAssignmentsTest(
             getResult2.response.contentAsString,
             TopPriceAssignment::class.java
         )
-        assertNull(assignment2BeforeRestart.getRefreshSchedulingInfo())
+        assertNull(assignment2BeforeRestart.getRefreshAssignmentScheduling())
 
         val recoveredAssignments: List<TopPriceAssignment> = assignmentExe.recoverAssignments()
 
@@ -190,7 +190,7 @@ class RecoverAssignmentsTest(
             getResult1After.response.contentAsString,
             TopPriceAssignment::class.java
         )
-        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getRefreshSchedulingInfo()
+        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getRefreshAssignmentScheduling()
         assertNotNull(assignmentSchedulingAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
         assertEquals(
@@ -209,8 +209,8 @@ class RecoverAssignmentsTest(
             getResult2After.response.contentAsString,
             TopPriceAssignment::class.java
         )
-        assertNull(assignment2AfterRecover.getRefreshSchedulingInfo())
-        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.status)
+        assertNull(assignment2AfterRecover.getRefreshAssignmentScheduling())
+        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.state)
 
         val getResult3After: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -223,8 +223,8 @@ class RecoverAssignmentsTest(
             getResult3After.response.contentAsString,
             TopPriceAssignment::class.java
         )
-        assertNotNull(assignment3AfterRecover.getRefreshSchedulingInfo())
-        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getRefreshSchedulingInfo()!!.status)
+        assertNotNull(assignment3AfterRecover.getRefreshAssignmentScheduling())
+        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getRefreshAssignmentScheduling()!!.state)
     }
 
     @Test
@@ -302,7 +302,7 @@ class RecoverAssignmentsTest(
             getResult1.response.contentAsString,
             ContinuousFractionalSpreadAssignment::class.java
         )
-        val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getContinueSchedulingInfo()?.taskId
+        val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getContinueAssignmentScheduling()?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
         assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
@@ -321,7 +321,7 @@ class RecoverAssignmentsTest(
             getResult2.response.contentAsString,
             ContinuousFractionalSpreadAssignment::class.java
         )
-        assertNull(assignment2BeforeRestart.getContinueSchedulingInfo())
+        assertNull(assignment2BeforeRestart.getContinueAssignmentScheduling())
 
         val recoveredAssignments: List<ContinuousFractionalSpreadAssignment> = continuousAssignmentExe.recoverAssignments()
 
@@ -343,7 +343,7 @@ class RecoverAssignmentsTest(
             getResult1After.response.contentAsString,
             ContinuousFractionalSpreadAssignment::class.java
         )
-        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getContinueSchedulingInfo()
+        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getContinueAssignmentScheduling()
         assertNotNull(assignmentSchedulingAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
         assertEquals(
@@ -362,8 +362,8 @@ class RecoverAssignmentsTest(
             getResult2After.response.contentAsString,
             ContinuousFractionalSpreadAssignment::class.java
         )
-        assertNull(assignment2AfterRecover.getContinueSchedulingInfo())
-        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.status)
+        assertNull(assignment2AfterRecover.getContinueAssignmentScheduling())
+        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.state)
 
         val getResult3After: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -376,7 +376,7 @@ class RecoverAssignmentsTest(
             getResult3After.response.contentAsString,
             ContinuousFractionalSpreadAssignment::class.java
         )
-        assertNotNull(assignment3AfterRecover.getContinueSchedulingInfo())
-        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getContinueSchedulingInfo()!!.status)
+        assertNotNull(assignment3AfterRecover.getContinueAssignmentScheduling())
+        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getContinueAssignmentScheduling()!!.state)
     }
 }

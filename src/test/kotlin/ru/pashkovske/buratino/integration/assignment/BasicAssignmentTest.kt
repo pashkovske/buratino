@@ -54,7 +54,7 @@ abstract class BasicAssignmentTest(
             .andExpect(jsonPath("$", hasSize<Any>(expectedCount)))
             .andExpect(
                 jsonPath(
-                    "$[*].status",
+                    "$[*].state",
                     everyItem(`is`("COMPLETED"))
                 )
             )
@@ -122,7 +122,7 @@ abstract class BasicAssignmentTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$.iid.id").value(iid.id))
             .andExpect(jsonPath("$.id").isString())
-            .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
+            .andExpect(jsonPath("$.state").value("IN_PROGRESS"))
     }
 
     protected fun performAndCheckRefresh(
@@ -142,7 +142,7 @@ abstract class BasicAssignmentTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$.iid.id").value(iid.id))
             .andExpect(jsonPath("$.id").value(assignmentId.toString()))
-            .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
+            .andExpect(jsonPath("$.state").value("IN_PROGRESS"))
     }
 
     protected fun performAndCheckCancel(
@@ -162,7 +162,7 @@ abstract class BasicAssignmentTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$.iid.id").value(iid.id))
             .andExpect(jsonPath("$.id").value(assignmentId.toString()))
-            .andExpect(jsonPath("$.status").value("COMPLETED"))
+            .andExpect(jsonPath("$.state").value("COMPLETED"))
     }
 
     @Suppress("SameParameterValue")
@@ -183,7 +183,7 @@ abstract class BasicAssignmentTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$.iid.id").value(iid.id))
             .andExpect(jsonPath("$.id").isString())
-            .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
+            .andExpect(jsonPath("$.state").value("IN_PROGRESS"))
     }
 
     private fun shutdownScheduler() {

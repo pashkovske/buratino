@@ -34,10 +34,10 @@ abstract class ContinuousAssignmentToPostgreMapper<
             AssignmentScheduling(
                 properties = properties,
                 taskId = row.continueSchedulingTaskId!!,
-                status = row.continueSchedulingState!!
+                state = row.continueSchedulingState!!
             )
         } else {
-            throw IllegalStateException("Continue scheduling task id and status are not consistent")
+            throw IllegalStateException("Continue scheduling task id and state are not consistent")
         }
     }
 

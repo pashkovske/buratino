@@ -1,12 +1,10 @@
-package ru.pashkovske.buratino.assignment.limit.spread.fraction.service
+package ru.pashkovske.buratino.assignment.limit.spread.fraction.service.refresh
 
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
-import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
-import ru.pashkovske.buratino.assignment.limit.base.service.LimitOrderAssignmentExe
+import ru.pashkovske.buratino.assignment.limit.base.service.refresh.LimitOrderAssignmentRefresher
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.instrument.model.Instrument
 import ru.pashkovske.buratino.instrument.service.InstrumentService
@@ -16,18 +14,14 @@ import ru.pashkovske.buratino.price.model.Price
 import ru.pashkovske.buratino.price.service.MarketPriceService
 
 @Service
-final class FractionalSpreadAssignmentExe(
-    orderService: OrderService,
+class FractionalSpreadAssignmentRefresher(
     assignmentDao: AssignmentDao<FractionalSpreadAssignment>,
-    taskScheduler: TaskScheduler,
-    assignmentRefresher: AssignmentRefresher<FractionalSpreadAssignment>,
-    val marketDataService: MarketPriceService,
-    val instrumentService: InstrumentService
-): LimitOrderAssignmentExe<FractionalSpreadAssignment>(
-    orderService = orderService,
+    orderService: OrderService,
+    private val marketDataService: MarketPriceService,
+    private val instrumentService: InstrumentService
+) : LimitOrderAssignmentRefresher<FractionalSpreadAssignment>(
     assignmentDao = assignmentDao,
-    taskScheduler = taskScheduler,
-    assignmentRefresher = assignmentRefresher
+    orderService = orderService
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}
