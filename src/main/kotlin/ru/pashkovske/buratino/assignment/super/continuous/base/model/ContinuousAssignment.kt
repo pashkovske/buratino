@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.`super`.continuous.base.model
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.`super`.base.model.SuperAssignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -22,20 +22,20 @@ abstract class ContinuousAssignment<Nested: Assignment>(
     nested = nested,
     refreshSchedulingProperties = refreshSchedulingProperties
 ) {
-    private var continueSchedulingInfo: SchedulingInfo? = null
+    private var continueAssignmentScheduling: AssignmentScheduling? = null
 
-    fun initContinueScheduling(schedulingInfo: SchedulingInfo) {
-        if (continueSchedulingInfo != null) {
+    fun initContinueScheduling(assignmentScheduling: AssignmentScheduling) {
+        if (continueAssignmentScheduling != null) {
             throw IllegalStateException("Continue scheduling info is already initialized")
         }
-        continueSchedulingInfo = schedulingInfo
+        continueAssignmentScheduling = assignmentScheduling
     }
 
     fun clearContinueScheduling() {
-        continueSchedulingInfo = null
+        continueAssignmentScheduling = null
     }
 
-    fun getContinueSchedulingInfo(): SchedulingInfo? {
-        return continueSchedulingInfo
+    fun getContinueSchedulingInfo(): AssignmentScheduling? {
+        return continueAssignmentScheduling
     }
 }

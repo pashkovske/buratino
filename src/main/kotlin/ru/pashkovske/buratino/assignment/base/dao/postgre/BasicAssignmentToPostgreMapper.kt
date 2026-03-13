@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 
@@ -25,11 +25,11 @@ abstract class BasicAssignmentToPostgreMapper<
     private fun mapRefreshSchedulingInfo(
         row: Row,
         properties: SchedulingProperties
-    ): SchedulingInfo? {
+    ): AssignmentScheduling? {
         return if (row.refreshSchedulingTaskId == null && row.refreshSchedulingState == null) {
             null
         } else if (row.refreshSchedulingTaskId != null && row.refreshSchedulingState != null) {
-            SchedulingInfo(
+            AssignmentScheduling(
                 properties = properties,
                 taskId = row.refreshSchedulingTaskId!!,
                 status = row.refreshSchedulingState!!
@@ -45,13 +45,13 @@ abstract class BasicAssignmentToPostgreMapper<
         refreshSchedulingProperties: SchedulingProperties?
     ) {
         if (refreshSchedulingProperties != null) {
-            val refreshSchedulingInfo: SchedulingInfo? = mapRefreshSchedulingInfo(
+            val refreshAssignmentScheduling: AssignmentScheduling? = mapRefreshSchedulingInfo(
                 row = row,
                 properties = refreshSchedulingProperties
             )
-            if (refreshSchedulingInfo != null) {
+            if (refreshAssignmentScheduling != null) {
                 assignment.initRefreshScheduling(
-                    schedulingInfo = refreshSchedulingInfo
+                    assignmentScheduling = refreshAssignmentScheduling
                 )
             }
         }

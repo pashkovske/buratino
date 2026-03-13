@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
@@ -190,12 +190,12 @@ class RecoverAssignmentsTest(
             getResult1After.response.contentAsString,
             TopPriceAssignment::class.java
         )
-        val schedulingInfoAfterRecover: SchedulingInfo? = assignment1AfterRecover.getRefreshSchedulingInfo()
-        assertNotNull(schedulingInfoAfterRecover)
-        assertTrue(schedulingTaskIdBeforeRestart != schedulingInfoAfterRecover!!.taskId)
+        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getRefreshSchedulingInfo()
+        assertNotNull(assignmentSchedulingAfterRecover)
+        assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            schedulingInfoAfterRecover.taskId
+            assignmentSchedulingAfterRecover.taskId
         )
 
         val getResult2After: MvcResult = mockMvc.perform(
@@ -343,12 +343,12 @@ class RecoverAssignmentsTest(
             getResult1After.response.contentAsString,
             ContinuousFractionalSpreadAssignment::class.java
         )
-        val schedulingInfoAfterRecover: SchedulingInfo? = assignment1AfterRecover.getContinueSchedulingInfo()
-        assertNotNull(schedulingInfoAfterRecover)
-        assertTrue(schedulingTaskIdBeforeRestart != schedulingInfoAfterRecover!!.taskId)
+        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getContinueSchedulingInfo()
+        assertNotNull(assignmentSchedulingAfterRecover)
+        assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            schedulingInfoAfterRecover.taskId
+            assignmentSchedulingAfterRecover.taskId
         )
 
         val getResult2After: MvcResult = mockMvc.perform(

@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
@@ -106,20 +106,20 @@ abstract class BasicContinuousAssignmentExe<
             period = schedulingProps.interval,
             subscriber = subscriber
         )
-        val schedulingInfo = SchedulingInfo(
+        val assignmentScheduling = AssignmentScheduling(
             properties = schedulingProps,
             taskId = taskId
         )
-        schedulingInfo.status = SchedulingState.ACTIVE
-        assignment.initContinueScheduling(schedulingInfo)
+        assignmentScheduling.status = SchedulingState.ACTIVE
+        assignment.initContinueScheduling(assignmentScheduling)
         return true
     }
 
     private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
-        val schedulingInfo: SchedulingInfo = ctx.assignment.getContinueSchedulingInfo() ?: return
+        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getContinueSchedulingInfo() ?: return
 
-        this.taskScheduler.stopPeriodic(schedulingInfo.taskId)
-        schedulingInfo.status = SchedulingState.COMPLETED
+        this.taskScheduler.stopPeriodic(assignmentScheduling.taskId)
+        assignmentScheduling.status = SchedulingState.COMPLETED
 
         ctx.setMutated()
     }

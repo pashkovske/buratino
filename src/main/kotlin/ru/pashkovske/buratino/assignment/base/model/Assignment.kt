@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.base.model
 
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
@@ -19,21 +19,21 @@ abstract class Assignment(
         }
     }
 
-    private var refreshSchedulingInfo: SchedulingInfo? = null
+    private var refreshAssignmentScheduling: AssignmentScheduling? = null
 
-    fun initRefreshScheduling(schedulingInfo: SchedulingInfo) {
-        if (refreshSchedulingInfo != null) {
+    fun initRefreshScheduling(assignmentScheduling: AssignmentScheduling) {
+        if (refreshAssignmentScheduling != null) {
             throw IllegalStateException("Refresh scheduling info is already initialized")
         }
-        refreshSchedulingInfo = schedulingInfo
+        refreshAssignmentScheduling = assignmentScheduling
     }
 
     fun clearRefreshScheduling() {
-        refreshSchedulingInfo = null
+        refreshAssignmentScheduling = null
     }
 
-    fun getRefreshSchedulingInfo(): SchedulingInfo? {
-        return refreshSchedulingInfo
+    fun getRefreshSchedulingInfo(): AssignmentScheduling? {
+        return refreshAssignmentScheduling
     }
 
     override fun toString(): String {

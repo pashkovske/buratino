@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingInfo
+import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.`super`.base.dao.postgre.SuperAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.model.ContinuousAssignment
@@ -27,11 +27,11 @@ abstract class ContinuousAssignmentToPostgreMapper<
     private fun mapContinueSchedulingInfo(
         row: ContinuousRow,
         properties: SchedulingProperties
-    ): SchedulingInfo? {
+    ): AssignmentScheduling? {
         return if (row.continueSchedulingTaskId == null && row.continueSchedulingState == null) {
             null
         } else if (row.continueSchedulingTaskId != null && row.continueSchedulingState != null) {
-            SchedulingInfo(
+            AssignmentScheduling(
                 properties = properties,
                 taskId = row.continueSchedulingTaskId!!,
                 status = row.continueSchedulingState!!
@@ -49,13 +49,13 @@ abstract class ContinuousAssignmentToPostgreMapper<
         if (continueSchedulingProperties == null) {
             return
         }
-        val continueSchedulingInfo: SchedulingInfo? = mapContinueSchedulingInfo(
+        val continueAssignmentScheduling: AssignmentScheduling? = mapContinueSchedulingInfo(
             row = continuousRow,
             properties = continueSchedulingProperties
         )
-        if (continueSchedulingInfo != null) {
+        if (continueAssignmentScheduling != null) {
             continuousAssignment.initContinueScheduling(
-                schedulingInfo = continueSchedulingInfo
+                assignmentScheduling = continueAssignmentScheduling
             )
         }
     }

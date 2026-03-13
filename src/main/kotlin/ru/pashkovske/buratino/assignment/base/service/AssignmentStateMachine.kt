@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.base.service
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 
-object StatusStateMachine {
+object AssignmentStateMachine {
 
     fun isStartable(assignment: Assignment): Boolean {
         return assignment.status == AssignmentState.QUEUED
