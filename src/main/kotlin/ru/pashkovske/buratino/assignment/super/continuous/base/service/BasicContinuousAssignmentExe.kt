@@ -10,6 +10,7 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
+import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.base.service.BasicSuperAssignmentExe
@@ -23,6 +24,7 @@ abstract class BasicContinuousAssignmentExe<
     assignmentDao: AssignmentDao<ContinuousA>,
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
+    assignmentCanceller: AssignmentCanceller<ContinuousA>,
     nestedAssignmentExe: AssignmentExe<Nested>,
     nestedAssignmentDao: AssignmentDao<Nested>
 ):
@@ -30,6 +32,7 @@ abstract class BasicContinuousAssignmentExe<
         assignmentDao = assignmentDao,
         taskScheduler = taskScheduler,
         assignmentRefresher = assignmentRefresher,
+        assignmentCanceller = assignmentCanceller,
         nestedAssignmentExe = nestedAssignmentExe,
         nestedAssignmentDao = nestedAssignmentDao
     ),
@@ -85,11 +88,6 @@ abstract class BasicContinuousAssignmentExe<
         super.postStart(ctx)
     }
 
-    override fun postCancel(ctx: ExeCtx<ContinuousA>) {
-        stopSchedulingContinuation(ctx)
-        super.postCancel(ctx)
-    }
-
     private fun scheduleContinue(ctx: ExeCtx<ContinuousA>) {
         val assignment: ContinuousA = ctx.assignment
         val scheduled: Boolean = scheduleContinue(assignment)
@@ -116,14 +114,5 @@ abstract class BasicContinuousAssignmentExe<
         assignmentScheduling.state = SchedulingState.ACTIVE
         assignment.initContinueScheduling(assignmentScheduling)
         return true
-    }
-
-    private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
-        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getContinueAssignmentScheduling() ?: return
-
-        this.taskScheduler.stopPeriodic(assignmentScheduling.taskId)
-        assignmentScheduling.state = SchedulingState.COMPLETED
-
-        ctx.setMutated()
     }
 }

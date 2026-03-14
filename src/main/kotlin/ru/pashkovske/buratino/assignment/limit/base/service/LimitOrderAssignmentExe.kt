@@ -1,12 +1,11 @@
 package ru.pashkovske.buratino.assignment.limit.base.service
 
-import mu.KLogger
-import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.base.service.BasicAssignmentExe
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
+import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
@@ -18,21 +17,17 @@ abstract class LimitOrderAssignmentExe<LimitA : LimitOrderAssignment>(
     private val orderService: OrderService,
     assignmentDao: AssignmentDao<LimitA>,
     taskScheduler: TaskScheduler,
-    assignmentRefresher: AssignmentRefresher<LimitA>
+    assignmentRefresher: AssignmentRefresher<LimitA>,
+    assignmentCanceller: AssignmentCanceller<LimitA>
 ): BasicAssignmentExe<LimitA>(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
-    assignmentRefresher = assignmentRefresher
+    assignmentRefresher = assignmentRefresher,
+    assignmentCanceller = assignmentCanceller
 ) {
-
-    private val log: KLogger = KotlinLogging.logger {}
 
     override fun doStart(ctx: ExeCtx<LimitA>) {
         startLimitOrder(ctx)
-    }
-
-    override fun doCancel(ctx: ExeCtx<LimitA>) {
-        cancelLimitOrder(ctx)
     }
 
     protected fun startLimitOrder(ctx: ExeCtx<LimitA>) {
@@ -41,17 +36,6 @@ abstract class LimitOrderAssignmentExe<LimitA : LimitOrderAssignment>(
             orderRequest = buildLimitReq(assignment)
         )
         assignment.info.orderId = order.id
-        ctx.setMutated()
-    }
-
-    protected fun cancelLimitOrder(ctx: ExeCtx<LimitA>) {
-        val assignment: LimitA = ctx.assignment
-        val orderId: String = getOrderId(assignment)
-        if (orderService.isOrderCompleted(orderId)) {
-            log.info("Order of assignment ${assignment.id} is already completed, skipping order cancel")
-            return
-        }
-        orderService.cancelOrder(orderId)
         ctx.setMutated()
     }
 
@@ -65,10 +49,5 @@ abstract class LimitOrderAssignmentExe<LimitA : LimitOrderAssignment>(
             idempotencyToken = UUID.randomUUID(),
             price = getPrice(assignment)
         )
-    }
-
-    private fun getOrderId(assignment: LimitA): String {
-        return assignment.info.orderId
-            ?: throw IllegalArgumentException("No order found in assignment ${assignment.id}. Probably it was not started or already canceled")
     }
 }

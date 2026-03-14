@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.BasicContinuousAssignmentExe
@@ -16,6 +17,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousFractionalSpreadAssignment>,
+    assignmentCanceller: AssignmentCanceller<ContinuousFractionalSpreadAssignment>,
     nestedAssignmentExe: FractionalSpreadAssignmentExe,
     nestedAssignmentDao: AssignmentDao<FractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
@@ -25,6 +27,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher,
+    assignmentCanceller = assignmentCanceller,
     nestedAssignmentExe = nestedAssignmentExe,
     nestedAssignmentDao = nestedAssignmentDao
 ) {
@@ -49,12 +52,6 @@ final class ContinuousFractionalSpreadAssignmentExe(
         ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
         checkAndStartNested(ctx)
-    }
-
-    override fun doCancel(
-        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
-    ) {
-        cancelNested(ctx)
     }
 
     override fun doContinue(

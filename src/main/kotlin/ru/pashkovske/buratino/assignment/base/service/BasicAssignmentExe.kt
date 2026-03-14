@@ -11,6 +11,7 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentSchedul
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
@@ -18,7 +19,8 @@ import java.util.UUID
 abstract class BasicAssignmentExe<A: Assignment>(
     protected val assignmentDao: AssignmentDao<A>,
     protected val taskScheduler: TaskScheduler,
-    protected val assignmentRefresher: AssignmentRefresher<A>
+    protected val assignmentRefresher: AssignmentRefresher<A>,
+    protected val assignmentCanceller: AssignmentCanceller<A>
 ): AssignmentExe<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
@@ -64,40 +66,11 @@ abstract class BasicAssignmentExe<A: Assignment>(
     }
 
     final override fun cancel(id: UUID): A {
-        val ctx: ExeCtx<A> = preCancel(id)
-        if (!ctx.shouldSkip()) {
-            doCancel(ctx)
-        }
-        postCancel(ctx)
-        return ctx.assignment
-    }
-    protected open fun preCancel(id: UUID): ExeCtx<A> {
-        val assignment: A = assignmentDao.get(id)
-        log.info("Canceling assignment: $assignment")
-        val ctx: ExeCtx<A> = ExeCtx(assignment)
-        if (isCompleted(ctx)) {
-            log.warn("Assignment ${ctx.assignment.id} is already completed. Skipping cancel")
-            ctx.setShouldSkip()
-        }
-        return ctx
-    }
-    protected abstract fun doCancel(ctx: ExeCtx<A>)
-    protected open fun postCancel(ctx: ExeCtx<A>) {
-        val assignment: A = ctx.assignment
-        stopSchedulingRefresh(ctx)
-        toCompleted(ctx)
-        if (ctx.isMutated()) {
-            assignmentDao.update(assignment)
-        }
-        log.info("Assignment canceled: $assignment")
+        return assignmentCanceller.cancel(id)
     }
 
     protected fun toInProgress(ctx: ExeCtx<A>) {
         AssignmentStateMachine.toInProgress(ctx.assignment)
-        ctx.setMutated()
-    }
-    protected fun toCompleted(ctx: ExeCtx<A>) {
-        AssignmentStateMachine.toCompleted(ctx.assignment)
         ctx.setMutated()
     }
     protected fun isCompleted(ctx: ExeCtx<A>): Boolean {
@@ -130,14 +103,4 @@ abstract class BasicAssignmentExe<A: Assignment>(
         assignment.initRefreshScheduling(assignmentScheduling)
     }
 
-    private fun stopSchedulingRefresh(ctx: ExeCtx<A>) {
-        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getRefreshAssignmentScheduling() ?: return
-        if (assignmentScheduling.state == SchedulingState.COMPLETED) {
-            return
-        }
-        taskScheduler.stopPeriodic(assignmentScheduling.taskId)
-        assignmentScheduling.state = SchedulingState.COMPLETED
-
-        ctx.setMutated()
-    }
 }
