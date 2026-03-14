@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
-import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.dao.postgre.ContinuousFractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.dao.postgre.ContinuousFractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
@@ -54,7 +54,7 @@ class ContinuousFractionalSpreadAssignmentTest(
     }
 
     @Test
-    fun `create, skip refresh, cancel nested, continue and cancel buy`() {
+    fun `create, skip refresh, cancel child, continue and cancel buy`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.BUY
         val rate = 0.007
@@ -67,16 +67,16 @@ class ContinuousFractionalSpreadAssignmentTest(
             content = "{\"rate\": $rate}",
             params = null
         )
-            .andExpect(jsonPath("$.nested.direction").value(direction.toString()))
-            .andExpect(jsonPath("$.nested.rate").value(rate))
-            .andExpect(jsonPath("$.nested.info.orderId").isString())
+            .andExpect(jsonPath("$.child.direction").value(direction.toString()))
+            .andExpect(jsonPath("$.child.rate").value(rate))
+            .andExpect(jsonPath("$.child.info.orderId").isString())
             .andReturn()
 
         verify(extOrderServiceAdapter).createOrder(any())
 
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
-        val nestedAssignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.nested.id"))
-        val createdOrderId: String = JsonPath.parse(createResult.response.contentAsString).read("$.nested.info.orderId")
+        val childAssignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.child.id"))
+        val createdOrderId: String = JsonPath.parse(createResult.response.contentAsString).read("$.child.info.orderId")
 
         val expectedPrice = Price(
             unit = 65,
@@ -101,15 +101,15 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-            .andExpect(jsonPath("$.nested.state").value("IN_PROGRESS"))
-            .andExpect(jsonPath("$.nested.info.orderId").isString())
+            .andExpect(jsonPath("$.child.state").value("IN_PROGRESS"))
+            .andExpect(jsonPath("$.child.info.orderId").isString())
 
         verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
 
-        // Cancel nested
+        // Cancel child
         performAndCheckCancel(
             path = "/assignment/fractional-spread/{assignmentId}",
-            assignmentId = nestedAssignmentId,
+            assignmentId = childAssignmentId,
             iid = iid
         )
             .andExpect(jsonPath("$.info.orderId").isString())
@@ -122,12 +122,12 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-            .andExpect(jsonPath("$.nested.direction").value(direction.getOpposite().toString()))
-            .andExpect(jsonPath("$.nested.rate").value(rate))
-            .andExpect(jsonPath("$.nested.info.orderId").isString())
+            .andExpect(jsonPath("$.child.direction").value(direction.getOpposite().toString()))
+            .andExpect(jsonPath("$.child.rate").value(rate))
+            .andExpect(jsonPath("$.child.info.orderId").isString())
             .andReturn()
 
-        val continuedOrderId: String = JsonPath.parse(continueResult.response.contentAsString).read("$.nested.info.orderId")
+        val continuedOrderId: String = JsonPath.parse(continueResult.response.contentAsString).read("$.child.info.orderId")
 
         assertNotEquals(continuedOrderId, createdOrderId)
 
@@ -137,7 +137,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             assignmentId = assignmentId,
             iid = iid
         )
-            .andExpect(jsonPath("$.nested.info.orderId").value(continuedOrderId))
+            .andExpect(jsonPath("$.child.info.orderId").value(continuedOrderId))
 
         assertAllAssignmentsCancelled(
             path = "/assignment/continuous/fractional-spread/",

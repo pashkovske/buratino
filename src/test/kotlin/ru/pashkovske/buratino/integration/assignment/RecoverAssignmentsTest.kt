@@ -25,8 +25,8 @@ import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.dao.postgre.ContinuousFractionalSpreadAssignmentDao
-import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.dao.postgre.ContinuousFractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
