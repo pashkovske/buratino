@@ -1,6 +1,5 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.service
 
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
@@ -8,6 +7,7 @@ import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.BasicContinuousAssignmentExe
+import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.`continue`.ContinuousAssignmentContinuer
 import ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
@@ -19,7 +19,8 @@ final class ContinuousFractionalSpreadAssignmentExe(
     assignmentRefresher: AssignmentRefresher<ContinuousFractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<ContinuousFractionalSpreadAssignment>,
     nestedAssignmentExe: FractionalSpreadAssignmentExe,
-    nestedAssignmentDao: AssignmentDao<FractionalSpreadAssignment>
+    nestedAssignmentDao: AssignmentDao<FractionalSpreadAssignment>,
+    continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousFractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment
@@ -29,38 +30,13 @@ final class ContinuousFractionalSpreadAssignmentExe(
     assignmentRefresher = assignmentRefresher,
     assignmentCanceller = assignmentCanceller,
     nestedAssignmentExe = nestedAssignmentExe,
-    nestedAssignmentDao = nestedAssignmentDao
+    nestedAssignmentDao = nestedAssignmentDao,
+    continuousAssignmentContinuer = continuousAssignmentContinuer
 ) {
-
-    private val log = KotlinLogging.logger {}
-
-    private fun startNewSpreadFractionAssignment(ctx: ExeCtx<ContinuousFractionalSpreadAssignment>) {
-        val completedAssignment: FractionalSpreadAssignment = ctx.assignment.nested
-        val nextAssignment = FractionalSpreadAssignment.newAssignment(
-            iid = completedAssignment.iid,
-            refreshSchedulingProperties = null,
-            direction = completedAssignment.direction.getOpposite(),
-            rate = completedAssignment.rate
-        )
-        nestedAssignmentExe.start(nextAssignment)
-        ctx.assignment.nested = nextAssignment
-        log.info("Started new spread fraction assignment: ${nextAssignment.id}")
-        ctx.setMutated()
-    }
 
     override fun doStart(
         ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
     ) {
         checkAndStartNested(ctx)
-    }
-
-    override fun doContinue(
-        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
-    ) {
-        if (!isNestedCompleted(ctx)) {
-            log.warn("Nested assignment ${ctx.assignment.nested.id} is not completed. Skipping continue")
-            return
-        }
-        startNewSpreadFractionAssignment(ctx)
     }
 }

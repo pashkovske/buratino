@@ -1,7 +1,6 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.base.service
 
 import jakarta.annotation.PostConstruct
-import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
@@ -15,6 +14,7 @@ import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefreshe
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.base.service.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.model.ContinuousAssignment
+import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.`continue`.ContinuousAssignmentContinuer
 import java.util.UUID
 
 abstract class BasicContinuousAssignmentExe<
@@ -26,7 +26,8 @@ abstract class BasicContinuousAssignmentExe<
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
     assignmentCanceller: AssignmentCanceller<ContinuousA>,
     nestedAssignmentExe: AssignmentExe<Nested>,
-    nestedAssignmentDao: AssignmentDao<Nested>
+    nestedAssignmentDao: AssignmentDao<Nested>,
+    protected val continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousA>
 ):
     BasicSuperAssignmentExe<ContinuousA, Nested>(
         assignmentDao = assignmentDao,
@@ -38,8 +39,6 @@ abstract class BasicContinuousAssignmentExe<
     ),
     ContinuousAssignmentExe<ContinuousA>
 {
-
-    private val log = KotlinLogging.logger {}
 
     @PostConstruct
     override fun recoverAssignments(): List<ContinuousA> {
@@ -57,30 +56,7 @@ abstract class BasicContinuousAssignmentExe<
     }
 
     final override fun continueAssignment(id: UUID): ContinuousA {
-        val ctx: ExeCtx<ContinuousA> = preContinue(id)
-        if (!ctx.shouldSkip()) {
-            doContinue(ctx)
-        }
-        postContinue(ctx)
-        return ctx.assignment
-    }
-    protected open fun preContinue(id: UUID): ExeCtx<ContinuousA> {
-        val assignment: ContinuousA = assignmentDao.get(id)
-        log.info("Continuing assignment: $assignment")
-        val ctx: ExeCtx<ContinuousA> = ExeCtx(assignment)
-        syncNested(ctx)
-        if (isCompleted(ctx)) {
-            log.warn("Assignment ${ctx.assignment.id} is already completed. Skipping continue")
-            ctx.setShouldSkip()
-        }
-        return ctx
-    }
-    protected abstract fun doContinue(ctx: ExeCtx<ContinuousA>)
-    protected open fun postContinue(ctx: ExeCtx<ContinuousA>) {
-        if (ctx.isMutated()) {
-            assignmentDao.update(ctx.assignment)
-        }
-        log.info("Assignment continued: ${ctx.assignment}")
+        return continuousAssignmentContinuer.continueAssignment(id)
     }
 
     override fun postStart(ctx: ExeCtx<ContinuousA>) {

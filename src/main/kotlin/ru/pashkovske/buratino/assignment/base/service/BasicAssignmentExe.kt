@@ -73,9 +73,6 @@ abstract class BasicAssignmentExe<A: Assignment>(
         AssignmentStateMachine.toInProgress(ctx.assignment)
         ctx.setMutated()
     }
-    protected fun isCompleted(ctx: ExeCtx<A>): Boolean {
-        return ctx.assignment.state == AssignmentState.COMPLETED
-    }
 
     private fun scheduleRefresh(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment

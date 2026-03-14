@@ -32,14 +32,6 @@ abstract class BasicSuperAssignmentExe<
 
     private val log: KLogger = KotlinLogging.logger {}
 
-    protected fun syncNested(ctx: ExeCtx<SuperA>) {
-        ctx.assignment.nested = nestedAssignmentDao.get(ctx.assignment.nested.id)
-    }
-
-    protected fun isNestedCompleted(ctx: ExeCtx<SuperA>): Boolean {
-        return ctx.assignment.nested.state == AssignmentState.COMPLETED
-    }
-
     protected fun checkAndStartNested(ctx: ExeCtx<SuperA>) {
         val assignment: SuperA = ctx.assignment
         if (assignment.nested.state != AssignmentState.QUEUED) {
