@@ -8,9 +8,9 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingPropert
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
-import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
+import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.base.service.BasicSuperAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.model.ContinuousAssignment
@@ -25,6 +25,7 @@ abstract class BasicContinuousAssignmentExe<
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
     assignmentCanceller: AssignmentCanceller<ContinuousA>,
+    assignmentStarter: AssignmentStarter<ContinuousA>,
     nestedAssignmentExe: AssignmentExe<Nested>,
     nestedAssignmentDao: AssignmentDao<Nested>,
     protected val continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousA>
@@ -34,6 +35,7 @@ abstract class BasicContinuousAssignmentExe<
         taskScheduler = taskScheduler,
         assignmentRefresher = assignmentRefresher,
         assignmentCanceller = assignmentCanceller,
+        assignmentStarter = assignmentStarter,
         nestedAssignmentExe = nestedAssignmentExe,
         nestedAssignmentDao = nestedAssignmentDao
     ),
@@ -57,19 +59,6 @@ abstract class BasicContinuousAssignmentExe<
 
     final override fun continueAssignment(id: UUID): ContinuousA {
         return continuousAssignmentContinuer.continueAssignment(id)
-    }
-
-    override fun postStart(ctx: ExeCtx<ContinuousA>) {
-        scheduleContinue(ctx)
-        super.postStart(ctx)
-    }
-
-    private fun scheduleContinue(ctx: ExeCtx<ContinuousA>) {
-        val assignment: ContinuousA = ctx.assignment
-        val scheduled: Boolean = scheduleContinue(assignment)
-        if (scheduled) {
-            ctx.setMutated()
-        }
     }
 
     private fun scheduleContinue(assignment: ContinuousA): Boolean {

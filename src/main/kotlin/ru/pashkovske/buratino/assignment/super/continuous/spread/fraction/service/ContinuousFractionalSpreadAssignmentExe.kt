@@ -1,10 +1,10 @@
 package ru.pashkovske.buratino.assignment.`super`.continuous.spread.fraction.service
 
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
+import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.BasicContinuousAssignmentExe
 import ru.pashkovske.buratino.assignment.`super`.continuous.base.service.`continue`.ContinuousAssignmentContinuer
@@ -18,6 +18,7 @@ final class ContinuousFractionalSpreadAssignmentExe(
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousFractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<ContinuousFractionalSpreadAssignment>,
+    assignmentStarter: AssignmentStarter<ContinuousFractionalSpreadAssignment>,
     nestedAssignmentExe: FractionalSpreadAssignmentExe,
     nestedAssignmentDao: AssignmentDao<FractionalSpreadAssignment>,
     continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousFractionalSpreadAssignment>
@@ -29,14 +30,8 @@ final class ContinuousFractionalSpreadAssignmentExe(
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher,
     assignmentCanceller = assignmentCanceller,
+    assignmentStarter = assignmentStarter,
     nestedAssignmentExe = nestedAssignmentExe,
     nestedAssignmentDao = nestedAssignmentDao,
     continuousAssignmentContinuer = continuousAssignmentContinuer
-) {
-
-    override fun doStart(
-        ctx: ExeCtx<ContinuousFractionalSpreadAssignment>
-    ) {
-        checkAndStartNested(ctx)
-    }
-}
+)
