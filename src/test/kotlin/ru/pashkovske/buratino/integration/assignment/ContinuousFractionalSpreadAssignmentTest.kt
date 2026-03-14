@@ -47,7 +47,7 @@ class ContinuousFractionalSpreadAssignmentTest(
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @AfterEach
-    fun setup() {
+    fun clean() {
         orderDao.deleteAll()
         fractionalSpreadAssignmentDao.deleteAll()
         continuousFractionalSpreadAssignmentDao.deleteAll()

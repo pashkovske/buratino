@@ -10,8 +10,8 @@ import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentControll
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.service.ContinuousFractionalSpreadAssignmentExe
-import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.dto.StartFractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -23,7 +23,7 @@ import java.util.UUID
 class ContinuousFractionalSpreadAssignmentController(
     dao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     override val exe: ContinuousFractionalSpreadAssignmentExe
-): BasicAssignmentController<ContinuousFractionalSpreadAssignment>(
+): BasicAssignmentController<ContinuousFractionalSpreadAssignment, ContinuousFractionalSpreadAssignmentStartCmd>(
     dao = dao,
     exe = exe
 ) {
@@ -33,28 +33,22 @@ class ContinuousFractionalSpreadAssignmentController(
         @PathVariable direction: String,
         @RequestBody body: StartFractionalSpreadAssignmentDto
     ): ContinuousFractionalSpreadAssignment {
-        val iid = InstrumentId(id = instrumentId)
-        val childAssignment = FractionalSpreadAssignment.newAssignment(
-            iid = iid,
-            refreshSchedulingProperties = null,
+        val cmd = ContinuousFractionalSpreadAssignmentStartCmd(
+            iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
-            rate = body.rate
-        )
-        val assignment = ContinuousFractionalSpreadAssignment.newAssignment(
-            iid = iid,
-            child = childAssignment,
-            refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
+            rate = body.rate,
+            continueSchedulingProperties = body.continueSchedulingInterval?.let {
                 SchedulingProperties(
                     interval = it
                 )
             },
-            continueSchedulingProperties = body.continueSchedulingInterval?.let {
+            refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
                 SchedulingProperties(
                     interval = it
                 )
             }
         )
-        return exe.start(assignment)
+        return doStart(cmd)
     }
 
     @PatchMapping("/{id}/continue")

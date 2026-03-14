@@ -46,7 +46,7 @@ class RefreshOrdersTest(
     private lateinit var objectMapper: ObjectMapper
 
     @AfterEach
-    fun setUp() {
+    fun clean() {
         orderDao.deleteAll()
     }
 

@@ -13,22 +13,24 @@ import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.parent.base.service.ParentAssignmentExe
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
+import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.ContinuousAssignmentContinuer
 import java.util.UUID
 
 abstract class BasicContinuousAssignmentExe<
     ContinuousA : ContinuousAssignment<ChildA>,
-    ChildA : Assignment
+    ChildA : Assignment,
+    ContinuousStartCmd : ContinuousAssignmentStartCmd<ContinuousA, ChildA>
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
     assignmentCanceller: AssignmentCanceller<ContinuousA>,
-    assignmentStarter: AssignmentStarter<ContinuousA>,
+    assignmentStarter: AssignmentStarter<ContinuousA, ContinuousStartCmd>,
     childAssignmentDao: AssignmentDao<ChildA>,
     protected val continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousA>
 ):
-    ParentAssignmentExe<ContinuousA, ChildA>(
+    ParentAssignmentExe<ContinuousA, ChildA, ContinuousStartCmd>(
         assignmentDao = assignmentDao,
         taskScheduler = taskScheduler,
         assignmentRefresher = assignmentRefresher,
@@ -36,7 +38,7 @@ abstract class BasicContinuousAssignmentExe<
         assignmentStarter = assignmentStarter,
         childAssignmentDao = childAssignmentDao
     ),
-    ContinuousAssignmentExe<ContinuousA>
+    ContinuousAssignmentExe<ContinuousA, ChildA, ContinuousStartCmd>
 {
 
     @PostConstruct

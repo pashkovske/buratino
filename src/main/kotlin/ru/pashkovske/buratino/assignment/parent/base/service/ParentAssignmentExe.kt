@@ -8,18 +8,20 @@ import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefreshe
 import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.parent.base.model.ParentAssignment
+import ru.pashkovske.buratino.assignment.parent.base.model.ParentAssignmentStartCmd
 
 abstract class ParentAssignmentExe<
     ParentA : ParentAssignment<ChildA>,
-    ChildA : Assignment
+    ChildA : Assignment,
+    ParentStartCmd : ParentAssignmentStartCmd<ParentA, ChildA>
     >(
     assignmentDao: AssignmentDao<ParentA>,
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ParentA>,
     assignmentCanceller: AssignmentCanceller<ParentA>,
-    assignmentStarter: AssignmentStarter<ParentA>,
+    assignmentStarter: AssignmentStarter<ParentA, ParentStartCmd>,
     protected val childAssignmentDao: AssignmentDao<ChildA>
-) : BasicAssignmentExe<ParentA>(
+) : BasicAssignmentExe<ParentA, ParentStartCmd>(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher,

@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.start.FractionalSpreadAssignmentStarter
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.BasicContinuousAssignmentContinuer
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 
@@ -13,7 +14,7 @@ import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model
 class ContinuousFractionalSpreadAssignmentContinuer(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     childAssignmentDao: AssignmentDao<FractionalSpreadAssignment>,
-    private val childAssignmentExe: FractionalSpreadAssignmentExe
+    private val childAssignmentStarter: FractionalSpreadAssignmentStarter
 ) : BasicContinuousAssignmentContinuer<FractionalSpreadAssignment, ContinuousFractionalSpreadAssignment>(
     assignmentDao = assignmentDao,
     childAssignmentDao = childAssignmentDao
@@ -31,13 +32,13 @@ class ContinuousFractionalSpreadAssignmentContinuer(
 
     private fun startNewSpreadFractionAssignment(ctx: ExeCtx<ContinuousFractionalSpreadAssignment>) {
         val completedAssignment: FractionalSpreadAssignment = ctx.assignment.child
-        val nextAssignment = FractionalSpreadAssignment.newAssignment(
+        val nextAssignmentCmd = FractionalSpreadAssignmentStartCmd(
             iid = completedAssignment.iid,
-            refreshSchedulingProperties = null,
             direction = completedAssignment.direction.getOpposite(),
-            rate = completedAssignment.rate
+            rate = completedAssignment.rate,
+            refreshSchedulingProperties = null
         )
-        childAssignmentExe.start(nextAssignment)
+        val nextAssignment: FractionalSpreadAssignment = childAssignmentStarter.start(nextAssignmentCmd)
         ctx.assignment.child = nextAssignment
         log.info("Started new spread fraction assignment: ${nextAssignment.id}")
         ctx.setMutated()

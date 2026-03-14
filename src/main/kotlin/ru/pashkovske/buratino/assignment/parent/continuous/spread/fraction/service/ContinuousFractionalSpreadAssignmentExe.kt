@@ -10,6 +10,7 @@ import ru.pashkovske.buratino.assignment.parent.continuous.base.service.BasicCon
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.ContinuousAssignmentContinuer
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignmentStartCmd
 
 @Service
 final class ContinuousFractionalSpreadAssignmentExe(
@@ -17,12 +18,13 @@ final class ContinuousFractionalSpreadAssignmentExe(
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousFractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<ContinuousFractionalSpreadAssignment>,
-    assignmentStarter: AssignmentStarter<ContinuousFractionalSpreadAssignment>,
+    assignmentStarter: AssignmentStarter<ContinuousFractionalSpreadAssignment, ContinuousFractionalSpreadAssignmentStartCmd>,
     childAssignmentDao: AssignmentDao<FractionalSpreadAssignment>,
     continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousFractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
-    FractionalSpreadAssignment
+    FractionalSpreadAssignment,
+    ContinuousFractionalSpreadAssignmentStartCmd
     >(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,

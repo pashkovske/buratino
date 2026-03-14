@@ -6,7 +6,7 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.cancel.BasicAssignmentCanceller
 import ru.pashkovske.buratino.assignment.parent.base.model.ParentAssignment
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
@@ -17,7 +17,7 @@ abstract class ParentAssignmentCanceller<
     >(
     assignmentDao: AssignmentDao<ParentA>,
     taskScheduler: TaskScheduler,
-    protected val childAssignmentExe: AssignmentExe<ChildA>
+    protected val childAssignmentCanceller: AssignmentCanceller<ChildA>
 ) : BasicAssignmentCanceller<ParentA>(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler
@@ -40,7 +40,7 @@ abstract class ParentAssignmentCanceller<
             return
         }
         log.info("Canceling child assignment: ${assignment.child.id}")
-        assignment.child = childAssignmentExe.cancel(assignment.child.id)
+        assignment.child = childAssignmentCanceller.cancel(assignment.child.id)
         ctx.setMutated()
     }
 }

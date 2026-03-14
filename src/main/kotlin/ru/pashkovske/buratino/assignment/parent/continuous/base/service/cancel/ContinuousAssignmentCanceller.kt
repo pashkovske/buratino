@@ -5,7 +5,7 @@ import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
+import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.parent.base.service.cancel.ParentAssignmentCanceller
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
@@ -16,12 +16,12 @@ abstract class ContinuousAssignmentCanceller<
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
     taskScheduler: TaskScheduler,
-    childAssignmentExe: AssignmentExe<ChildA>,
+    childAssignmentCanceller: AssignmentCanceller<ChildA>,
     private val continuousTaskScheduler: TaskScheduler
 ) : ParentAssignmentCanceller<ContinuousA, ChildA>(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
-    childAssignmentExe = childAssignmentExe
+    childAssignmentCanceller = childAssignmentCanceller
 ) {
 
     override fun postCancel(ctx: ExeCtx<ContinuousA>) {

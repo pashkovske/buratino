@@ -8,19 +8,23 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentSchedul
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
-abstract class BasicAssignmentExe<A: Assignment>(
+abstract class BasicAssignmentExe<
+    A: Assignment,
+    Cmd: AssignmentStartCmd<A>
+    >(
     protected val assignmentDao: AssignmentDao<A>,
     protected val taskScheduler: TaskScheduler,
     protected val assignmentRefresher: AssignmentRefresher<A>,
     protected val assignmentCanceller: AssignmentCanceller<A>,
-    protected val assignmentStarter: AssignmentStarter<A>
-): AssignmentExe<A> {
+    protected val assignmentStarter: AssignmentStarter<A, Cmd>
+): AssignmentExe<A, Cmd> {
 
     @PostConstruct
     override fun recoverAssignments(): List<A> {
@@ -36,8 +40,8 @@ abstract class BasicAssignmentExe<A: Assignment>(
         return activeAssignments
     }
 
-    final override fun start(assignment: A): A {
-        return assignmentStarter.start(assignment)
+    final override fun start(cmd: Cmd): A {
+        return assignmentStarter.start(cmd)
     }
 
     final override fun refresh(id: UUID): A {

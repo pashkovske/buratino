@@ -4,19 +4,23 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
-import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
+import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import java.util.UUID
 
 @Suppress("unused")
-abstract class BasicAssignmentController<A: Assignment>(
+abstract class BasicAssignmentController<
+    A : Assignment,
+    Cmd : AssignmentStartCmd<A>
+    >(
     open val dao: AssignmentDao<A>,
-    open val exe: AssignmentExe<A>
+    open val exe: AssignmentExe<A, Cmd>
 ) {
-    protected fun doStart(assignment: A): A {
-        return exe.start(assignment)
+    protected fun doStart(cmd: Cmd): A {
+        return exe.start(cmd)
     }
 
     @PatchMapping("/{id}/refresh")

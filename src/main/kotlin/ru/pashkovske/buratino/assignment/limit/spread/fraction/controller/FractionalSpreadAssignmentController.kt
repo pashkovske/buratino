@@ -9,6 +9,7 @@ import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentControll
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.dto.StartFractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -20,7 +21,7 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 class FractionalSpreadAssignmentController(
     dao: AssignmentDao<FractionalSpreadAssignment>,
     exe: FractionalSpreadAssignmentExe
-): BasicAssignmentController<FractionalSpreadAssignment>(
+): BasicAssignmentController<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>(
     dao = dao,
     exe = exe
 ) {
@@ -30,16 +31,16 @@ class FractionalSpreadAssignmentController(
         @PathVariable direction: String,
         @RequestBody body: StartFractionalSpreadAssignmentDto
     ): FractionalSpreadAssignment {
-        val assignment = FractionalSpreadAssignment.newAssignment(
+        val cmd = FractionalSpreadAssignmentStartCmd(
             iid = InstrumentId(id = instrumentId),
+            direction = OrderDirection.fromString(direction),
+            rate = body.rate,
             refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
                 SchedulingProperties(
                     interval = it
                 )
-            },
-            direction = OrderDirection.fromString(direction),
-            rate = body.rate
+            }
         )
-        return doStart(assignment)
+        return doStart(cmd)
     }
 }

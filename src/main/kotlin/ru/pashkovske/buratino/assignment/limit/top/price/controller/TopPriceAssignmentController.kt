@@ -10,6 +10,7 @@ import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentControll
 import ru.pashkovske.buratino.assignment.base.controller.dto.BasicStartAssignmentDto
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
+import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -21,7 +22,7 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 class TopPriceAssignmentController(
     dao: AssignmentDao<TopPriceAssignment>,
     exe: TopPriceAssignmentExe
-): BasicAssignmentController<TopPriceAssignment>(
+): BasicAssignmentController<TopPriceAssignment, TopPriceAssignmentStartCmd>(
     dao = dao,
     exe = exe
 ) {
@@ -32,16 +33,16 @@ class TopPriceAssignmentController(
         @RequestParam oneStepOver: Boolean?,
         @RequestBody body: BasicStartAssignmentDto
     ): TopPriceAssignment {
-        val assignment = TopPriceAssignment.newAssignment(
+        val cmd = TopPriceAssignmentStartCmd(
             iid = InstrumentId(id = instrumentId),
+            direction = OrderDirection.fromString(direction),
+            oneStepOver = oneStepOver ?: false,
             refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
                 SchedulingProperties(
                     interval = it
                 )
-            },
-            direction = OrderDirection.fromString(direction),
-            oneStepOver = oneStepOver ?: false
+            }
         )
-        return doStart(assignment)
+        return doStart(cmd)
     }
 }

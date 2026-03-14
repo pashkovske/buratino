@@ -5,18 +5,22 @@ import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.base.service.start.BasicAssignmentStarter
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
+import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.limit.base.service.order.LimitOrderFactory
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.service.OrderService
 
-abstract class LimitOrderAssignmentStarter<LimitA : LimitOrderAssignment>(
+abstract class LimitOrderAssignmentStarter<
+    LimitA : LimitOrderAssignment,
+    Cmd : LimitOrderAssignmentStartCmd<LimitA>
+    >(
     assignmentDao: AssignmentDao<LimitA>,
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<LimitA>,
     private val orderService: OrderService,
     private val limitOrderFactory: LimitOrderFactory<LimitA>
-) : BasicAssignmentStarter<LimitA>(
+) : BasicAssignmentStarter<LimitA, Cmd>(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher

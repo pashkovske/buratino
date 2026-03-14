@@ -6,6 +6,7 @@ import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefreshe
 import ru.pashkovske.buratino.assignment.limit.base.service.order.LimitOrderFactory
 import ru.pashkovske.buratino.assignment.limit.base.service.start.LimitOrderAssignmentStarter
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.order.service.OrderService
 
@@ -16,10 +17,19 @@ class FractionalSpreadAssignmentStarter(
     assignmentRefresher: AssignmentRefresher<FractionalSpreadAssignment>,
     orderService: OrderService,
     limitOrderFactory: LimitOrderFactory<FractionalSpreadAssignment>
-) : LimitOrderAssignmentStarter<FractionalSpreadAssignment>(
+) : LimitOrderAssignmentStarter<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher,
     orderService = orderService,
     limitOrderFactory = limitOrderFactory
-)
+) {
+    override fun buildAssignment(cmd: FractionalSpreadAssignmentStartCmd): FractionalSpreadAssignment {
+        return FractionalSpreadAssignment.newAssignment(
+            iid = cmd.iid,
+            direction = cmd.direction,
+            refreshSchedulingProperties = cmd.refreshSchedulingProperties,
+            rate = cmd.rate
+        )
+    }
+}

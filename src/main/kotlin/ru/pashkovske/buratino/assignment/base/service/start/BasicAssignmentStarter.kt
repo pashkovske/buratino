@@ -4,6 +4,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
+import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
@@ -14,15 +15,19 @@ import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefreshe
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
-abstract class BasicAssignmentStarter<A : Assignment>(
+abstract class BasicAssignmentStarter<
+    A : Assignment,
+    Cmd : AssignmentStartCmd<A>
+    >(
     private val assignmentDao: AssignmentDao<A>,
     private val taskScheduler: TaskScheduler,
     private val assignmentRefresher: AssignmentRefresher<A>
-) : AssignmentStarter<A> {
+) : AssignmentStarter<A, Cmd> {
 
     private val log: KLogger = KotlinLogging.logger {}
 
-    final override fun start(assignment: A): A {
+    final override fun start(cmd: Cmd): A {
+        val assignment: A = buildAssignment(cmd)
         val ctx: ExeCtx<A> = preStart(assignment)
         if (!ctx.shouldSkip()) {
             doStart(ctx)
@@ -30,11 +35,15 @@ abstract class BasicAssignmentStarter<A : Assignment>(
         postStart(ctx)
         return assignment
     }
+
+    protected abstract fun buildAssignment(cmd: Cmd): A
+
     protected open fun preStart(assignment: A): ExeCtx<A> {
         log.info("Starting assignment: $assignment")
         val ctx: ExeCtx<A> = ExeCtx(assignment)
         return ctx
     }
+
     protected abstract fun doStart(ctx: ExeCtx<A>)
     protected open fun postStart(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
