@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model
 
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignmentStartCmd
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -10,10 +10,10 @@ class ContinuousFractionalSpreadAssignmentStartCmd(
     iid: InstrumentId,
     val direction: OrderDirection,
     val rate: Double,
-    continueSchedulingProperties: SchedulingProperties?,
-    refreshSchedulingProperties: SchedulingProperties?
+    continueAssignmentSchedulingProperties: AssignmentSchedulingProperties?,
+    refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?
 ) : ContinuousAssignmentStartCmd<ContinuousFractionalSpreadAssignment, FractionalSpreadAssignment>(
     iid = iid,
-    continueSchedulingProperties = continueSchedulingProperties,
-    refreshSchedulingProperties = refreshSchedulingProperties
+    continueAssignmentSchedulingProperties = continueAssignmentSchedulingProperties,
+    refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties
 )

@@ -1,8 +1,8 @@
 package ru.pashkovske.buratino.assignment.parent.continuous.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.parent.base.dao.postgre.ParentAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
 
@@ -16,9 +16,9 @@ abstract class ContinuousAssignmentToPostgreMapper<
     ContinuousRow
     >() {
 
-    protected fun mapContinueSchedulingProperties(row: ContinuousRow): SchedulingProperties? {
+    protected fun mapContinueSchedulingProperties(row: ContinuousRow): AssignmentSchedulingProperties? {
         return row.continueSchedulingPeriod?.let {
-            SchedulingProperties(
+            AssignmentSchedulingProperties(
                 period = it
             )
         }
@@ -26,7 +26,7 @@ abstract class ContinuousAssignmentToPostgreMapper<
 
     private fun mapContinueSchedulingInfo(
         row: ContinuousRow,
-        properties: SchedulingProperties
+        properties: AssignmentSchedulingProperties
     ): AssignmentScheduling? {
         return if (row.continueSchedulingTaskId == null && row.continueSchedulingState == null) {
             null
@@ -44,14 +44,14 @@ abstract class ContinuousAssignmentToPostgreMapper<
     protected fun initContinueSchedulingInfo(
         continuousRow: ContinuousRow,
         continuousAssignment: ContinuousA,
-        continueSchedulingProperties: SchedulingProperties?
+        continueAssignmentSchedulingProperties: AssignmentSchedulingProperties?
     ) {
-        if (continueSchedulingProperties == null) {
+        if (continueAssignmentSchedulingProperties == null) {
             return
         }
         val continueAssignmentScheduling: AssignmentScheduling? = mapContinueSchedulingInfo(
             row = continuousRow,
-            properties = continueSchedulingProperties
+            properties = continueAssignmentSchedulingProperties
         )
         if (continueAssignmentScheduling != null) {
             continuousAssignment.initContinueScheduling(

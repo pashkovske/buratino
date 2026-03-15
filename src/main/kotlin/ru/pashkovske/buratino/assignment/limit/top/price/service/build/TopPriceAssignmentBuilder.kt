@@ -15,7 +15,7 @@ class TopPriceAssignmentBuilder : LimitOrderAssignmentBuilder<
         return TopPriceAssignment.newAssignment(
             iid = cmd.iid,
             direction = cmd.direction,
-            refreshSchedulingProperties = cmd.refreshSchedulingProperties,
+            refreshAssignmentSchedulingProperties = cmd.refreshAssignmentSchedulingProperties,
             oneStepOver = cmd.oneStepOver
         )
     }

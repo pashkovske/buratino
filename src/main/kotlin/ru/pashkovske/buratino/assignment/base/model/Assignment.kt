@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.base.model
 
-import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
 
@@ -9,7 +9,7 @@ abstract class Assignment(
     val id: UUID,
     val iid: InstrumentId,
     var state: AssignmentState,
-    val refreshSchedulingProperties: SchedulingProperties?
+    val refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?
 ) {
 
     companion object {

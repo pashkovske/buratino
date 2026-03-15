@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.limit.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentPostgreRow
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.order.model.OrderDirection
 import java.time.Duration

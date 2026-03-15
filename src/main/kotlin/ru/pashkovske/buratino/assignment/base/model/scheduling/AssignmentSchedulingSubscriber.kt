@@ -1,4 +1,4 @@
-package ru.pashkovske.buratino.assignment.base.scheduling
+package ru.pashkovske.buratino.assignment.base.model.scheduling
 
 import mu.KLogger
 import mu.KotlinLogging

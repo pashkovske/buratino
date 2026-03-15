@@ -25,7 +25,7 @@ class ContinuousFractionalSpreadAssignmentBuilder(
             iid = cmd.iid,
             direction = cmd.direction,
             rate = cmd.rate,
-            refreshSchedulingProperties = null
+            refreshAssignmentSchedulingProperties = null
         )
     }
 
@@ -35,9 +35,9 @@ class ContinuousFractionalSpreadAssignmentBuilder(
     ): ContinuousFractionalSpreadAssignment {
         return ContinuousFractionalSpreadAssignment.newAssignment(
             iid = cmd.iid,
-            refreshSchedulingProperties = cmd.refreshSchedulingProperties,
+            refreshAssignmentSchedulingProperties = cmd.refreshAssignmentSchedulingProperties,
             child = child,
-            continueSchedulingProperties = cmd.continueSchedulingProperties
+            continueAssignmentSchedulingProperties = cmd.continueAssignmentSchedulingProperties
         )
     }
 }

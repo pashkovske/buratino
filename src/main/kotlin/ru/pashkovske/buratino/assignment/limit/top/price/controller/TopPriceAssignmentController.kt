@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.controller.dto.BasicStartAssignmentDto
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
@@ -37,8 +37,8 @@ class TopPriceAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             oneStepOver = oneStepOver ?: false,
-            refreshSchedulingProperties = body.refreshSchedulingPeriod?.let {
-                SchedulingProperties(
+            refreshAssignmentSchedulingProperties = body.refreshSchedulingPeriod?.let {
+                AssignmentSchedulingProperties(
                     period = it
                 )
             }

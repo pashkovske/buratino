@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.dao.
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.base.dao.postgre.ContinuousAssignmentPostgreRow
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment

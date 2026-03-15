@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignmentStartCmd
@@ -37,13 +37,13 @@ class ContinuousFractionalSpreadAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             rate = body.rate,
-            continueSchedulingProperties = body.continueSchedulingPeriod?.let {
-                SchedulingProperties(
+            continueAssignmentSchedulingProperties = body.continueSchedulingPeriod?.let {
+                AssignmentSchedulingProperties(
                     period = it
                 )
             },
-            refreshSchedulingProperties = body.refreshSchedulingPeriod?.let {
-                SchedulingProperties(
+            refreshAssignmentSchedulingProperties = body.refreshSchedulingPeriod?.let {
+                AssignmentSchedulingProperties(
                     period = it
                 )
             }

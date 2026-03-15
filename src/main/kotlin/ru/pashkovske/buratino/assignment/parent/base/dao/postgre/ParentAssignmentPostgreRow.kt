@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.parent.base.dao.postgre
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.dao.postgre.AssignmentPostgreRow
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import java.time.Duration
 import java.util.UUID
 

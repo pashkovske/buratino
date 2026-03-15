@@ -5,10 +5,10 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedulingSubscriber
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.AssignmentStateMachine
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
@@ -58,7 +58,7 @@ abstract class BasicAssignmentStarter<A : Assignment>(
     }
 
     private fun scheduleRefresh(assignment: A) {
-        val schedulingProps: SchedulingProperties = assignment.refreshSchedulingProperties ?: return
+        val schedulingProps: AssignmentSchedulingProperties = assignment.refreshAssignmentSchedulingProperties ?: return
 
         val subscriber = AssignmentSchedulingSubscriber(
             action = assignmentRefresher::refresh,

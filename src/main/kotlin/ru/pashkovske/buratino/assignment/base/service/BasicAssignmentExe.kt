@@ -5,10 +5,10 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
-import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedulingSubscriber
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.build.AssignmentBuilder
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
@@ -32,7 +32,7 @@ abstract class BasicAssignmentExe<
     override fun recoverAssignments(): List<A> {
         val activeAssignments: List<A> = assignmentDao.getByState(AssignmentState.IN_PROGRESS)
         activeAssignments.filter { assignment: A ->
-            assignment.refreshSchedulingProperties != null
+            assignment.refreshAssignmentSchedulingProperties != null
         }.forEach { assignment: A ->
             assignment.clearRefreshScheduling()
             scheduleRefresh(assignment)
@@ -56,7 +56,7 @@ abstract class BasicAssignmentExe<
     }
 
     private fun scheduleRefresh(assignment: A) {
-        val schedulingProps: SchedulingProperties = assignment.refreshSchedulingProperties ?: return
+        val schedulingProps: AssignmentSchedulingProperties = assignment.refreshAssignmentSchedulingProperties ?: return
 
         val subscriber = AssignmentSchedulingSubscriber(
             action = this::refresh,

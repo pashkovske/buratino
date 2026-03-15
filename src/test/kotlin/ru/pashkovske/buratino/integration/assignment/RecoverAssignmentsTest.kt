@@ -19,8 +19,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
-import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre.TopPriceAssignmentDao

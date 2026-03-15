@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.dao.postgre
 
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.base.dao.postgre.ContinuousAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
@@ -17,20 +17,20 @@ class ContinuousFractionalSpreadAssignmentMapper : ContinuousAssignmentToPostgre
         parentRow: ContinuousFractionalSpreadAssignmentRow,
         childAssignment: FractionalSpreadAssignment
     ): ContinuousFractionalSpreadAssignment {
-        val refreshSchedulingProperties: SchedulingProperties? = mapRefreshSchedulingProperties(parentRow)
-        val continueSchedulingProperties: SchedulingProperties? = mapContinueSchedulingProperties(parentRow)
+        val refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties? = mapRefreshSchedulingProperties(parentRow)
+        val continueAssignmentSchedulingProperties: AssignmentSchedulingProperties? = mapContinueSchedulingProperties(parentRow)
 
         val assignment = ContinuousFractionalSpreadAssignment(
             id = parentRow.id,
             iid = mapIid(parentRow.instrumentId),
             state = parentRow.state,
-            refreshSchedulingProperties = refreshSchedulingProperties,
+            refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties,
             child = childAssignment,
-            continueSchedulingProperties = continueSchedulingProperties
+            continueAssignmentSchedulingProperties = continueAssignmentSchedulingProperties
         )
 
-        initRefreshSchedulingInfo(parentRow, assignment, refreshSchedulingProperties)
-        initContinueSchedulingInfo(parentRow, assignment, continueSchedulingProperties)
+        initRefreshSchedulingInfo(parentRow, assignment, refreshAssignmentSchedulingProperties)
+        initContinueSchedulingInfo(parentRow, assignment, continueAssignmentSchedulingProperties)
 
         return assignment
     }
@@ -42,11 +42,11 @@ class ContinuousFractionalSpreadAssignmentMapper : ContinuousAssignmentToPostgre
             id = assignment.id,
             instrumentId = assignment.iid.id,
             state = assignment.state,
-            refreshSchedulingPeriod = assignment.refreshSchedulingProperties?.period,
+            refreshSchedulingPeriod = assignment.refreshAssignmentSchedulingProperties?.period,
             refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
             refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
             childAssignmentId = child.id,
-            continueSchedulingPeriod = assignment.continueSchedulingProperties?.period,
+            continueSchedulingPeriod = assignment.continueAssignmentSchedulingProperties?.period,
             continueSchedulingTaskId = assignment.getContinueAssignmentScheduling()?.taskId,
             continueSchedulingState = assignment.getContinueAssignmentScheduling()?.state
         )

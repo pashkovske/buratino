@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.parent.base.dao.postgre.ParentAssignmentPostgreRow
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
 import java.time.Duration

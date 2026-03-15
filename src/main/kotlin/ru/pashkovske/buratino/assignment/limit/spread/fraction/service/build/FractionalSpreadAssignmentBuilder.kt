@@ -15,7 +15,7 @@ class FractionalSpreadAssignmentBuilder : LimitOrderAssignmentBuilder<
         return FractionalSpreadAssignment.newAssignment(
             iid = cmd.iid,
             direction = cmd.direction,
-            refreshSchedulingProperties = cmd.refreshSchedulingProperties,
+            refreshAssignmentSchedulingProperties = cmd.refreshAssignmentSchedulingProperties,
             rate = cmd.rate
         )
     }

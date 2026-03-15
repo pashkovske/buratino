@@ -2,8 +2,8 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.model
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
-import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.parent.base.model.ParentAssignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
@@ -12,15 +12,15 @@ abstract class ContinuousAssignment<ChildA: Assignment>(
     id: UUID,
     iid: InstrumentId,
     state: AssignmentState,
-    refreshSchedulingProperties: SchedulingProperties?,
+    refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?,
     child: ChildA,
-    val continueSchedulingProperties: SchedulingProperties?
+    val continueAssignmentSchedulingProperties: AssignmentSchedulingProperties?
 ): ParentAssignment<ChildA>(
     id = id,
     iid = iid,
     state = state,
     child = child,
-    refreshSchedulingProperties = refreshSchedulingProperties
+    refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties
 ) {
     private var continueAssignmentScheduling: AssignmentScheduling? = null
 

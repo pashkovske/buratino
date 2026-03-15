@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre
 
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.base.dao.postgre.LimitOrderAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 
@@ -12,17 +12,17 @@ class TopPriceAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
     >() {
 
     override fun map(row: TopPriceAssignmentRow): TopPriceAssignment {
-        val refreshSchedulingProperties: SchedulingProperties? = mapRefreshSchedulingProperties(row)
+        val refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties? = mapRefreshSchedulingProperties(row)
         val assignment = TopPriceAssignment(
             id = row.id,
             iid = mapIid(row.instrumentId),
             state = row.state,
-            refreshSchedulingProperties = refreshSchedulingProperties,
+            refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties,
             direction = row.orderDirection,
             info = mapOrderInfo(row),
             oneStepOver = row.oneStepOver,
         )
-        initRefreshSchedulingInfo(row, assignment, refreshSchedulingProperties)
+        initRefreshSchedulingInfo(row, assignment, refreshAssignmentSchedulingProperties)
         return assignment
     }
 
@@ -33,7 +33,7 @@ class TopPriceAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
             state = assignment.state,
             orderDirection = assignment.direction,
             oneStepOver = assignment.oneStepOver,
-            refreshSchedulingPeriod = assignment.refreshSchedulingProperties?.period,
+            refreshSchedulingPeriod = assignment.refreshAssignmentSchedulingProperties?.period,
             refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
             refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
             orderId = assignment.info.orderId

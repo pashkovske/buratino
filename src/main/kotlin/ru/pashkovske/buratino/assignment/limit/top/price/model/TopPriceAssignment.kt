@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.limit.top.price.model
 
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
-import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.assignment.limit.base.model.OrderInfo
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -12,7 +12,7 @@ class TopPriceAssignment(
     id: UUID,
     iid: InstrumentId,
     state: AssignmentState,
-    refreshSchedulingProperties: SchedulingProperties?,
+    refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?,
     direction: OrderDirection,
     info: OrderInfo,
     val oneStepOver: Boolean = false
@@ -20,7 +20,7 @@ class TopPriceAssignment(
     id = id,
     iid = iid,
     state = state,
-    refreshSchedulingProperties = refreshSchedulingProperties,
+    refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties,
     direction = direction,
     info = info
 ) {
@@ -29,14 +29,14 @@ class TopPriceAssignment(
         fun newAssignment(
             iid: InstrumentId,
             direction: OrderDirection,
-            refreshSchedulingProperties: SchedulingProperties?,
+            refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?,
             oneStepOver: Boolean = false
         ): TopPriceAssignment {
             return TopPriceAssignment(
                 id = generateId(),
                 iid = iid,
                 state = initialState,
-                refreshSchedulingProperties = refreshSchedulingProperties,
+                refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties,
                 direction = direction,
                 info = initialOrderInfo(),
                 oneStepOver = oneStepOver
