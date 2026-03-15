@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.dto.FractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.FractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.dto.StartFractionalSpreadAssignmentDto
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.controller.mapper.FractionalSpreadAssignmentMapper
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 
@@ -21,16 +23,24 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 class FractionalSpreadAssignmentController(
     dao: AssignmentDao<FractionalSpreadAssignment>,
     exe: FractionalSpreadAssignmentExe
-): BasicAssignmentController<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>(
+): BasicAssignmentController<
+    FractionalSpreadAssignment,
+    FractionalSpreadAssignmentDto,
+    FractionalSpreadAssignmentStartCmd
+    >(
     dao = dao,
     exe = exe
 ) {
+    override fun toDto(assignment: FractionalSpreadAssignment): FractionalSpreadAssignmentDto {
+        return FractionalSpreadAssignmentMapper.toDto(assignment)
+    }
+
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
         @PathVariable instrumentId: String,
         @PathVariable direction: String,
         @RequestBody body: StartFractionalSpreadAssignmentDto
-    ): FractionalSpreadAssignment {
+    ): FractionalSpreadAssignmentDto {
         val cmd = FractionalSpreadAssignmentStartCmd(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),

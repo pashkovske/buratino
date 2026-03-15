@@ -4,6 +4,4 @@ import java.time.Duration
 
 class PeriodicAssignmentSchedulingProperties(
     val period: Duration
-) : AssignmentSchedulingProperties(
-    type = AssignmentSchedulingType.PERIODIC
-)
+) : AssignmentSchedulingProperties()

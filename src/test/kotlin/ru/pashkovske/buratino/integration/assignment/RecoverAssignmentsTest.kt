@@ -17,15 +17,17 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import ru.pashkovske.buratino.assignment.base.controller.dto.scheduling.AssignmentSchedulingDto
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
-import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.dao.postgre.FractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.limit.top.price.controller.dto.TopPriceAssignmentDto
 import ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.controller.dto.ContinuousFractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.dao.postgre.ContinuousFractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignmentStartCmd
@@ -33,6 +35,7 @@ import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.dao.OrderDao
+import java.util.UUID
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -147,11 +150,12 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment1BeforeRestart = objectMapper.readValue(
+        val assignmentDto1BeforeRestart: TopPriceAssignmentDto = objectMapper.readValue(
             getResult1.response.contentAsString,
-            TopPriceAssignment::class.java
+            TopPriceAssignmentDto::class.java
         )
-        val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getRefreshAssignmentScheduling()?.taskId
+        val assignment1BeforeRestart: TopPriceAssignment = topPriceAssignmentDao.get(UUID.fromString(assignment1Id))
+        val schedulingTaskIdBeforeRestart: UUID? = assignmentDto1BeforeRestart.refreshAssignmentScheduling?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
         assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
@@ -166,11 +170,11 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment2BeforeRestart = objectMapper.readValue(
+        val assignmentDto2BeforeRestart: TopPriceAssignmentDto = objectMapper.readValue(
             getResult2.response.contentAsString,
-            TopPriceAssignment::class.java
+            TopPriceAssignmentDto::class.java
         )
-        assertNull(assignment2BeforeRestart.getRefreshAssignmentScheduling())
+        assertNull(assignmentDto2BeforeRestart.refreshAssignmentScheduling)
 
         val recoveredAssignments: List<TopPriceAssignment> = assignmentExe.recoverAssignments()
 
@@ -188,11 +192,11 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment1AfterRecover: TopPriceAssignment = objectMapper.readValue(
+        val assignmentDto1AfterRecover: TopPriceAssignmentDto = objectMapper.readValue(
             getResult1After.response.contentAsString,
-            TopPriceAssignment::class.java
+            TopPriceAssignmentDto::class.java
         )
-        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getRefreshAssignmentScheduling()
+        val assignmentSchedulingAfterRecover: AssignmentSchedulingDto? = assignmentDto1AfterRecover.refreshAssignmentScheduling
         assertNotNull(assignmentSchedulingAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
         assertEquals(
@@ -207,12 +211,12 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment2AfterRecover: TopPriceAssignment = objectMapper.readValue(
+        val assignmentDto2AfterRecover: TopPriceAssignmentDto = objectMapper.readValue(
             getResult2After.response.contentAsString,
-            TopPriceAssignment::class.java
+            TopPriceAssignmentDto::class.java
         )
-        assertNull(assignment2AfterRecover.getRefreshAssignmentScheduling())
-        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.state)
+        assertNull(assignmentDto2AfterRecover.refreshAssignmentScheduling)
+        assertEquals(AssignmentState.IN_PROGRESS, assignmentDto2AfterRecover.state)
 
         val getResult3After: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -221,12 +225,12 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment3AfterRecover: TopPriceAssignment = objectMapper.readValue(
+        val assignmentDto3AfterRecover: TopPriceAssignmentDto = objectMapper.readValue(
             getResult3After.response.contentAsString,
-            TopPriceAssignment::class.java
+            TopPriceAssignmentDto::class.java
         )
-        assertNotNull(assignment3AfterRecover.getRefreshAssignmentScheduling())
-        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getRefreshAssignmentScheduling()!!.state)
+        assertNotNull(assignmentDto3AfterRecover.refreshAssignmentScheduling)
+        assertEquals(SchedulingState.COMPLETED, assignmentDto3AfterRecover.refreshAssignmentScheduling!!.state)
     }
 
     @Test
@@ -300,11 +304,12 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment1BeforeRestart = objectMapper.readValue(
+        val assignmentDto1BeforeRestart: ContinuousFractionalSpreadAssignmentDto = objectMapper.readValue(
             getResult1.response.contentAsString,
-            ContinuousFractionalSpreadAssignment::class.java
+            ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        val schedulingTaskIdBeforeRestart = assignment1BeforeRestart.getContinueAssignmentScheduling()?.taskId
+        val assignment1BeforeRestart: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(UUID.fromString(assignment1Id))
+        val schedulingTaskIdBeforeRestart: UUID? = assignmentDto1BeforeRestart.continueAssignmentScheduling?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
         assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
@@ -319,11 +324,11 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment2BeforeRestart = objectMapper.readValue(
+        val assignmentDto2BeforeRestart: ContinuousFractionalSpreadAssignmentDto = objectMapper.readValue(
             getResult2.response.contentAsString,
-            ContinuousFractionalSpreadAssignment::class.java
+            ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        assertNull(assignment2BeforeRestart.getContinueAssignmentScheduling())
+        assertNull(assignmentDto2BeforeRestart.continueAssignmentScheduling)
 
         val recoveredAssignments: List<ContinuousFractionalSpreadAssignment> = continuousAssignmentExe.recoverAssignments()
 
@@ -341,11 +346,11 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment1AfterRecover: ContinuousFractionalSpreadAssignment = objectMapper.readValue(
+        val assignmentDto1AfterRecover: ContinuousFractionalSpreadAssignmentDto = objectMapper.readValue(
             getResult1After.response.contentAsString,
-            ContinuousFractionalSpreadAssignment::class.java
+            ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        val assignmentSchedulingAfterRecover: AssignmentScheduling? = assignment1AfterRecover.getContinueAssignmentScheduling()
+        val assignmentSchedulingAfterRecover: AssignmentSchedulingDto? = assignmentDto1AfterRecover.continueAssignmentScheduling
         assertNotNull(assignmentSchedulingAfterRecover)
         assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
         assertEquals(
@@ -360,12 +365,12 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment2AfterRecover: ContinuousFractionalSpreadAssignment = objectMapper.readValue(
+        val assignmentDto2AfterRecover: ContinuousFractionalSpreadAssignmentDto = objectMapper.readValue(
             getResult2After.response.contentAsString,
-            ContinuousFractionalSpreadAssignment::class.java
+            ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        assertNull(assignment2AfterRecover.getContinueAssignmentScheduling())
-        assertEquals(AssignmentState.IN_PROGRESS, assignment2AfterRecover.state)
+        assertNull(assignmentDto2AfterRecover.continueAssignmentScheduling)
+        assertEquals(AssignmentState.IN_PROGRESS, assignmentDto2AfterRecover.state)
 
         val getResult3After: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -374,11 +379,11 @@ class RecoverAssignmentsTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn()
-        val assignment3AfterRecover: ContinuousFractionalSpreadAssignment = objectMapper.readValue(
+        val assignmentDto3AfterRecover: ContinuousFractionalSpreadAssignmentDto = objectMapper.readValue(
             getResult3After.response.contentAsString,
-            ContinuousFractionalSpreadAssignment::class.java
+            ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        assertNotNull(assignment3AfterRecover.getContinueAssignmentScheduling())
-        assertEquals(SchedulingState.COMPLETED, assignment3AfterRecover.getContinueAssignmentScheduling()!!.state)
+        assertNotNull(assignmentDto3AfterRecover.continueAssignmentScheduling)
+        assertEquals(SchedulingState.COMPLETED, assignmentDto3AfterRecover.continueAssignmentScheduling!!.state)
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.controller.dto.ContinuousFractionalSpreadAssignmentDto
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.controller.mapper.ContinuousFractionalSpreadAssignmentMapper
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.service.ContinuousFractionalSpreadAssignmentExe
@@ -23,16 +25,20 @@ import java.util.UUID
 class ContinuousFractionalSpreadAssignmentController(
     dao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     override val exe: ContinuousFractionalSpreadAssignmentExe
-): BasicAssignmentController<ContinuousFractionalSpreadAssignment, ContinuousFractionalSpreadAssignmentStartCmd>(
+): BasicAssignmentController<ContinuousFractionalSpreadAssignment, ContinuousFractionalSpreadAssignmentDto, ContinuousFractionalSpreadAssignmentStartCmd>(
     dao = dao,
     exe = exe
 ) {
+    override fun toDto(assignment: ContinuousFractionalSpreadAssignment): ContinuousFractionalSpreadAssignmentDto {
+        return ContinuousFractionalSpreadAssignmentMapper.toDto(assignment)
+    }
+
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
         @PathVariable instrumentId: String,
         @PathVariable direction: String,
         @RequestBody body: StartFractionalSpreadAssignmentDto
-    ): ContinuousFractionalSpreadAssignment {
+    ): ContinuousFractionalSpreadAssignmentDto {
         val cmd = ContinuousFractionalSpreadAssignmentStartCmd(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
@@ -52,7 +58,7 @@ class ContinuousFractionalSpreadAssignmentController(
     }
 
     @PatchMapping("/{id}/continue")
-    fun continueAssignment(@PathVariable id: UUID): ContinuousFractionalSpreadAssignment {
-        return exe.continueAssignment(id)
+    fun continueAssignment(@PathVariable id: UUID): ContinuousFractionalSpreadAssignmentDto {
+        return toDto(exe.continueAssignment(id))
     }
 }

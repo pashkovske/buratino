@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.base.controller.BasicAssignmentController
 import ru.pashkovske.buratino.assignment.base.controller.dto.BasicStartAssignmentDto
+import ru.pashkovske.buratino.assignment.limit.top.price.controller.dto.TopPriceAssignmentDto
+import ru.pashkovske.buratino.assignment.limit.top.price.controller.mapper.TopPriceAssignmentMapper
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.limit.top.price.service.TopPriceAssignmentExe
@@ -22,17 +24,21 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 class TopPriceAssignmentController(
     dao: AssignmentDao<TopPriceAssignment>,
     exe: TopPriceAssignmentExe
-): BasicAssignmentController<TopPriceAssignment, TopPriceAssignmentStartCmd>(
+): BasicAssignmentController<TopPriceAssignment, TopPriceAssignmentDto, TopPriceAssignmentStartCmd>(
     dao = dao,
     exe = exe
 ) {
+    override fun toDto(assignment: TopPriceAssignment): TopPriceAssignmentDto {
+        return TopPriceAssignmentMapper.toDto(assignment)
+    }
+
     @PostMapping("/{instrumentId}/start/{direction}")
     fun start(
         @PathVariable instrumentId: String,
         @PathVariable direction: String,
         @RequestParam oneStepOver: Boolean?,
         @RequestBody body: BasicStartAssignmentDto
-    ): TopPriceAssignment {
+    ): TopPriceAssignmentDto {
         val cmd = TopPriceAssignmentStartCmd(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
