@@ -2,38 +2,31 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.service.start
 
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.scheduling.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
-import ru.pashkovske.buratino.assignment.base.service.AssignmentExe
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.parent.base.service.start.ParentAssignmentStarter
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
-import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.ContinuousAssignmentContinuer
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
 abstract class ContinuousAssignmentStarter<
     ContinuousA : ContinuousAssignment<ChildA>,
-    ChildA : Assignment,
-    Cmd : ContinuousAssignmentStartCmd<ContinuousA, ChildA>,
-    ChildCmd : AssignmentStartCmd<ChildA>
+    ChildA : Assignment
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
-    childAssignmentExe: AssignmentExe<ChildA, ChildCmd>,
     private val continuousTaskScheduler: TaskScheduler,
     private val continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousA>
-) : ParentAssignmentStarter<ContinuousA, ChildA, Cmd, ChildCmd>(
+) : ParentAssignmentStarter<ContinuousA, ChildA>(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
-    assignmentRefresher = assignmentRefresher,
-    childAssignmentExe = childAssignmentExe
+    assignmentRefresher = assignmentRefresher
 ) {
 
     override fun postStart(ctx: ExeCtx<ContinuousA>) {

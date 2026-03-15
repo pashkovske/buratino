@@ -2,6 +2,7 @@ package ru.pashkovske.buratino.assignment.limit.spread.fraction.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.service.build.AssignmentBuilder
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
@@ -16,7 +17,8 @@ final class FractionalSpreadAssignmentExe(
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<FractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<FractionalSpreadAssignment>,
-    assignmentStarter: AssignmentStarter<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>
+    assignmentStarter: AssignmentStarter<FractionalSpreadAssignment>,
+    assignmentBuilder: AssignmentBuilder<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>
 ) : LimitOrderAssignmentExe<
     FractionalSpreadAssignment,
     FractionalSpreadAssignmentStartCmd
@@ -25,5 +27,6 @@ final class FractionalSpreadAssignmentExe(
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher,
     assignmentCanceller = assignmentCanceller,
-    assignmentStarter = assignmentStarter
+    assignmentStarter = assignmentStarter,
+    assignmentBuilder = assignmentBuilder
 )

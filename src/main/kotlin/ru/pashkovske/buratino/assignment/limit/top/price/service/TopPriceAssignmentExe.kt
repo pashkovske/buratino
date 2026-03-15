@@ -2,6 +2,7 @@ package ru.pashkovske.buratino.assignment.limit.top.price.service
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.service.build.AssignmentBuilder
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
@@ -16,7 +17,8 @@ final class TopPriceAssignmentExe(
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<TopPriceAssignment>,
     assignmentCanceller: AssignmentCanceller<TopPriceAssignment>,
-    assignmentStarter: AssignmentStarter<TopPriceAssignment, TopPriceAssignmentStartCmd>
+    assignmentStarter: AssignmentStarter<TopPriceAssignment>,
+    assignmentBuilder: AssignmentBuilder<TopPriceAssignment, TopPriceAssignmentStartCmd>
 ) : LimitOrderAssignmentExe<
     TopPriceAssignment,
     TopPriceAssignmentStartCmd
@@ -25,5 +27,6 @@ final class TopPriceAssignmentExe(
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher,
     assignmentCanceller = assignmentCanceller,
-    assignmentStarter = assignmentStarter
+    assignmentStarter = assignmentStarter,
+    assignmentBuilder = assignmentBuilder
 )

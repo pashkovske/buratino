@@ -6,6 +6,7 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.build.FractionalSpreadAssignmentBuilder
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.service.start.FractionalSpreadAssignmentStarter
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.BasicContinuousAssignmentContinuer
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
@@ -14,6 +15,7 @@ import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model
 class ContinuousFractionalSpreadAssignmentContinuer(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
     childAssignmentDao: AssignmentDao<FractionalSpreadAssignment>,
+    private val childAssignmentBuilder: FractionalSpreadAssignmentBuilder,
     private val childAssignmentStarter: FractionalSpreadAssignmentStarter
 ) : BasicContinuousAssignmentContinuer<FractionalSpreadAssignment, ContinuousFractionalSpreadAssignment>(
     assignmentDao = assignmentDao,
@@ -38,8 +40,8 @@ class ContinuousFractionalSpreadAssignmentContinuer(
             rate = completedAssignment.rate,
             refreshSchedulingProperties = null
         )
-        val nextAssignment: FractionalSpreadAssignment = childAssignmentStarter.start(nextAssignmentCmd)
-        ctx.assignment.child = nextAssignment
+        val nextAssignment: FractionalSpreadAssignment = childAssignmentBuilder.build(nextAssignmentCmd)
+        ctx.assignment.child = childAssignmentStarter.start(nextAssignment)
         log.info("Started new spread fraction assignment: ${nextAssignment.id}")
         ctx.setMutated()
     }

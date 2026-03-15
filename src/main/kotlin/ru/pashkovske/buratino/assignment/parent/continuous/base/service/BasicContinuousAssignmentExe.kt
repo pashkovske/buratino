@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.assignment.base.scheduling.model.AssignmentSchedul
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingProperties
 import ru.pashkovske.buratino.assignment.base.scheduling.model.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
+import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
@@ -14,28 +15,32 @@ import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.parent.base.service.ParentAssignmentExe
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.parent.continuous.base.service.build.ContinuousAssignmentBuilder
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.ContinuousAssignmentContinuer
 import java.util.UUID
 
 abstract class BasicContinuousAssignmentExe<
     ContinuousA : ContinuousAssignment<ChildA>,
     ChildA : Assignment,
-    ContinuousStartCmd : ContinuousAssignmentStartCmd<ContinuousA, ChildA>
+    ContinuousStartCmd : ContinuousAssignmentStartCmd<ContinuousA, ChildA>,
+    ChildCmd : AssignmentStartCmd<ChildA>
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
     assignmentCanceller: AssignmentCanceller<ContinuousA>,
-    assignmentStarter: AssignmentStarter<ContinuousA, ContinuousStartCmd>,
+    assignmentStarter: AssignmentStarter<ContinuousA>,
+    assignmentBuilder: ContinuousAssignmentBuilder<ContinuousA, ChildA, ContinuousStartCmd, ChildCmd>,
     childAssignmentDao: AssignmentDao<ChildA>,
     protected val continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousA>
 ):
-    ParentAssignmentExe<ContinuousA, ChildA, ContinuousStartCmd>(
+    ParentAssignmentExe<ContinuousA, ChildA, ContinuousStartCmd, ChildCmd>(
         assignmentDao = assignmentDao,
         taskScheduler = taskScheduler,
         assignmentRefresher = assignmentRefresher,
         assignmentCanceller = assignmentCanceller,
         assignmentStarter = assignmentStarter,
+        assignmentBuilder = assignmentBuilder,
         childAssignmentDao = childAssignmentDao
     ),
     ContinuousAssignmentExe<ContinuousA, ChildA, ContinuousStartCmd>

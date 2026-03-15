@@ -10,7 +10,9 @@ import ru.pashkovske.buratino.assignment.parent.continuous.base.service.BasicCon
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.ContinuousAssignmentContinuer
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.service.build.ContinuousFractionalSpreadAssignmentBuilder
 
 @Service
 final class ContinuousFractionalSpreadAssignmentExe(
@@ -18,19 +20,22 @@ final class ContinuousFractionalSpreadAssignmentExe(
     taskScheduler: TaskScheduler,
     assignmentRefresher: AssignmentRefresher<ContinuousFractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<ContinuousFractionalSpreadAssignment>,
-    assignmentStarter: AssignmentStarter<ContinuousFractionalSpreadAssignment, ContinuousFractionalSpreadAssignmentStartCmd>,
+    assignmentStarter: AssignmentStarter<ContinuousFractionalSpreadAssignment>,
+    assignmentBuilder: ContinuousFractionalSpreadAssignmentBuilder,
     childAssignmentDao: AssignmentDao<FractionalSpreadAssignment>,
     continuousAssignmentContinuer: ContinuousAssignmentContinuer<ContinuousFractionalSpreadAssignment>
 ): BasicContinuousAssignmentExe<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment,
-    ContinuousFractionalSpreadAssignmentStartCmd
+    ContinuousFractionalSpreadAssignmentStartCmd,
+    FractionalSpreadAssignmentStartCmd
     >(
     assignmentDao = assignmentDao,
     taskScheduler = taskScheduler,
     assignmentRefresher = assignmentRefresher,
     assignmentCanceller = assignmentCanceller,
     assignmentStarter = assignmentStarter,
+    assignmentBuilder = assignmentBuilder,
     childAssignmentDao = childAssignmentDao,
     continuousAssignmentContinuer = continuousAssignmentContinuer
 )
