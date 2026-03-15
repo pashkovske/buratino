@@ -7,6 +7,7 @@ import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedul
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.parent.base.service.start.ParentAssignmentStarter
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
@@ -44,6 +45,9 @@ abstract class ContinuousAssignmentStarter<
 
     private fun scheduleContinue(assignment: ContinuousA): Boolean {
         val schedulingProps: AssignmentSchedulingProperties = assignment.continueAssignmentSchedulingProperties ?: return false
+        if (schedulingProps !is PeriodicAssignmentSchedulingProperties) {
+            return false
+        }
 
         val subscriber = AssignmentSchedulingSubscriber(
             action = continuousAssignmentContinuer::continueAssignment,

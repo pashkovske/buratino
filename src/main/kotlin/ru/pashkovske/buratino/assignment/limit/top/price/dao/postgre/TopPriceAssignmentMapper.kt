@@ -2,8 +2,10 @@ package ru.pashkovske.buratino.assignment.limit.top.price.dao.postgre
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.limit.base.dao.postgre.LimitOrderAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.limit.top.price.model.TopPriceAssignment
+import java.time.Duration
 
 @Service
 class TopPriceAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
@@ -27,13 +29,17 @@ class TopPriceAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
     }
 
     override fun map(assignment: TopPriceAssignment): TopPriceAssignmentRow {
+        val refreshPeriod: Duration? = when (assignment.refreshAssignmentSchedulingProperties) {
+            null -> null
+            is PeriodicAssignmentSchedulingProperties -> assignment.refreshAssignmentSchedulingProperties.period
+        }
         return TopPriceAssignmentRow(
             id = assignment.id,
             instrumentId = assignment.iid.id,
             state = assignment.state,
             orderDirection = assignment.direction,
             oneStepOver = assignment.oneStepOver,
-            refreshSchedulingPeriod = assignment.refreshAssignmentSchedulingProperties?.period,
+            refreshSchedulingPeriod = refreshPeriod,
             refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
             refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
             orderId = assignment.info.orderId

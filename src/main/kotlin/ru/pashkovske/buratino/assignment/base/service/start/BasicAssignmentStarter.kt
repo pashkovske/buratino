@@ -9,6 +9,7 @@ import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedul
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.service.AssignmentStateMachine
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
@@ -59,6 +60,9 @@ abstract class BasicAssignmentStarter<A : Assignment>(
 
     private fun scheduleRefresh(assignment: A) {
         val schedulingProps: AssignmentSchedulingProperties = assignment.refreshAssignmentSchedulingProperties ?: return
+        if (schedulingProps !is PeriodicAssignmentSchedulingProperties) {
+            return
+        }
 
         val subscriber = AssignmentSchedulingSubscriber(
             action = assignmentRefresher::refresh,

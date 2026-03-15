@@ -8,6 +8,7 @@ import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.Assign
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
@@ -67,6 +68,9 @@ abstract class BasicContinuousAssignmentExe<
 
     private fun scheduleContinue(assignment: ContinuousA): Boolean {
         val schedulingProps: AssignmentSchedulingProperties = assignment.continueAssignmentSchedulingProperties ?: return false
+        if (schedulingProps !is PeriodicAssignmentSchedulingProperties) {
+            return false
+        }
 
         val subscriber = AssignmentSchedulingSubscriber(
             action = this::continueAssignment,

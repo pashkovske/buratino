@@ -3,6 +3,7 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.dao.postgre
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.parent.base.dao.postgre.ParentAssignmentToPostgreMapper
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
 
@@ -18,7 +19,7 @@ abstract class ContinuousAssignmentToPostgreMapper<
 
     protected fun mapContinueSchedulingProperties(row: ContinuousRow): AssignmentSchedulingProperties? {
         return row.continueSchedulingPeriod?.let {
-            AssignmentSchedulingProperties(
+            PeriodicAssignmentSchedulingProperties(
                 period = it
             )
         }

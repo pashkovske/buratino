@@ -3,6 +3,7 @@ package ru.pashkovske.buratino.assignment.base.dao.postgre
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 
 abstract class BasicAssignmentToPostgreMapper<
@@ -16,7 +17,7 @@ abstract class BasicAssignmentToPostgreMapper<
 
     protected fun mapRefreshSchedulingProperties(row: Row): AssignmentSchedulingProperties? {
         return row.refreshSchedulingPeriod?.let {
-            AssignmentSchedulingProperties(
+            PeriodicAssignmentSchedulingProperties(
                 period = it
             )
         }
