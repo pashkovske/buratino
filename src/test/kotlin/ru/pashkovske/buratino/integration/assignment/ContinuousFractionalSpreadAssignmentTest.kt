@@ -164,7 +164,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             content = """
                 {
                     "rate": $rate,
-                    "continueSchedulingInterval": "PT10M"
+                    "continueSchedulingPeriod": "PT10M"
                 }
             """.trimIndent(),
             params = null
@@ -201,7 +201,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             content = """
                 {
                     "rate": $rate,
-                    "refreshSchedulingInterval": "PT10M"
+                    "refreshSchedulingPeriod": "PT10M"
                 }
             """.trimIndent(),
             params = null

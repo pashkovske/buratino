@@ -37,9 +37,9 @@ class TopPriceAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             oneStepOver = oneStepOver ?: false,
-            refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
+            refreshSchedulingProperties = body.refreshSchedulingPeriod?.let {
                 SchedulingProperties(
-                    interval = it
+                    period = it
                 )
             }
         )

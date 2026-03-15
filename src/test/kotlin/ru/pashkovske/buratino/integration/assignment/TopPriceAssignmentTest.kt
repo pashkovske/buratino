@@ -128,7 +128,7 @@ class TopPriceAssignmentTest(
             path = "/assignment/top-price/{instrumentId}/start/{direction}",
             iid = iid,
             direction = direction,
-            content = "{\"refreshSchedulingInterval\": \"PT10M\"}",
+            content = "{\"refreshSchedulingPeriod\": \"PT10M\"}",
             params = mapOf("oneStepOver" to oneStepOver.toString())
         ).andReturn()
 

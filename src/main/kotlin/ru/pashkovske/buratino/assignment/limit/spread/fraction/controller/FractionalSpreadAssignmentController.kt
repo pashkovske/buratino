@@ -35,9 +35,9 @@ class FractionalSpreadAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             rate = body.rate,
-            refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
+            refreshSchedulingProperties = body.refreshSchedulingPeriod?.let {
                 SchedulingProperties(
-                    interval = it
+                    period = it
                 )
             }
         )

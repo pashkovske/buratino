@@ -5,8 +5,8 @@ import java.time.Duration
 
 class StartFractionalSpreadAssignmentDto(
     val rate: Double,
-    val continueSchedulingInterval: Duration?,
-    refreshSchedulingInterval: Duration?
+    val continueSchedulingPeriod: Duration?,
+    refreshSchedulingPeriod: Duration?
 ) : BasicStartAssignmentDto(
-    refreshSchedulingInterval = refreshSchedulingInterval
+    refreshSchedulingPeriod = refreshSchedulingPeriod
 )

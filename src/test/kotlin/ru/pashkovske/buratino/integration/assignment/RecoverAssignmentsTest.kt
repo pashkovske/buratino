@@ -89,7 +89,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"refreshSchedulingInterval\": \"PT10M\"}")
+                .content("{\"refreshSchedulingPeriod\": \"PT10M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -123,7 +123,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"refreshSchedulingInterval\": \"PT15M\"}")
+                .content("{\"refreshSchedulingPeriod\": \"PT15M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -242,7 +242,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"rate\": 0.007, \"continueSchedulingInterval\": \"PT10M\"}")
+                .content("{\"rate\": 0.007, \"continueSchedulingPeriod\": \"PT10M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -276,7 +276,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"rate\": 0.007, \"continueSchedulingInterval\": \"PT15M\"}")
+                .content("{\"rate\": 0.007, \"continueSchedulingPeriod\": \"PT15M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())

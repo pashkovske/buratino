@@ -37,14 +37,14 @@ class ContinuousFractionalSpreadAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             rate = body.rate,
-            continueSchedulingProperties = body.continueSchedulingInterval?.let {
+            continueSchedulingProperties = body.continueSchedulingPeriod?.let {
                 SchedulingProperties(
-                    interval = it
+                    period = it
                 )
             },
-            refreshSchedulingProperties = body.refreshSchedulingInterval?.let {
+            refreshSchedulingProperties = body.refreshSchedulingPeriod?.let {
                 SchedulingProperties(
-                    interval = it
+                    period = it
                 )
             }
         )

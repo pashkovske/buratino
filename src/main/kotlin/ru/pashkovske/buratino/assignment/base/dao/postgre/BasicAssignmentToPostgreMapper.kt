@@ -17,7 +17,7 @@ abstract class BasicAssignmentToPostgreMapper<
     protected fun mapRefreshSchedulingProperties(row: Row): SchedulingProperties? {
         return row.refreshSchedulingPeriod?.let {
             SchedulingProperties(
-                interval = it
+                period = it
             )
         }
     }

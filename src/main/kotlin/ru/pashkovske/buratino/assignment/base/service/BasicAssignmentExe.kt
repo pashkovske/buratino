@@ -63,7 +63,7 @@ abstract class BasicAssignmentExe<
             assignmentId = assignment.id
         )
         val taskId: UUID = taskScheduler.startNewPeriodic(
-            period = schedulingProps.interval,
+            period = schedulingProps.period,
             subscriber = subscriber
         )
         val assignmentScheduling = AssignmentScheduling(

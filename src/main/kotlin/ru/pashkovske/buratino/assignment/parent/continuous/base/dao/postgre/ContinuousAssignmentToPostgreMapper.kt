@@ -19,7 +19,7 @@ abstract class ContinuousAssignmentToPostgreMapper<
     protected fun mapContinueSchedulingProperties(row: ContinuousRow): SchedulingProperties? {
         return row.continueSchedulingPeriod?.let {
             SchedulingProperties(
-                interval = it
+                period = it
             )
         }
     }
