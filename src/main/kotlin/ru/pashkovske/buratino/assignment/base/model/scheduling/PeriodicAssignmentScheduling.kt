@@ -6,7 +6,7 @@ import java.util.UUID
 class PeriodicAssignmentScheduling(
     id: UUID,
     assignmentId: UUID,
-    taskId: UUID,
+    taskId: UUID?,
     state: SchedulingState,
     override val properties: PeriodicAssignmentSchedulingProperties
 ) : AssignmentScheduling(

@@ -2,15 +2,15 @@ package ru.pashkovske.buratino.assignment.base.exception.scheduling
 
 import java.util.UUID
 
-class AssignmentSchedulingException(
+class AssignmentNotifyException(
     message: String,
-    schedulingId: UUID?,
+    notifierId: UUID?,
     assignmentId: UUID?,
     cause: Throwable? = null
 ): RuntimeException(
     parentMessage(
         message = message,
-        schedulingId = schedulingId,
+        notifierId = notifierId,
         assignmentId = assignmentId
     ),
     cause
@@ -19,11 +19,11 @@ class AssignmentSchedulingException(
     companion object {
         private fun parentMessage(
             message: String,
-            schedulingId: UUID?,
+            notifierId: UUID?,
             assignmentId: UUID?
         ): String {
             return """
-            Scheduling id: $schedulingId
+            Notifier id: $notifierId
             Assignment id: $assignmentId
             Error:
             ${message.prependIndent("    ")}

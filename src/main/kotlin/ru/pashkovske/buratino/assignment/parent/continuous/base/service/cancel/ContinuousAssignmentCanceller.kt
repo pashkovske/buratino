@@ -32,7 +32,7 @@ abstract class ContinuousAssignmentCanceller<
     private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
         val assignmentScheduling: AssignmentScheduling = ctx.assignment.getContinueAssignmentScheduling() ?: return
 
-        continuousTaskScheduler.stopPeriodic(assignmentScheduling.taskId)
+        continuousTaskScheduler.stopPeriodic(assignmentScheduling.taskId!!)
         assignmentScheduling.state = SchedulingState.COMPLETED
 
         ctx.setMutated()

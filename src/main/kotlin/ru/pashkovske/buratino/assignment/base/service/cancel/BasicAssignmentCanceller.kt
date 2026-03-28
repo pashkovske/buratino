@@ -61,7 +61,7 @@ abstract class BasicAssignmentCanceller<A : Assignment>(
         if (assignmentScheduling.state == SchedulingState.COMPLETED) {
             return
         }
-        taskScheduler.stopPeriodic(assignmentScheduling.taskId)
+        taskScheduler.stopPeriodic(assignmentScheduling.taskId!!)
         assignmentScheduling.state = SchedulingState.COMPLETED
 
         ctx.setMutated()

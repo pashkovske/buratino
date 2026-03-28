@@ -21,6 +21,7 @@ object AssignmentSchedulingMapper {
     fun toDto(scheduling: AssignmentScheduling?): AssignmentSchedulingDto? {
         return scheduling?.let {
             AssignmentSchedulingDto(
+                id = it.id,
                 properties = toDto(it.properties),
                 taskId = it.taskId,
                 state = it.state

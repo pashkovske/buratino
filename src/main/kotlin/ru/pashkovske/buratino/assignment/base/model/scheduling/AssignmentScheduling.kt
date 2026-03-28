@@ -7,6 +7,6 @@ sealed class AssignmentScheduling(
     val id: UUID,
     val assignmentId: UUID,
     open val properties: AssignmentSchedulingProperties?,
-    var taskId: UUID,
+    var taskId: UUID?,
     var state: SchedulingState = SchedulingState.QUEUED
 )
