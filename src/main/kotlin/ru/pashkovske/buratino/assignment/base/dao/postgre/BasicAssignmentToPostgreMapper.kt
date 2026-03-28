@@ -35,6 +35,7 @@ abstract class BasicAssignmentToPostgreMapper<
             }
             AssignmentScheduling(
                 id = row.refreshSchedulingId!!,
+                assignmentId = row.id,
                 properties = properties,
                 taskId = row.refreshSchedulingTaskId!!,
                 state = row.refreshSchedulingState!!

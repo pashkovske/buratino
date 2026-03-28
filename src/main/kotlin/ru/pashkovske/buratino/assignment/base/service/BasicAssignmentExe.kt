@@ -70,6 +70,7 @@ abstract class BasicAssignmentExe<
         taskScheduler.subscribePeriodic(taskId, subscriber)
         val assignmentScheduling = AssignmentScheduling(
             id = UUID.randomUUID(),
+            assignmentId = assignment.id,
             properties = schedulingProps,
             taskId = taskId,
             state = SchedulingState.ACTIVE

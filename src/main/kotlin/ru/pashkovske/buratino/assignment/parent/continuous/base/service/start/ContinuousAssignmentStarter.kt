@@ -57,10 +57,11 @@ abstract class ContinuousAssignmentStarter<
         continuousTaskScheduler.subscribePeriodic(taskId, subscriber)
         val assignmentScheduling = AssignmentScheduling(
             id = UUID.randomUUID(),
+            assignmentId = assignment.id,
             properties = schedulingProps,
-            taskId = taskId
+            taskId = taskId,
+            state = SchedulingState.ACTIVE
         )
-        assignmentScheduling.state = SchedulingState.ACTIVE
         assignment.initContinueScheduling(assignmentScheduling)
         return true
     }

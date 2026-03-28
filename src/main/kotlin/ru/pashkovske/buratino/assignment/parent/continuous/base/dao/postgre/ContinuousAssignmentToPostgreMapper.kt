@@ -37,6 +37,7 @@ abstract class ContinuousAssignmentToPostgreMapper<
             }
             AssignmentScheduling(
                 id = row.continueSchedulingId!!,
+                assignmentId = row.id,
                 properties = properties,
                 taskId = row.continueSchedulingTaskId!!,
                 state = row.continueSchedulingState!!
