@@ -14,6 +14,7 @@ abstract class ParentAssignmentPostgreRow<ChildA : Assignment>(
     refreshSchedulingPeriod: Duration?,
     refreshSchedulingTaskId: UUID?,
     refreshSchedulingState: SchedulingState?,
+    refreshSchedulingId: UUID?,
     open val childAssignmentId: UUID
 ) : AssignmentPostgreRow<ChildA>(
     id = id,
@@ -21,5 +22,6 @@ abstract class ParentAssignmentPostgreRow<ChildA : Assignment>(
     state = state,
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
-    refreshSchedulingState = refreshSchedulingState
+    refreshSchedulingState = refreshSchedulingState,
+    refreshSchedulingId = refreshSchedulingId
 )

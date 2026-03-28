@@ -42,6 +42,7 @@ class FractionalSpreadAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
             refreshSchedulingPeriod = refreshPeriod,
             refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
             refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
+            refreshSchedulingId = assignment.getRefreshAssignmentScheduling()?.id,
             orderId = assignment.info.orderId
         )
     }

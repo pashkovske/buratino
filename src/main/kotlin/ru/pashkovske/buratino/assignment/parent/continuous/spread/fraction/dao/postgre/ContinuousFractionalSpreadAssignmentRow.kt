@@ -18,10 +18,12 @@ data class ContinuousFractionalSpreadAssignmentRow(
     override val refreshSchedulingPeriod: Duration?,
     override val refreshSchedulingTaskId: UUID?,
     override val refreshSchedulingState: SchedulingState?,
+    override val refreshSchedulingId: UUID?,
     override val childAssignmentId: UUID,
     override val continueSchedulingPeriod: Duration?,
     override val continueSchedulingTaskId: UUID?,
-    override val continueSchedulingState: SchedulingState?
+    override val continueSchedulingState: SchedulingState?,
+    override val continueSchedulingId: UUID?
 ) : ContinuousAssignmentPostgreRow<
     FractionalSpreadAssignment,
     ContinuousFractionalSpreadAssignment
@@ -32,8 +34,10 @@ data class ContinuousFractionalSpreadAssignmentRow(
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,
+    refreshSchedulingId = refreshSchedulingId,
     childAssignmentId = childAssignmentId,
     continueSchedulingPeriod = continueSchedulingPeriod,
     continueSchedulingTaskId = continueSchedulingTaskId,
-    continueSchedulingState = continueSchedulingState
+    continueSchedulingState = continueSchedulingState,
+    continueSchedulingId = continueSchedulingId
 )

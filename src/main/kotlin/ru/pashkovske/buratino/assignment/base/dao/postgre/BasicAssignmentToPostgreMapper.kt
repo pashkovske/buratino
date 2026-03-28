@@ -30,7 +30,11 @@ abstract class BasicAssignmentToPostgreMapper<
         return if (row.refreshSchedulingTaskId == null && row.refreshSchedulingState == null) {
             null
         } else if (row.refreshSchedulingTaskId != null && row.refreshSchedulingState != null) {
+            if (row.refreshSchedulingId == null) {
+                throw IllegalStateException("Refresh scheduling id is required but not provided")
+            }
             AssignmentScheduling(
+                id = row.refreshSchedulingId!!,
                 properties = properties,
                 taskId = row.refreshSchedulingTaskId!!,
                 state = row.refreshSchedulingState!!

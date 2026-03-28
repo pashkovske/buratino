@@ -18,10 +18,12 @@ abstract class ContinuousAssignmentPostgreRow<
     refreshSchedulingPeriod: Duration?,
     refreshSchedulingTaskId: UUID?,
     refreshSchedulingState: SchedulingState?,
+    refreshSchedulingId: UUID?,
     childAssignmentId: UUID,
     open val continueSchedulingPeriod: Duration?,
     open val continueSchedulingTaskId: UUID?,
-    open val continueSchedulingState: SchedulingState?
+    open val continueSchedulingState: SchedulingState?,
+    open val continueSchedulingId: UUID?
 ) : ParentAssignmentPostgreRow<ContinuousA>(
     id = id,
     instrumentId = instrumentId,
@@ -29,5 +31,6 @@ abstract class ContinuousAssignmentPostgreRow<
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,
+    refreshSchedulingId = refreshSchedulingId,
     childAssignmentId = childAssignmentId
 )

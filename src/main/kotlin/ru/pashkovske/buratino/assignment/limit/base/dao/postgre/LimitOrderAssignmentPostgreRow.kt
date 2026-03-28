@@ -15,6 +15,7 @@ abstract class LimitOrderAssignmentPostgreRow<LA : LimitOrderAssignment>(
     refreshSchedulingPeriod: Duration?,
     refreshSchedulingTaskId: UUID?,
     refreshSchedulingState: SchedulingState?,
+    refreshSchedulingId: UUID?,
     open val orderDirection: OrderDirection,
     open val orderId: String?
 ) : AssignmentPostgreRow<LA>(
@@ -24,4 +25,5 @@ abstract class LimitOrderAssignmentPostgreRow<LA : LimitOrderAssignment>(
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,
+    refreshSchedulingId = refreshSchedulingId
 )

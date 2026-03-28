@@ -71,6 +71,7 @@ abstract class BasicAssignmentStarter<A : Assignment>(
         val taskId: UUID = taskScheduler.startNewPeriodic(schedulingProps.period)
         taskScheduler.subscribePeriodic(taskId, subscriber)
         val assignmentScheduling = AssignmentScheduling(
+            id = UUID.randomUUID(),
             properties = schedulingProps,
             taskId = taskId,
             state = SchedulingState.ACTIVE

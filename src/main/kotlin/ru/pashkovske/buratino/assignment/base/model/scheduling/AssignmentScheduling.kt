@@ -4,6 +4,7 @@ import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.Assign
 import java.util.UUID
 
 data class AssignmentScheduling(
+    val id: UUID,
     val properties: AssignmentSchedulingProperties?,
     var taskId: UUID,
     var state: SchedulingState = SchedulingState.QUEUED

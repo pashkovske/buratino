@@ -32,7 +32,11 @@ abstract class ContinuousAssignmentToPostgreMapper<
         return if (row.continueSchedulingTaskId == null && row.continueSchedulingState == null) {
             null
         } else if (row.continueSchedulingTaskId != null && row.continueSchedulingState != null) {
+            if (row.continueSchedulingId == null) {
+                throw IllegalStateException("Continue scheduling id is required but not provided")
+            }
             AssignmentScheduling(
+                id = row.continueSchedulingId!!,
                 properties = properties,
                 taskId = row.continueSchedulingTaskId!!,
                 state = row.continueSchedulingState!!

@@ -12,5 +12,6 @@ abstract class AssignmentPostgreRow<A : Assignment>(
     open val state: AssignmentState,
     open val refreshSchedulingPeriod: Duration?,
     open val refreshSchedulingTaskId: UUID?,
-    open val refreshSchedulingState: SchedulingState?
+    open val refreshSchedulingState: SchedulingState?,
+    open val refreshSchedulingId: UUID?
 )

@@ -18,6 +18,7 @@ data class FractionalSpreadAssignmentRow(
     override val refreshSchedulingPeriod: Duration?,
     override val refreshSchedulingTaskId: UUID?,
     override val refreshSchedulingState: SchedulingState?,
+    override val refreshSchedulingId: UUID?,
     override val orderDirection: OrderDirection,
     override val orderId: String?,
     val rate: Double
@@ -28,6 +29,7 @@ data class FractionalSpreadAssignmentRow(
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,
+    refreshSchedulingId = refreshSchedulingId,
     orderDirection = orderDirection,
     orderId = orderId
 )

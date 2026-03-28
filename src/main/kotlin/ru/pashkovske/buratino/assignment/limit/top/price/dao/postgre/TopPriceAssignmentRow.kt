@@ -18,6 +18,7 @@ data class TopPriceAssignmentRow(
     override val refreshSchedulingPeriod: Duration?,
     override val refreshSchedulingTaskId: UUID?,
     override val refreshSchedulingState: SchedulingState?,
+    override val refreshSchedulingId: UUID?,
     override val orderDirection: OrderDirection,
     override val orderId: String?,
     val oneStepOver: Boolean
@@ -28,6 +29,7 @@ data class TopPriceAssignmentRow(
     refreshSchedulingPeriod = refreshSchedulingPeriod,
     refreshSchedulingTaskId = refreshSchedulingTaskId,
     refreshSchedulingState = refreshSchedulingState,
+    refreshSchedulingId = refreshSchedulingId,
     orderDirection = orderDirection,
     orderId = orderId
 )

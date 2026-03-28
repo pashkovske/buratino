@@ -55,10 +55,12 @@ class ContinuousFractionalSpreadAssignmentMapper : ContinuousAssignmentToPostgre
             refreshSchedulingPeriod = refreshPeriod,
             refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
             refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
+            refreshSchedulingId = assignment.getRefreshAssignmentScheduling()?.id,
             childAssignmentId = child.id,
             continueSchedulingPeriod = continuePeriod,
             continueSchedulingTaskId = assignment.getContinueAssignmentScheduling()?.taskId,
-            continueSchedulingState = assignment.getContinueAssignmentScheduling()?.state
+            continueSchedulingState = assignment.getContinueAssignmentScheduling()?.state,
+            continueSchedulingId = assignment.getContinueAssignmentScheduling()?.id
         )
     }
 }
