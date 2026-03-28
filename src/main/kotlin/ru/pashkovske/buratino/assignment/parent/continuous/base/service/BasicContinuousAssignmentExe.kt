@@ -76,10 +76,8 @@ abstract class BasicContinuousAssignmentExe<
             action = this::continueAssignment,
             assignmentId = assignment.id
         )
-        val taskId: UUID = taskScheduler.startNewPeriodic(
-            period = schedulingProps.period,
-            subscriber = subscriber
-        )
+        val taskId: UUID = taskScheduler.startNewPeriodic(schedulingProps.period)
+        taskScheduler.subscribePeriodic(taskId, subscriber)
         val assignmentScheduling = AssignmentScheduling(
             properties = schedulingProps,
             taskId = taskId

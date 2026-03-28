@@ -12,9 +12,6 @@ interface TaskScheduler {
         taskId: UUID,
         subscriber: DisposableSubscriber<Tick>
     )
-    fun startNewPeriodic(
-        period: Duration,
-        subscriber: DisposableSubscriber<Tick>
-    ) : UUID
+    fun startNewPeriodic(period: Duration) : UUID
     fun stopPeriodic(taskId: UUID)
 }

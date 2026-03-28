@@ -16,18 +16,11 @@ class TaskSchedulerDelegate(
         return periodicTaskPool.getPeriodicTasks()
     }
 
-    override fun startNewPeriodic(
-        period: Duration,
-        subscriber: DisposableSubscriber<Tick>
-    ): UUID {
+    override fun startNewPeriodic(period: Duration): UUID {
         val taskId = UUID.randomUUID()
         periodicTaskPool.create(
             id = taskId,
             period = period
-        )
-        periodicTaskPool.subscribe(
-            id = taskId,
-            subscriber = subscriber
         )
         return taskId
     }
