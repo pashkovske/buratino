@@ -3,11 +3,11 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.service
 import jakarta.annotation.PostConstruct
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
+import ru.pashkovske.buratino.assignment.base.model.scheduling.PeriodicAssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
@@ -78,7 +78,7 @@ abstract class BasicContinuousAssignmentExe<
         )
         val taskId: UUID = taskScheduler.startNewPeriodic(schedulingProps.period)
         taskScheduler.subscribePeriodic(taskId, subscriber)
-        val assignmentScheduling = AssignmentScheduling(
+        val assignmentScheduling = PeriodicAssignmentScheduling(
             id = UUID.randomUUID(),
             assignmentId = assignment.id,
             properties = schedulingProps,

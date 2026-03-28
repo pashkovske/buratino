@@ -6,7 +6,7 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.PeriodicAssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
@@ -70,7 +70,7 @@ abstract class BasicAssignmentStarter<A : Assignment>(
         )
         val taskId: UUID = taskScheduler.startNewPeriodic(schedulingProps.period)
         taskScheduler.subscribePeriodic(taskId, subscriber)
-        val assignmentScheduling = AssignmentScheduling(
+        val assignmentScheduling = PeriodicAssignmentScheduling(
             id = UUID.randomUUID(),
             assignmentId = assignment.id,
             properties = schedulingProps,

@@ -2,6 +2,7 @@ package ru.pashkovske.buratino.assignment.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.PeriodicAssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -33,10 +34,10 @@ abstract class BasicAssignmentToPostgreMapper<
             if (row.refreshSchedulingId == null) {
                 throw IllegalStateException("Refresh scheduling id is required but not provided")
             }
-            AssignmentScheduling(
+            PeriodicAssignmentScheduling(
                 id = row.refreshSchedulingId!!,
                 assignmentId = row.id,
-                properties = properties,
+                properties = properties as PeriodicAssignmentSchedulingProperties,
                 taskId = row.refreshSchedulingTaskId!!,
                 state = row.refreshSchedulingState!!
             )

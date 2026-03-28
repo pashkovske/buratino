@@ -2,6 +2,7 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.dao.postgre
 
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.base.model.scheduling.PeriodicAssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.parent.base.dao.postgre.ParentAssignmentToPostgreMapper
@@ -35,10 +36,10 @@ abstract class ContinuousAssignmentToPostgreMapper<
             if (row.continueSchedulingId == null) {
                 throw IllegalStateException("Continue scheduling id is required but not provided")
             }
-            AssignmentScheduling(
+            PeriodicAssignmentScheduling(
                 id = row.continueSchedulingId!!,
                 assignmentId = row.id,
-                properties = properties,
+                properties = properties as PeriodicAssignmentSchedulingProperties,
                 taskId = row.continueSchedulingTaskId!!,
                 state = row.continueSchedulingState!!
             )
