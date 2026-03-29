@@ -2,24 +2,21 @@ package ru.pashkovske.buratino.assignment.limit.base.service.start
 
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.base.service.start.BasicAssignmentStarter
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.assignment.limit.base.service.order.LimitOrderFactory
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.order.model.Order
 import ru.pashkovske.buratino.order.service.OrderService
 
 abstract class LimitOrderAssignmentStarter<LimitA : LimitOrderAssignment>(
     assignmentDao: AssignmentDao<LimitA>,
-    taskScheduler: TaskScheduler,
-    assignmentRefresher: AssignmentRefresher<LimitA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<LimitA>,
     private val orderService: OrderService,
     private val limitOrderFactory: LimitOrderFactory<LimitA>
 ) : BasicAssignmentStarter<LimitA>(
     assignmentDao = assignmentDao,
-    taskScheduler = taskScheduler,
-    assignmentRefresher = assignmentRefresher
+    refreshNotifyOrchestrator = refreshNotifyOrchestrator
 ) {
 
     override fun doStart(ctx: ExeCtx<LimitA>) {

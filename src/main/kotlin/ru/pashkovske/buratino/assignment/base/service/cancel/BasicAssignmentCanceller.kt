@@ -6,15 +6,13 @@ import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.AssignmentStateMachine
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import java.util.UUID
 
 abstract class BasicAssignmentCanceller<A : Assignment>(
     private val assignmentDao: AssignmentDao<A>,
-    private val taskScheduler: TaskScheduler
+    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator<A>
 ) : AssignmentCanceller<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
@@ -40,7 +38,7 @@ abstract class BasicAssignmentCanceller<A : Assignment>(
     protected abstract fun doCancel(ctx: ExeCtx<A>)
     protected open fun postCancel(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
-        stopSchedulingRefresh(ctx)
+        stopRefreshNotifier(ctx)
         toCompleted(ctx)
         if (ctx.isMutated()) {
             assignmentDao.update(assignment)
@@ -56,14 +54,13 @@ abstract class BasicAssignmentCanceller<A : Assignment>(
         return ctx.assignment.state == AssignmentState.COMPLETED
     }
 
-    private fun stopSchedulingRefresh(ctx: ExeCtx<A>) {
-        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getRefreshAssignmentScheduling() ?: return
-        if (assignmentScheduling.state == SchedulingState.COMPLETED) {
-            return
+    private fun stopRefreshNotifier(ctx: ExeCtx<A>) {
+        val assignment: A = ctx.assignment
+        val stopped: List<UUID> = refreshNotifyOrchestrator.stopForAssignment(assignment.id)
+        if (stopped.isNotEmpty()) {
+            assignment.clearRefreshScheduling()
+            assignment.initRefreshScheduling(refreshNotifyOrchestrator.get(stopped.first())!!)
+            ctx.setMutated()
         }
-        taskScheduler.stopPeriodic(assignmentScheduling.taskId!!)
-        assignmentScheduling.state = SchedulingState.COMPLETED
-
-        ctx.setMutated()
     }
 }

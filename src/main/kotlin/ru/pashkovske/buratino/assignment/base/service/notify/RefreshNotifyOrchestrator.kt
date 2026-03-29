@@ -6,10 +6,10 @@ import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefreshe
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
-abstract class RefreshNotifierOrchestrator<A : Assignment>(
+abstract class RefreshNotifyOrchestrator<A : Assignment>(
     taskScheduler: TaskScheduler,
     private val refresher: AssignmentRefresher<A>
-) : BasicNotifierOrchestrator<A>(
+) : BasicNotifyOrchestrator<A>(
     taskScheduler = taskScheduler
 ) {
 

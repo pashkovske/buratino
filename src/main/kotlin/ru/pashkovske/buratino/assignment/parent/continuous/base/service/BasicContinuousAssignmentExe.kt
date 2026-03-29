@@ -2,22 +2,19 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.service
 
 import jakarta.annotation.PostConstruct
 import ru.pashkovske.buratino.assignment.base.model.Assignment
-import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.AssignmentStartCmd
-import ru.pashkovske.buratino.assignment.base.model.scheduling.PeriodicAssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.base.service.start.AssignmentStarter
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.assignment.parent.base.service.ParentAssignmentExe
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.build.ContinuousAssignmentBuilder
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.`continue`.ContinuousAssignmentContinuer
+import ru.pashkovske.buratino.assignment.parent.continuous.base.service.notify.ContinueNotifyOrchestrator
 import java.util.UUID
 
 abstract class BasicContinuousAssignmentExe<
@@ -27,7 +24,8 @@ abstract class BasicContinuousAssignmentExe<
     ChildCmd : AssignmentStartCmd<ChildA>
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
-    taskScheduler: TaskScheduler,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousA>,
+    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousA, ChildA>,
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
     assignmentCanceller: AssignmentCanceller<ContinuousA>,
     assignmentStarter: AssignmentStarter<ContinuousA>,
@@ -37,7 +35,7 @@ abstract class BasicContinuousAssignmentExe<
 ):
     ParentAssignmentExe<ContinuousA, ChildA, ContinuousStartCmd, ChildCmd>(
         assignmentDao = assignmentDao,
-        taskScheduler = taskScheduler,
+        refreshNotifyOrchestrator = refreshNotifyOrchestrator,
         assignmentRefresher = assignmentRefresher,
         assignmentCanceller = assignmentCanceller,
         assignmentStarter = assignmentStarter,
@@ -54,8 +52,7 @@ abstract class BasicContinuousAssignmentExe<
         assignmentsToRecover.filter { assignment: ContinuousA ->
             assignment.continueAssignmentSchedulingProperties != null
         }.forEach { assignment: ContinuousA ->
-            assignment.clearContinueScheduling()
-            scheduleContinue(assignment)
+            recoverContinueNotifier(assignment)
             assignmentDao.update(assignment)
             continueAssignment(assignment.id)
         }
@@ -66,26 +63,17 @@ abstract class BasicContinuousAssignmentExe<
         return continuousAssignmentContinuer.continueAssignment(id)
     }
 
-    private fun scheduleContinue(assignment: ContinuousA): Boolean {
-        val schedulingProps: AssignmentSchedulingProperties = assignment.continueAssignmentSchedulingProperties ?: return false
-        if (schedulingProps !is PeriodicAssignmentSchedulingProperties) {
-            return false
-        }
-
-        val subscriber = AssignmentSchedulingSubscriber(
-            action = this::continueAssignment,
+    private fun recoverContinueNotifier(assignment: ContinuousA) {
+        val notifier: AssignmentScheduling? = continueNotifyOrchestrator.build(
+            properties = assignment.continueAssignmentSchedulingProperties,
             assignmentId = assignment.id
         )
-        val taskId: UUID = taskScheduler.startNewPeriodic(schedulingProps.period)
-        taskScheduler.subscribePeriodic(taskId, subscriber)
-        val assignmentScheduling = PeriodicAssignmentScheduling(
-            id = UUID.randomUUID(),
-            assignmentId = assignment.id,
-            properties = schedulingProps,
-            taskId = taskId,
-            state = SchedulingState.ACTIVE
-        )
-        assignment.initContinueScheduling(assignmentScheduling)
-        return true
+        val notifierId: UUID? = continueNotifyOrchestrator.register(notifier)
+        continueNotifyOrchestrator.start(notifierId)
+        if (notifierId != null) {
+            assignment.clearContinueScheduling()
+            val notifier: AssignmentScheduling = continueNotifyOrchestrator.get(notifierId)!!
+            assignment.initContinueScheduling(notifier)
+        }
     }
 }

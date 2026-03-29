@@ -5,19 +5,19 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.service.cancel.BasicAssignmentCanceller
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.limit.base.model.LimitOrderAssignment
 import ru.pashkovske.buratino.assignment.limit.base.service.order.LimitOrderFactory
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.order.service.OrderService
 
 abstract class LimitOrderAssignmentCanceller<LimitA : LimitOrderAssignment>(
     assignmentDao: AssignmentDao<LimitA>,
-    taskScheduler: TaskScheduler,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<LimitA>,
     private val orderService: OrderService,
     private val limitOrderFactory: LimitOrderFactory<LimitA>
 ) : BasicAssignmentCanceller<LimitA>(
     assignmentDao = assignmentDao,
-    taskScheduler = taskScheduler
+    refreshNotifyOrchestrator = refreshNotifyOrchestrator
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}

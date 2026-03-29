@@ -11,24 +11,21 @@ import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class BasicNotifierOrchestrator<A : Assignment>(
+abstract class BasicNotifyOrchestrator<A : Assignment>(
     private val taskScheduler: TaskScheduler,
-) : NotifierOrchestrator<A> {
-
-    private data class AssignmentNotifierInstance(
-        val notifier: AssignmentScheduling,
-        val subscriber: AssignmentSchedulingSubscriber
-    )
+) : NotifyOrchestrator<A> {
 
     private val notifiers: MutableMap<UUID, AssignmentScheduling> = ConcurrentHashMap()
     private val assignmentNotifiers: MutableMap<UUID, MutableList<UUID>> = ConcurrentHashMap()
     private val stateMachine: AssignmentNotifierStateMachine = AssignmentNotifierStateMachine
 
+    override fun get(id: UUID?): AssignmentScheduling? = notifiers[id]
+
     override fun build(
         properties: AssignmentSchedulingProperties?,
         assignmentId: UUID
     ): AssignmentScheduling? {
-        return when(properties) {
+        return when (properties) {
             null -> null
             is PeriodicAssignmentSchedulingProperties -> {
                 PeriodicAssignmentScheduling(
@@ -44,9 +41,9 @@ abstract class BasicNotifierOrchestrator<A : Assignment>(
 
     abstract fun getSubscriber(assignmentId: UUID): AssignmentSchedulingSubscriber
 
-    override fun register(notifier: AssignmentScheduling?) {
+    override fun register(notifier: AssignmentScheduling?): UUID? {
         if (notifier == null) {
-            return
+            return null
         }
         val isNew: Boolean = notifiers.putIfAbsent(notifier.id, notifier) == null
         if (!isNew) {
@@ -61,16 +58,20 @@ abstract class BasicNotifierOrchestrator<A : Assignment>(
             notifiers.add(notifier.id)
             notifiers
         }
+        return notifier.id
     }
 
-    override fun start(id: UUID): Boolean {
+    override fun start(id: UUID?): Boolean {
+        if (id == null) {
+            return false
+        }
         val notifier: AssignmentScheduling = notifiers[id] ?: throw AssignmentNotifyException(
             message = "Notifier is not registered",
             notifierId = id,
             assignmentId = null
         )
         val subscriber: AssignmentSchedulingSubscriber = getSubscriber(notifier.assignmentId)
-        val taskId: UUID = when(notifier) {
+        val taskId: UUID = when (notifier) {
             is PeriodicAssignmentScheduling -> startPeriodic(notifier, subscriber)
         }
         notifier.taskId = taskId
@@ -101,8 +102,15 @@ abstract class BasicNotifierOrchestrator<A : Assignment>(
      * - **Idempotent:** if task does not registered or already completed, does nothing
      * @return is task stopped
      */
-    override fun stop(id: UUID): Boolean {
-        val notifier: AssignmentScheduling = notifiers[id] ?: return false
+    override fun stop(id: UUID?): Boolean {
+        if (id == null) {
+            return false
+        }
+        val notifier: AssignmentScheduling = notifiers[id] ?: throw AssignmentNotifyException(
+            message = "Notifier is not registered, cannot stop",
+            notifierId = id,
+            assignmentId = null
+        )
         if (!stateMachine.canComplete(notifier.state)) {
             return false
         }

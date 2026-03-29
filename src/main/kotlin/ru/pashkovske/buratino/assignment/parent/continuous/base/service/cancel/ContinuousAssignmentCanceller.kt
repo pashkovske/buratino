@@ -3,38 +3,39 @@ package ru.pashkovske.buratino.assignment.parent.continuous.base.service.cancel
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.parent.base.service.cancel.ParentAssignmentCanceller
 import ru.pashkovske.buratino.assignment.parent.continuous.base.model.ContinuousAssignment
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
+import ru.pashkovske.buratino.assignment.parent.continuous.base.service.notify.ContinueNotifyOrchestrator
+import java.util.UUID
 
 abstract class ContinuousAssignmentCanceller<
     ChildA : Assignment,
     ContinuousA : ContinuousAssignment<ChildA>
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
-    taskScheduler: TaskScheduler,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousA>,
     childAssignmentCanceller: AssignmentCanceller<ChildA>,
-    private val continuousTaskScheduler: TaskScheduler
+    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousA, ChildA>
 ) : ParentAssignmentCanceller<ContinuousA, ChildA>(
     assignmentDao = assignmentDao,
-    taskScheduler = taskScheduler,
+    refreshNotifyOrchestrator = refreshNotifyOrchestrator,
     childAssignmentCanceller = childAssignmentCanceller
 ) {
 
     override fun postCancel(ctx: ExeCtx<ContinuousA>) {
-        stopSchedulingContinuation(ctx)
+        stopContinueNotifier(ctx)
         super.postCancel(ctx)
     }
 
-    private fun stopSchedulingContinuation(ctx: ExeCtx<ContinuousA>) {
-        val assignmentScheduling: AssignmentScheduling = ctx.assignment.getContinueAssignmentScheduling() ?: return
-
-        continuousTaskScheduler.stopPeriodic(assignmentScheduling.taskId!!)
-        assignmentScheduling.state = SchedulingState.COMPLETED
-
-        ctx.setMutated()
+    private fun stopContinueNotifier(ctx: ExeCtx<ContinuousA>) {
+        val assignment: ContinuousA = ctx.assignment
+        val stopped: List<UUID> = continueNotifyOrchestrator.stopForAssignment(assignment.id)
+        if (stopped.isNotEmpty()) {
+            assignment.clearContinueScheduling()
+            assignment.initContinueScheduling(continueNotifyOrchestrator.get(stopped.first())!!)
+            ctx.setMutated()
+        }
     }
 }

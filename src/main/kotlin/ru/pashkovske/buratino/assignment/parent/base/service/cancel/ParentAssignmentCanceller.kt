@@ -8,19 +8,19 @@ import ru.pashkovske.buratino.assignment.base.model.AssignmentState
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
 import ru.pashkovske.buratino.assignment.base.service.cancel.AssignmentCanceller
 import ru.pashkovske.buratino.assignment.base.service.cancel.BasicAssignmentCanceller
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.parent.base.model.ParentAssignment
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 
 abstract class ParentAssignmentCanceller<
     ParentA : ParentAssignment<ChildA>,
     ChildA : Assignment
     >(
     assignmentDao: AssignmentDao<ParentA>,
-    taskScheduler: TaskScheduler,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ParentA>,
     protected val childAssignmentCanceller: AssignmentCanceller<ChildA>
 ) : BasicAssignmentCanceller<ParentA>(
     assignmentDao = assignmentDao,
-    taskScheduler = taskScheduler
+    refreshNotifyOrchestrator = refreshNotifyOrchestrator
 ) {
 
     private val log: KLogger = KotlinLogging.logger {}

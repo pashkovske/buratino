@@ -2,22 +2,28 @@ package ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.serv
 
 import org.springframework.stereotype.Component
 import ru.pashkovske.buratino.assignment.base.service.build.AssignmentBuilder
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.limit.spread.fraction.model.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.parent.continuous.base.service.build.ContinuousAssignmentBuilder
+import ru.pashkovske.buratino.assignment.parent.continuous.base.service.notify.ContinueNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.parent.continuous.spread.fraction.model.ContinuousFractionalSpreadAssignmentStartCmd
 
 @Component
 class ContinuousFractionalSpreadAssignmentBuilder(
-    childBuilder: AssignmentBuilder<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>
+    childBuilder: AssignmentBuilder<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousFractionalSpreadAssignment>,
+    continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousFractionalSpreadAssignment, FractionalSpreadAssignment>
 ) : ContinuousAssignmentBuilder<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment,
     ContinuousFractionalSpreadAssignmentStartCmd,
     FractionalSpreadAssignmentStartCmd
     >(
-    childBuilder = childBuilder
+    childBuilder = childBuilder,
+    refreshNotifyOrchestrator = refreshNotifyOrchestrator,
+    continueNotifyOrchestrator = continueNotifyOrchestrator
 ) {
 
     override fun buildChildStartCmd(cmd: ContinuousFractionalSpreadAssignmentStartCmd): FractionalSpreadAssignmentStartCmd {
@@ -29,7 +35,7 @@ class ContinuousFractionalSpreadAssignmentBuilder(
         )
     }
 
-    override fun buildParent(
+    override fun preBuildParent(
         cmd: ContinuousFractionalSpreadAssignmentStartCmd,
         child: FractionalSpreadAssignment
     ): ContinuousFractionalSpreadAssignment {

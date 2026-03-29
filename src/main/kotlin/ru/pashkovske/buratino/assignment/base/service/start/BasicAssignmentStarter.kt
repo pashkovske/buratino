@@ -5,20 +5,13 @@ import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.base.dao.AssignmentDao
 import ru.pashkovske.buratino.assignment.base.model.Assignment
 import ru.pashkovske.buratino.assignment.base.model.ExeCtx
-import ru.pashkovske.buratino.assignment.base.model.scheduling.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.base.model.scheduling.PeriodicAssignmentScheduling
-import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.AssignmentSchedulingProperties
-import ru.pashkovske.buratino.assignment.base.model.scheduling.SchedulingState
-import ru.pashkovske.buratino.assignment.base.model.scheduling.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.base.service.AssignmentStateMachine
-import ru.pashkovske.buratino.assignment.base.service.refresh.AssignmentRefresher
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
+import ru.pashkovske.buratino.assignment.base.service.notify.RefreshNotifyOrchestrator
 import java.util.UUID
 
 abstract class BasicAssignmentStarter<A : Assignment>(
     private val assignmentDao: AssignmentDao<A>,
-    private val taskScheduler: TaskScheduler,
-    private val assignmentRefresher: AssignmentRefresher<A>
+    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator<A>
 ) : AssignmentStarter<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
@@ -39,9 +32,10 @@ abstract class BasicAssignmentStarter<A : Assignment>(
     }
 
     protected abstract fun doStart(ctx: ExeCtx<A>)
+
     protected open fun postStart(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
-        scheduleRefresh(ctx)
+        startRefreshNotifier(ctx)
         toInProgress(ctx)
         assignmentDao.create(assignment)
         log.info("Assignment started: $assignment")
@@ -52,32 +46,13 @@ abstract class BasicAssignmentStarter<A : Assignment>(
         ctx.setMutated()
     }
 
-    private fun scheduleRefresh(ctx: ExeCtx<A>) {
+    private fun startRefreshNotifier(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
-        scheduleRefresh(assignment)
-        ctx.setMutated()
-    }
-
-    private fun scheduleRefresh(assignment: A) {
-        val schedulingProps: AssignmentSchedulingProperties = assignment.refreshAssignmentSchedulingProperties ?: return
-        if (schedulingProps !is PeriodicAssignmentSchedulingProperties) {
-            return
+        val started: List<UUID> = refreshNotifyOrchestrator.startForAssignment(assignment.id)
+        if (started.isNotEmpty()) {
+            assignment.clearRefreshScheduling()
+            assignment.initRefreshScheduling(refreshNotifyOrchestrator.get(started.first())!!)
+            ctx.setMutated()
         }
-
-        val subscriber = AssignmentSchedulingSubscriber(
-            action = assignmentRefresher::refresh,
-            assignmentId = assignment.id
-        )
-        val taskId: UUID = taskScheduler.startNewPeriodic(schedulingProps.period)
-        taskScheduler.subscribePeriodic(taskId, subscriber)
-        val assignmentScheduling = PeriodicAssignmentScheduling(
-            id = UUID.randomUUID(),
-            assignmentId = assignment.id,
-            properties = schedulingProps,
-            taskId = taskId,
-            state = SchedulingState.ACTIVE
-        )
-        assignmentScheduling.state = SchedulingState.ACTIVE
-        assignment.initRefreshScheduling(assignmentScheduling)
     }
 }
