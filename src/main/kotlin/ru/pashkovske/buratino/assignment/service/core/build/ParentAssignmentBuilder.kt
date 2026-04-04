@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.assignment.service.core.build
 
+import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.cmd.ParentAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
@@ -13,8 +14,10 @@ abstract class ParentAssignmentBuilder<
     ChildCmd : AssignmentStartCmd<ChildA>
     >(
     protected val childBuilder: AssignmentBuilder<ChildA, ChildCmd>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ParentA>
+    assignmentDao: AssignmentDao<ParentA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator
 ) : BasicAssignmentBuilder<ParentA, ParentCmd>(
+    assignmentDao = assignmentDao,
     refreshNotifyOrchestrator = refreshNotifyOrchestrator
 ) {
 

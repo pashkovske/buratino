@@ -18,7 +18,7 @@ abstract class BasicAssignmentExe<
     Cmd : AssignmentStartCmd<A>
     >(
     protected val assignmentDao: AssignmentDao<A>,
-    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator<A>,
+    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     protected val assignmentRefresher: AssignmentRefresher<A>,
     protected val assignmentCanceller: AssignmentCanceller<A>,
     protected val assignmentStarter: AssignmentStarter<A>,

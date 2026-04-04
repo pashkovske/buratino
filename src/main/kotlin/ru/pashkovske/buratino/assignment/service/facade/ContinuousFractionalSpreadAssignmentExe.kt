@@ -17,8 +17,8 @@ import ru.pashkovske.buratino.assignment.service.core.start.AssignmentStarter
 @Service
 final class ContinuousFractionalSpreadAssignmentExe(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousFractionalSpreadAssignment>,
-    continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousFractionalSpreadAssignment, FractionalSpreadAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    continueNotifyOrchestrator: ContinueNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<ContinuousFractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<ContinuousFractionalSpreadAssignment>,
     assignmentStarter: AssignmentStarter<ContinuousFractionalSpreadAssignment>,

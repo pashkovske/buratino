@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.assignment.service.core.build
 
+import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.cmd.ContinuousAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
@@ -15,10 +16,12 @@ abstract class ContinuousAssignmentBuilder<
     ChildCmd : AssignmentStartCmd<ChildA>
     >(
     childBuilder: AssignmentBuilder<ChildA, ChildCmd>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousA>,
-    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousA, ChildA>
+    assignmentDao: AssignmentDao<ContinuousA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator
 ) : ParentAssignmentBuilder<ContinuousA, ChildA, ContinuousCmd, ChildCmd>(
     childBuilder = childBuilder,
+    assignmentDao = assignmentDao,
     refreshNotifyOrchestrator = refreshNotifyOrchestrator
 ) {
 

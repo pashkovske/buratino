@@ -13,7 +13,7 @@ import ru.pashkovske.buratino.assignment.service.core.start.AssignmentStarter
 @Service
 final class FractionalSpreadAssignmentExe(
     assignmentDao: AssignmentDao<FractionalSpreadAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<FractionalSpreadAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<FractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<FractionalSpreadAssignment>,
     assignmentStarter: AssignmentStarter<FractionalSpreadAssignment>,

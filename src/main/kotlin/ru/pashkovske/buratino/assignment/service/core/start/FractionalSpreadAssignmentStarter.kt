@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.order.service.OrderService
 @Service
 class FractionalSpreadAssignmentStarter(
     assignmentDao: AssignmentDao<FractionalSpreadAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<FractionalSpreadAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     orderService: OrderService,
     limitOrderFactory: LimitOrderFactory<FractionalSpreadAssignment>
 ) : LimitOrderAssignmentStarter<FractionalSpreadAssignment>(

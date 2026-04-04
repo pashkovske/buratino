@@ -10,7 +10,7 @@ abstract class ParentAssignmentStarter<
     ChildA : Assignment
     >(
     assignmentDao: AssignmentDao<ParentA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ParentA>
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator
 ) : BasicAssignmentStarter<ParentA>(
     assignmentDao = assignmentDao,
     refreshNotifyOrchestrator = refreshNotifyOrchestrator

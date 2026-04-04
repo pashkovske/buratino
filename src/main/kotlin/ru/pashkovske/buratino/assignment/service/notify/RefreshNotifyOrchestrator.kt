@@ -1,19 +1,23 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
+import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.service.core.refresh.AssignmentRefresher
+import ru.pashkovske.buratino.assignment.service.core.refresh.dispatcher.RefreshDispatcher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
-abstract class RefreshNotifyOrchestrator<A : Assignment>(
+@Service
+class RefreshNotifyOrchestrator(
     taskScheduler: TaskScheduler,
-    private val refresher: AssignmentRefresher<A>
-) : BasicNotifyOrchestrator<A>(
+    private val refreshDispatcher: RefreshDispatcher
+) : BasicNotifyOrchestrator(
     taskScheduler = taskScheduler
 ) {
 
     override fun getSubscriber(assignmentId: UUID): AssignmentSchedulingSubscriber {
+        val refresher: AssignmentRefresher<out Assignment> = refreshDispatcher.getRefresher(assignmentId)
         return AssignmentSchedulingSubscriber(
             action = refresher::refresh,
             assignmentId = assignmentId

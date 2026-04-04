@@ -1,12 +1,15 @@
 package ru.pashkovske.buratino.assignment.dao.core.postgre.mapper
 
 import ru.pashkovske.buratino.assignment.dao.core.postgre.row.AssignmentPostgreRow
+import ru.pashkovske.buratino.assignment.exception.AssignmentDaoOperationInconsistencyException
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
 import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
+import java.util.UUID
 
 abstract class BasicAssignmentToPostgreMapper<
     A : Assignment,
@@ -29,21 +32,21 @@ abstract class BasicAssignmentToPostgreMapper<
         row: Row,
         properties: AssignmentSchedulingProperties
     ): AssignmentScheduling? {
-        return if (row.refreshSchedulingTaskId == null && row.refreshSchedulingState == null) {
-            null
-        } else if (row.refreshSchedulingTaskId != null && row.refreshSchedulingState != null) {
-            if (row.refreshSchedulingId == null) {
-                throw IllegalStateException("Refresh scheduling id is required but not provided")
+        val refreshSchedulingId: UUID = row.refreshSchedulingId ?: return null
+        val refreshSchedulingState: SchedulingState = row.refreshSchedulingState ?: throw AssignmentDaoOperationInconsistencyException(
+            message = "Refresh id is not provided but state is",
+            assignmentId = row.id
+        )
+        return when(properties) {
+            is PeriodicAssignmentSchedulingProperties -> {
+                PeriodicAssignmentScheduling(
+                    id = refreshSchedulingId,
+                    assignmentId = row.id,
+                    properties = properties,
+                    taskId = row.refreshSchedulingTaskId,
+                    state = refreshSchedulingState
+                )
             }
-            PeriodicAssignmentScheduling(
-                id = row.refreshSchedulingId!!,
-                assignmentId = row.id,
-                properties = properties as PeriodicAssignmentSchedulingProperties,
-                taskId = row.refreshSchedulingTaskId!!,
-                state = row.refreshSchedulingState!!
-            )
-        } else {
-            throw IllegalStateException("Refresh scheduling task id and state are not consistent")
         }
     }
 

@@ -14,7 +14,7 @@ abstract class LimitOrderAssignmentExe<
     LimitCmd : LimitOrderAssignmentStartCmd<LimitA>
     >(
     assignmentDao: AssignmentDao<LimitA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<LimitA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<LimitA>,
     assignmentCanceller: AssignmentCanceller<LimitA>,
     assignmentStarter: AssignmentStarter<LimitA>,

@@ -23,8 +23,8 @@ abstract class BasicContinuousAssignmentExe<
     ChildCmd : AssignmentStartCmd<ChildA>
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousA>,
-    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousA, ChildA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<ContinuousA>,
     assignmentCanceller: AssignmentCanceller<ContinuousA>,
     assignmentStarter: AssignmentStarter<ContinuousA>,

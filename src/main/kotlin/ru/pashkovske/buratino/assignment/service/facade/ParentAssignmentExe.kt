@@ -18,7 +18,7 @@ abstract class ParentAssignmentExe<
     ChildCmd : AssignmentStartCmd<ChildA>
     >(
     assignmentDao: AssignmentDao<ParentA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ParentA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<ParentA>,
     assignmentCanceller: AssignmentCanceller<ParentA>,
     assignmentStarter: AssignmentStarter<ParentA>,

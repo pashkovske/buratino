@@ -11,7 +11,7 @@ import ru.pashkovske.buratino.order.service.OrderService
 
 abstract class LimitOrderAssignmentCanceller<LimitA : LimitOrderAssignment>(
     assignmentDao: AssignmentDao<LimitA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<LimitA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     private val orderService: OrderService,
     private val limitOrderFactory: LimitOrderFactory<LimitA>
 ) : BasicAssignmentCanceller<LimitA>(

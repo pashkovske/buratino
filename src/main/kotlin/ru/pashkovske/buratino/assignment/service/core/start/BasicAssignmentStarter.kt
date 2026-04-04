@@ -11,7 +11,7 @@ import java.util.UUID
 
 abstract class BasicAssignmentStarter<A : Assignment>(
     private val assignmentDao: AssignmentDao<A>,
-    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator<A>
+    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator
 ) : AssignmentStarter<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
@@ -37,7 +37,7 @@ abstract class BasicAssignmentStarter<A : Assignment>(
         val assignment: A = ctx.assignment
         startRefreshNotifier(ctx)
         toInProgress(ctx)
-        assignmentDao.create(assignment)
+        assignmentDao.update(assignment)
         log.info("Assignment started: $assignment")
     }
 

@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.order.service.OrderService
 
 abstract class LimitOrderAssignmentStarter<LimitA : LimitOrderAssignment>(
     assignmentDao: AssignmentDao<LimitA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<LimitA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     private val orderService: OrderService,
     private val limitOrderFactory: LimitOrderFactory<LimitA>
 ) : BasicAssignmentStarter<LimitA>(

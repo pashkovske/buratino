@@ -1,7 +1,6 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
 import ru.pashkovske.buratino.assignment.exception.AssignmentNotifyException
-import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
@@ -12,9 +11,9 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.get
 
-abstract class BasicNotifyOrchestrator<A : Assignment>(
+abstract class BasicNotifyOrchestrator(
     private val taskScheduler: TaskScheduler,
-) : NotifyOrchestrator<A> {
+) : NotifyOrchestrator {
 
     private val notifiers: MutableMap<UUID, AssignmentScheduling> = ConcurrentHashMap()
     private val assignmentNotifiers: MutableMap<UUID, MutableList<UUID>> = ConcurrentHashMap()

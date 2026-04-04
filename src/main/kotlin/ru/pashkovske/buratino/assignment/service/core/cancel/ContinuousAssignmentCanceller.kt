@@ -13,9 +13,9 @@ abstract class ContinuousAssignmentCanceller<
     ContinuousA : ContinuousAssignment<ChildA>
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     childAssignmentCanceller: AssignmentCanceller<ChildA>,
-    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousA, ChildA>
+    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator
 ) : ParentAssignmentCanceller<ContinuousA, ChildA>(
     assignmentDao = assignmentDao,
     refreshNotifyOrchestrator = refreshNotifyOrchestrator,

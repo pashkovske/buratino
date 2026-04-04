@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.order.service.OrderService
 @Service
 class TopPriceAssignmentStarter(
     assignmentDao: AssignmentDao<TopPriceAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<TopPriceAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     orderService: OrderService,
     limitOrderFactory: LimitOrderFactory<TopPriceAssignment>
 ) : LimitOrderAssignmentStarter<TopPriceAssignment>(

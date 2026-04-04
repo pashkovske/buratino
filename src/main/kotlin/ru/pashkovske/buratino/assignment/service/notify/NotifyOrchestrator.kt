@@ -1,11 +1,10 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
-import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
 import java.util.UUID
 
-interface NotifyOrchestrator<A : Assignment> {
+interface NotifyOrchestrator {
 
     fun get(id: UUID?): AssignmentScheduling?
 

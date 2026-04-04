@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.exception
 
 import java.util.UUID
 
-class AssignmentDaoOperationException(
+open class AssignmentDaoOperationException(
     message: String,
     assignmentId: UUID?
 ): IllegalArgumentException(

@@ -66,12 +66,19 @@ abstract class PostgreParentAssignmentDao<
     }
 
     override fun get(id: UUID): ParentA {
-        val parentAssignmentRow: ParentRow = r2dbcRepository.findById(id)
-            .block() ?: throw AssignmentDaoOperationException(
+        return find(id) ?: throw AssignmentDaoOperationException(
             message = "Assignment not found in PostgreSQL",
             assignmentId = id
         )
-        val childAssignment: ChildA = childAssignmentDao.get(parentAssignmentRow.childAssignmentId)
+    }
+
+    override fun find(id: UUID): ParentA? {
+        val parentAssignmentRow: ParentRow = r2dbcRepository.findById(id)
+            .block() ?: return null
+        val childAssignment: ChildA = childAssignmentDao.find(parentAssignmentRow.childAssignmentId) ?: throw AssignmentDaoOperationException(
+            message = "Child assignment `${parentAssignmentRow.childAssignmentId}` not found in PostgreSQL",
+            assignmentId = parentAssignmentRow.id
+        )
         return mapper.map(
             parentRow = parentAssignmentRow,
             childAssignment = childAssignment

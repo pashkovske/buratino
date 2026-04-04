@@ -1,23 +1,22 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
-import ru.pashkovske.buratino.assignment.model.core.Assignment
-import ru.pashkovske.buratino.assignment.model.core.ContinuousAssignment
+import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.service.core.continuation.ContinuousAssignmentContinuer
+import ru.pashkovske.buratino.assignment.service.core.continuation.dispatcher.ContinueDispatcher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import java.util.UUID
 
-abstract class ContinueNotifyOrchestrator<
-    ContinuousA : ContinuousAssignment<ChildA>,
-    ChildA : Assignment
-    >(
+@Service
+class ContinueNotifyOrchestrator(
     taskScheduler: TaskScheduler,
-    private val continuer: ContinuousAssignmentContinuer<ContinuousA>
-) : BasicNotifyOrchestrator<ContinuousA>(
+    private val continueDispatcher: ContinueDispatcher
+) : BasicNotifyOrchestrator(
     taskScheduler = taskScheduler
 ) {
 
     override fun getSubscriber(assignmentId: UUID): AssignmentSchedulingSubscriber {
+        val continuer: ContinuousAssignmentContinuer<*> = continueDispatcher.getContinuer(assignmentId)
         return AssignmentSchedulingSubscriber(
             action = continuer::continueAssignment,
             assignmentId = assignmentId

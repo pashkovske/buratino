@@ -14,7 +14,7 @@ abstract class ParentAssignmentCanceller<
     ChildA : Assignment
     >(
     assignmentDao: AssignmentDao<ParentA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ParentA>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     protected val childAssignmentCanceller: AssignmentCanceller<ChildA>
 ) : BasicAssignmentCanceller<ParentA>(
     assignmentDao = assignmentDao,

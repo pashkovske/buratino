@@ -13,7 +13,7 @@ import ru.pashkovske.buratino.assignment.service.core.start.AssignmentStarter
 @Service
 final class TopPriceAssignmentExe(
     assignmentDao: AssignmentDao<TopPriceAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<TopPriceAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<TopPriceAssignment>,
     assignmentCanceller: AssignmentCanceller<TopPriceAssignment>,
     assignmentStarter: AssignmentStarter<TopPriceAssignment>,

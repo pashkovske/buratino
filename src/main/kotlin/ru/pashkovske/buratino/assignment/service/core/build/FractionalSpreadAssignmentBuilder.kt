@@ -1,17 +1,20 @@
 package ru.pashkovske.buratino.assignment.service.core.build
 
 import org.springframework.stereotype.Component
+import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
 
 @Component
 class FractionalSpreadAssignmentBuilder(
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<FractionalSpreadAssignment>
+    assignmentDao: AssignmentDao<FractionalSpreadAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator
 ) : LimitOrderAssignmentBuilder<
     FractionalSpreadAssignment,
     FractionalSpreadAssignmentStartCmd
     >(
+        assignmentDao = assignmentDao,
         refreshNotifyOrchestrator = refreshNotifyOrchestrator
     ) {
 

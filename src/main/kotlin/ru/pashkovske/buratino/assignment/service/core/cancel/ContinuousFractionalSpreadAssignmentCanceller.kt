@@ -10,8 +10,8 @@ import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrato
 @Service
 class ContinuousFractionalSpreadAssignmentCanceller(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousFractionalSpreadAssignment>,
-    continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousFractionalSpreadAssignment, FractionalSpreadAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    continueNotifyOrchestrator: ContinueNotifyOrchestrator,
     childAssignmentCanceller: FractionalSpreadAssignmentCanceller
 ) : ContinuousAssignmentCanceller<FractionalSpreadAssignment, ContinuousFractionalSpreadAssignment>(
     assignmentDao = assignmentDao,

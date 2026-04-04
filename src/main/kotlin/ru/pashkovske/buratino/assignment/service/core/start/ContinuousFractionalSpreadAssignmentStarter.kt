@@ -11,8 +11,8 @@ import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrato
 @Service
 class ContinuousFractionalSpreadAssignmentStarter(
     assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousFractionalSpreadAssignment>,
-    continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousFractionalSpreadAssignment, FractionalSpreadAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    continueNotifyOrchestrator: ContinueNotifyOrchestrator,
     private val childAssignmentStarter: AssignmentStarter<FractionalSpreadAssignment>
 ) : ContinuousAssignmentStarter<
     ContinuousFractionalSpreadAssignment,

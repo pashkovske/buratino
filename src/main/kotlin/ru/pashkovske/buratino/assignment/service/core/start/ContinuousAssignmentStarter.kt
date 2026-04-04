@@ -13,8 +13,8 @@ abstract class ContinuousAssignmentStarter<
     ChildA : Assignment
     >(
     assignmentDao: AssignmentDao<ContinuousA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousA>,
-    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousA, ChildA>
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    private val continueNotifyOrchestrator: ContinueNotifyOrchestrator
 ) : ParentAssignmentStarter<ContinuousA, ChildA>(
     assignmentDao = assignmentDao,
     refreshNotifyOrchestrator = refreshNotifyOrchestrator

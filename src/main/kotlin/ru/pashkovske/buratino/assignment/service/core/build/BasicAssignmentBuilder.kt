@@ -1,16 +1,18 @@
 package ru.pashkovske.buratino.assignment.service.core.build
 
-import ru.pashkovske.buratino.assignment.model.core.Assignment
+import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
+import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
 
 abstract class BasicAssignmentBuilder<
     A : Assignment,
-    Cmd : AssignmentStartCmd<A>
+    Cmd : AssignmentStartCmd<A>,
     >(
-        private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator<A>
-    ) : AssignmentBuilder<A, Cmd> {
+    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    private val assignmentDao: AssignmentDao<A>
+) : AssignmentBuilder<A, Cmd> {
 
     protected abstract fun preBuild(cmd: Cmd): A
 
@@ -23,6 +25,7 @@ abstract class BasicAssignmentBuilder<
         if (notifier != null) {
             assignment.initRefreshScheduling(notifier)
         }
+        assignmentDao.create(assignment)
     }
 
     final override fun build(cmd: Cmd): A {

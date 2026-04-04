@@ -1,12 +1,15 @@
 package ru.pashkovske.buratino.assignment.dao.core.postgre.mapper
 
 import ru.pashkovske.buratino.assignment.dao.core.postgre.row.ContinuousAssignmentPostgreRow
+import ru.pashkovske.buratino.assignment.exception.AssignmentDaoOperationInconsistencyException
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ContinuousAssignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
 import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
+import java.util.UUID
 
 abstract class ContinuousAssignmentToPostgreMapper<
     ChildA : Assignment,
@@ -30,21 +33,21 @@ abstract class ContinuousAssignmentToPostgreMapper<
         row: ContinuousRow,
         properties: AssignmentSchedulingProperties
     ): AssignmentScheduling? {
-        return if (row.continueSchedulingTaskId == null && row.continueSchedulingState == null) {
-            null
-        } else if (row.continueSchedulingTaskId != null && row.continueSchedulingState != null) {
-            if (row.continueSchedulingId == null) {
-                throw IllegalStateException("Continue scheduling id is required but not provided")
+        val continueSchedulingId: UUID = row.continueSchedulingId ?: return null
+        val continueSchedulingState: SchedulingState = row.continueSchedulingState ?: throw AssignmentDaoOperationInconsistencyException(
+            message = "Continue id is not provided but state is",
+            assignmentId = row.id
+        )
+        return when(properties) {
+            is PeriodicAssignmentSchedulingProperties -> {
+                PeriodicAssignmentScheduling(
+                    id = continueSchedulingId,
+                    assignmentId = row.id,
+                    properties = properties,
+                    taskId = row.continueSchedulingTaskId,
+                    state = continueSchedulingState
+                )
             }
-            PeriodicAssignmentScheduling(
-                id = row.continueSchedulingId!!,
-                assignmentId = row.id,
-                properties = properties as PeriodicAssignmentSchedulingProperties,
-                taskId = row.continueSchedulingTaskId!!,
-                state = row.continueSchedulingState!!
-            )
-        } else {
-            throw IllegalStateException("Continue scheduling task id and state are not consistent")
         }
     }
 

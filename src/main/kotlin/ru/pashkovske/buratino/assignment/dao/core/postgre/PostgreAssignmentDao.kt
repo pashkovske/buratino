@@ -36,12 +36,16 @@ abstract class PostgreAssignmentDao<A : Assignment, Row : AssignmentPostgreRow<A
     }
 
     override fun get(id: UUID): A {
-        return r2dbcRepository.findById(id)
-            .map(mapper::map)
-            .block() ?: throw AssignmentDaoOperationException(
+        return find(id) ?: throw AssignmentDaoOperationException(
                 message = "Assignment not found in PostgreSQL",
                 assignmentId = id
             )
+    }
+
+    override fun find(id: UUID): A? {
+        return r2dbcRepository.findById(id)
+            .map(mapper::map)
+            .block()
     }
 
     override fun create(assignment: A) {

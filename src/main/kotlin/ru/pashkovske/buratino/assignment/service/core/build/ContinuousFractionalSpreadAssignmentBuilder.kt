@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.assignment.service.core.build
 
 import org.springframework.stereotype.Component
+import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.ContinuousFractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.cmd.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
@@ -11,8 +12,9 @@ import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrato
 @Component
 class ContinuousFractionalSpreadAssignmentBuilder(
     childBuilder: AssignmentBuilder<FractionalSpreadAssignment, FractionalSpreadAssignmentStartCmd>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator<ContinuousFractionalSpreadAssignment>,
-    continueNotifyOrchestrator: ContinueNotifyOrchestrator<ContinuousFractionalSpreadAssignment, FractionalSpreadAssignment>
+    assignmentDao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
+    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
+    continueNotifyOrchestrator: ContinueNotifyOrchestrator,
 ) : ContinuousAssignmentBuilder<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment,
@@ -20,6 +22,7 @@ class ContinuousFractionalSpreadAssignmentBuilder(
     FractionalSpreadAssignmentStartCmd
     >(
     childBuilder = childBuilder,
+    assignmentDao = assignmentDao,
     refreshNotifyOrchestrator = refreshNotifyOrchestrator,
     continueNotifyOrchestrator = continueNotifyOrchestrator
 ) {

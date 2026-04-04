@@ -12,7 +12,7 @@ import java.util.UUID
 
 abstract class BasicAssignmentCanceller<A : Assignment>(
     private val assignmentDao: AssignmentDao<A>,
-    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator<A>
+    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator
 ) : AssignmentCanceller<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
