@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
 import org.springframework.stereotype.Service
-import ru.pashkovske.buratino.assignment.dao.notify.postgre.PostgreContinueNotifierDao
+import ru.pashkovske.buratino.assignment.dao.notify.ContinueNotifierDao
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.service.core.continuation.ContinuousAssignmentContinuer
 import ru.pashkovske.buratino.assignment.service.core.continuation.dispatcher.ContinueDispatcher
@@ -11,7 +11,7 @@ import java.util.UUID
 @Service
 class ContinueNotifyOrchestrator(
     taskScheduler: TaskScheduler,
-    notifierDao: PostgreContinueNotifierDao,
+    notifierDao: ContinueNotifierDao,
     private val continueDispatcher: ContinueDispatcher
 ) : BasicNotifyOrchestrator(
     taskScheduler = taskScheduler,
