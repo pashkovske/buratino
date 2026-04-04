@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
 import org.springframework.stereotype.Service
+import ru.pashkovske.buratino.assignment.dao.notify.postgre.PostgreRefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.service.core.refresh.AssignmentRefresher
@@ -11,9 +12,11 @@ import java.util.UUID
 @Service
 class RefreshNotifyOrchestrator(
     taskScheduler: TaskScheduler,
+    notifierDao: PostgreRefreshNotifierDao,
     private val refreshDispatcher: RefreshDispatcher
 ) : BasicNotifyOrchestrator(
-    taskScheduler = taskScheduler
+    taskScheduler = taskScheduler,
+    notifierDao = notifierDao
 ) {
 
     override fun getSubscriber(assignmentId: UUID): AssignmentSchedulingSubscriber {

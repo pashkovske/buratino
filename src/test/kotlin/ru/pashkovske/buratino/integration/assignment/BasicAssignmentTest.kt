@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.integration.assignment
 import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.util.MultiValueMap
+import ru.pashkovske.buratino.assignment.dao.notify.NotifierDao
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
@@ -35,8 +36,12 @@ abstract class BasicAssignmentTest(
     @Autowired
     protected lateinit var taskScheduler: TaskScheduler
 
-    @BeforeEach
-    fun setUp() {
+    @Autowired
+    private lateinit var assignmentNotifierDaos: List<NotifierDao>
+
+    @AfterEach
+    fun tearDown() {
+        assignmentNotifierDaos.forEach { it.deleteAll() }
         shutdownScheduler()
     }
 
