@@ -14,7 +14,7 @@ import ru.pashkovske.buratino.assignment.controller.mapper.TopPriceAssignmentMap
 import ru.pashkovske.buratino.assignment.service.facade.TopPriceAssignmentExe
 import ru.pashkovske.buratino.assignment.model.cmd.TopPriceAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicNotifierProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
 
@@ -48,8 +48,8 @@ class TopPriceAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             oneStepOver = oneStepOver ?: false,
-            refreshAssignmentSchedulingProperties = body.refreshSchedulingPeriod?.let {
-                PeriodicAssignmentSchedulingProperties(
+            refreshNotifierProperties = body.refreshNotifyPeriod?.let {
+                PeriodicNotifierProperties(
                     period = it
                 )
             }

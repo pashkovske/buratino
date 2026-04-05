@@ -8,7 +8,7 @@ import ru.pashkovske.buratino.common.scheduler.base.model.Tick
 import java.util.UUID
 import java.util.function.Consumer
 
-class AssignmentSchedulingSubscriber(
+class AssignmentNotifierSubscriber(
     private val action: Consumer<UUID>,
     private val assignmentId: UUID
 ): DisposableSubscriber<Tick>, AutoCloseable {
@@ -25,16 +25,16 @@ class AssignmentSchedulingSubscriber(
         try {
             action.accept(assignmentId)
         } catch (e: Exception) {
-            log.error(e) { "Assignment $assignmentId scheduling task failed" }
+            log.error(e) { "Assignment $assignmentId notifier task failed" }
         }
     }
 
     override fun onError(t: Throwable) {
-        log.error(t) { "Assignment $assignmentId scheduling publisher produced error" }
+        log.error(t) { "Assignment $assignmentId notifier publisher produced error" }
     }
 
     override fun onComplete() {
-        log.info { "Assignment $assignmentId scheduling publisher completed" }
+        log.info { "Assignment $assignmentId notifier publisher completed" }
     }
 
     override fun close() {

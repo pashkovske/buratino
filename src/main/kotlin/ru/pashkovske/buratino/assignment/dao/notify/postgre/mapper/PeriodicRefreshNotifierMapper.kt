@@ -2,12 +2,12 @@ package ru.pashkovske.buratino.assignment.dao.notify.postgre.mapper
 
 import org.springframework.stereotype.Component
 import ru.pashkovske.buratino.assignment.dao.notify.postgre.row.PeriodicRefreshNotifierRow
-import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentNotifier
 
 @Component
 class PeriodicRefreshNotifierMapper : PeriodicNotifierMapper<PeriodicRefreshNotifierRow>() {
 
-    override fun toRow(notifier: PeriodicAssignmentScheduling): PeriodicRefreshNotifierRow {
+    override fun toRow(notifier: PeriodicAssignmentNotifier): PeriodicRefreshNotifierRow {
         return PeriodicRefreshNotifierRow(
             id = notifier.id,
             assignmentId = notifier.assignmentId,

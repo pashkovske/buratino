@@ -37,7 +37,7 @@ class ContinuousFractionalSpreadAssignmentContinuer(
             iid = completedAssignment.iid,
             direction = completedAssignment.direction.getOpposite(),
             rate = completedAssignment.rate,
-            refreshAssignmentSchedulingProperties = null
+            refreshNotifierProperties = null
         )
         val nextAssignment: FractionalSpreadAssignment = childAssignmentBuilder.build(nextAssignmentCmd)
         ctx.assignment.child = childAssignmentStarter.start(nextAssignment)

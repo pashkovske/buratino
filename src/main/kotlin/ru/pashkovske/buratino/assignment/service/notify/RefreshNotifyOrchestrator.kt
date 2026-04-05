@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.service.notify
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.core.Assignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifierSubscriber
 import ru.pashkovske.buratino.assignment.service.core.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.service.core.refresh.dispatcher.RefreshDispatcher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
@@ -19,9 +19,9 @@ class RefreshNotifyOrchestrator(
     notifierDao = notifierDao
 ) {
 
-    override fun getSubscriber(assignmentId: UUID): AssignmentSchedulingSubscriber {
+    override fun getSubscriber(assignmentId: UUID): AssignmentNotifierSubscriber {
         val refresher: AssignmentRefresher<out Assignment> = refreshDispatcher.getRefresher(assignmentId)
-        return AssignmentSchedulingSubscriber(
+        return AssignmentNotifierSubscriber(
             action = refresher::refresh,
             assignmentId = assignmentId
         )

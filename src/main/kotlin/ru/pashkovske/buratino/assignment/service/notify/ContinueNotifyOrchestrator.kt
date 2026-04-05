@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.service.notify
 
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.dao.notify.ContinueNotifierDao
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifierSubscriber
 import ru.pashkovske.buratino.assignment.service.core.continuation.ContinuousAssignmentContinuer
 import ru.pashkovske.buratino.assignment.service.core.continuation.dispatcher.ContinueDispatcher
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
@@ -18,9 +18,9 @@ class ContinueNotifyOrchestrator(
     notifierDao = notifierDao
 ) {
 
-    override fun getSubscriber(assignmentId: UUID): AssignmentSchedulingSubscriber {
+    override fun getSubscriber(assignmentId: UUID): AssignmentNotifierSubscriber {
         val continuer: ContinuousAssignmentContinuer<*> = continueDispatcher.getContinuer(assignmentId)
-        return AssignmentSchedulingSubscriber(
+        return AssignmentNotifierSubscriber(
             action = continuer::continueAssignment,
             assignmentId = assignmentId
         )

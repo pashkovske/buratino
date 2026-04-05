@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.controller.dto
 
 import ru.pashkovske.buratino.assignment.controller.dto.limit.order.OrderInfoDto
-import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentSchedulingDto
+import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentNotifierDto
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
 import ru.pashkovske.buratino.instrument.model.InstrumentId
@@ -12,7 +12,7 @@ class TopPriceAssignmentDto(
     id: UUID,
     iid: InstrumentId,
     state: AssignmentState,
-    refreshAssignmentScheduling: AssignmentSchedulingDto?,
+    refreshNotifier: AssignmentNotifierDto?,
     direction: OrderDirection,
     info: OrderInfoDto,
     val oneStepOver: Boolean
@@ -20,7 +20,7 @@ class TopPriceAssignmentDto(
     id = id,
     iid = iid,
     state = state,
-    refreshAssignmentScheduling = refreshAssignmentScheduling,
+    refreshNotifier = refreshNotifier,
     direction = direction,
     info = info
 )

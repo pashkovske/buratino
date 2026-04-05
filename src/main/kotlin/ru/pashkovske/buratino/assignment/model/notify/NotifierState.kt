@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.model.notify
 
-enum class SchedulingState {
+enum class NotifierState {
     QUEUED,
     ACTIVE,
     COMPLETED

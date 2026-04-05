@@ -2,12 +2,12 @@ package ru.pashkovske.buratino.assignment.service.notify
 
 import jakarta.annotation.PostConstruct
 import ru.pashkovske.buratino.assignment.dao.notify.NotifierDao
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
-import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
-import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
-import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifierSubscriber
+import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentNotifier
+import ru.pashkovske.buratino.assignment.model.notify.NotifierState
+import ru.pashkovske.buratino.assignment.model.notify.properties.NotifierProperties
+import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicNotifierProperties
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.common.scheduler.base.model.Tick
 import java.time.Instant
@@ -21,13 +21,13 @@ abstract class BasicNotifyOrchestrator(
     private val stateMachine: AssignmentNotifierStateMachine = AssignmentNotifierStateMachine
 
     @PostConstruct
-    fun recoverNotifiers(): List<AssignmentScheduling> {
-        val recoveredNotifiers: List<AssignmentScheduling> = notifierDao.findByState(SchedulingState.ACTIVE)
+    fun recoverNotifiers(): List<AssignmentNotifier> {
+        val recoveredNotifiers: List<AssignmentNotifier> = notifierDao.findByState(NotifierState.ACTIVE)
         recoveredNotifiers
-            .forEach { notifier: AssignmentScheduling ->
-                val subscriber: AssignmentSchedulingSubscriber = getSubscriber(notifier.assignmentId)
+            .forEach { notifier: AssignmentNotifier ->
+                val subscriber: AssignmentNotifierSubscriber = getSubscriber(notifier.assignmentId)
                 val taskId: UUID = when (notifier) {
-                    is PeriodicAssignmentScheduling -> startPeriodic(notifier, subscriber)
+                    is PeriodicAssignmentNotifier -> startPeriodic(notifier, subscriber)
                 }
                 notifier.taskId = taskId
                 notifierDao.update(notifier)
@@ -41,19 +41,19 @@ abstract class BasicNotifyOrchestrator(
         return recoveredNotifiers
     }
 
-    override fun get(id: UUID?): AssignmentScheduling? {
+    override fun get(id: UUID?): AssignmentNotifier? {
         if (id == null) return null
         return notifierDao.get(id)
     }
 
     override fun build(
-        properties: AssignmentSchedulingProperties?,
+        properties: NotifierProperties?,
         assignmentId: UUID
-    ): AssignmentScheduling? {
+    ): AssignmentNotifier? {
         return when (properties) {
             null -> null
-            is PeriodicAssignmentSchedulingProperties -> {
-                PeriodicAssignmentScheduling(
+            is PeriodicNotifierProperties -> {
+                PeriodicAssignmentNotifier(
                     id = UUID.randomUUID(),
                     assignmentId = assignmentId,
                     properties = properties,
@@ -64,12 +64,12 @@ abstract class BasicNotifyOrchestrator(
         }
     }
 
-    abstract fun getSubscriber(assignmentId: UUID): AssignmentSchedulingSubscriber
+    abstract fun getSubscriber(assignmentId: UUID): AssignmentNotifierSubscriber
 
-    override fun register(notifier: AssignmentScheduling?): UUID? {
+    override fun register(notifier: AssignmentNotifier?): UUID? {
         return when (notifier) {
             null -> null
-            is PeriodicAssignmentScheduling -> {
+            is PeriodicAssignmentNotifier -> {
                 notifierDao.create(notifier)
                 notifier.id
             }
@@ -80,10 +80,10 @@ abstract class BasicNotifyOrchestrator(
         if (id == null) {
             return false
         }
-        val notifier: AssignmentScheduling = notifierDao.get(id)
-        val subscriber: AssignmentSchedulingSubscriber = getSubscriber(notifier.assignmentId)
+        val notifier: AssignmentNotifier = notifierDao.get(id)
+        val subscriber: AssignmentNotifierSubscriber = getSubscriber(notifier.assignmentId)
         val taskId: UUID = when (notifier) {
-            is PeriodicAssignmentScheduling -> startPeriodic(notifier, subscriber)
+            is PeriodicAssignmentNotifier -> startPeriodic(notifier, subscriber)
         }
         notifier.taskId = taskId
         stateMachine.toActive(notifier)
@@ -92,8 +92,8 @@ abstract class BasicNotifyOrchestrator(
     }
 
     private fun startPeriodic(
-        notifier: PeriodicAssignmentScheduling,
-        subscriber: AssignmentSchedulingSubscriber
+        notifier: PeriodicAssignmentNotifier,
+        subscriber: AssignmentNotifierSubscriber
     ): UUID {
         val taskId: UUID = taskScheduler.startNewPeriodic(notifier.properties.period)
         taskScheduler.subscribePeriodic(taskId, subscriber)
@@ -102,7 +102,7 @@ abstract class BasicNotifyOrchestrator(
 
     override fun startForAssignment(assignmentId: UUID): List<UUID> {
         return notifierDao.findByAssignmentId(assignmentId)
-            .map { notifier: AssignmentScheduling ->
+            .map { notifier: AssignmentNotifier ->
                 start(notifier.id)
                 notifier.id
             }
@@ -112,7 +112,7 @@ abstract class BasicNotifyOrchestrator(
         if (id == null) {
             return false
         }
-        val notifier: AssignmentScheduling = notifierDao.get(id)
+        val notifier: AssignmentNotifier = notifierDao.get(id)
         if (!stateMachine.canComplete(notifier.state)) {
             return false
         }
@@ -125,7 +125,7 @@ abstract class BasicNotifyOrchestrator(
 
     override fun stopForAssignment(assignmentId: UUID): List<UUID> {
         return notifierDao.findByAssignmentId(assignmentId)
-            .filter { notifier: AssignmentScheduling -> stop(notifier.id) }
+            .filter { notifier: AssignmentNotifier -> stop(notifier.id) }
             .map { it.id }
     }
 

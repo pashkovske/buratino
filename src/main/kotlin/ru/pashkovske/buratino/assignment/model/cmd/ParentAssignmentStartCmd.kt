@@ -2,7 +2,7 @@ package ru.pashkovske.buratino.assignment.model.cmd
 
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ParentAssignment
-import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.model.notify.properties.NotifierProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 
 abstract class ParentAssignmentStartCmd<
@@ -10,8 +10,8 @@ abstract class ParentAssignmentStartCmd<
     ChildA : Assignment
     >(
     iid: InstrumentId,
-    refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?
+    refreshNotifierProperties: NotifierProperties?
 ) : AssignmentStartCmd<ParentA>(
     iid = iid,
-    refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties
+    refreshNotifierProperties = refreshNotifierProperties
 )

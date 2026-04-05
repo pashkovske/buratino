@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import ru.pashkovske.buratino.assignment.controller.dto.ContinuousFractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.assignment.controller.dto.TopPriceAssignmentDto
-import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentSchedulingDto
+import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentNotifierDto
 import ru.pashkovske.buratino.assignment.dao.core.postgre.ContinuousFractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.dao.core.postgre.FractionalSpreadAssignmentDao
 import ru.pashkovske.buratino.assignment.dao.core.postgre.TopPriceAssignmentDao
@@ -30,8 +30,8 @@ import ru.pashkovske.buratino.assignment.model.cmd.ContinuousFractionalSpreadAss
 import ru.pashkovske.buratino.assignment.model.cmd.TopPriceAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
+import ru.pashkovske.buratino.assignment.model.notify.NotifierState
 import ru.pashkovske.buratino.assignment.service.facade.AssignmentExe
 import ru.pashkovske.buratino.assignment.service.notify.ContinueNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
@@ -101,10 +101,10 @@ class RecoverAssignmentsTest(
     }
 
     @Test
-    fun `recoverAssignments should recover refresh scheduling for IN_PROGRESS assignments`() {
+    fun `recoverAssignments should recover refresh notifier for IN_PROGRESS assignments`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
 
-        // Create assignment 1: IN_PROGRESS with refresh scheduling
+        // Create assignment 1: IN_PROGRESS with refresh notifier
         val createResult1: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
@@ -113,7 +113,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"refreshSchedulingPeriod\": \"PT10M\"}")
+                .content("{\"refreshNotifyPeriod\": \"PT10M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -121,7 +121,7 @@ class RecoverAssignmentsTest(
         val assignment1Id: String = objectMapper.readTree(createResult1.response.contentAsString)
             .get("id").asText()
 
-        // Create assignment 2: IN_PROGRESS without refresh scheduling
+        // Create assignment 2: IN_PROGRESS without refresh notifier
         val createResult2: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
@@ -138,7 +138,7 @@ class RecoverAssignmentsTest(
         val assignment2Id: String = objectMapper.readTree(createResult2.response.contentAsString)
             .get("id").asText()
 
-        // Create assignment 3: IN_PROGRESS with refresh scheduling, then cancel it
+        // Create assignment 3: IN_PROGRESS with refresh notifier, then cancel it
         val createResult3: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
@@ -147,7 +147,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"refreshSchedulingPeriod\": \"PT15M\"}")
+                .content("{\"refreshNotifyPeriod\": \"PT15M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -176,9 +176,9 @@ class RecoverAssignmentsTest(
             TopPriceAssignmentDto::class.java
         )
         val assignment1BeforeRestart: TopPriceAssignment = topPriceAssignmentDao.get(UUID.fromString(assignment1Id))
-        val schedulingTaskIdBeforeRestart: UUID? = assignmentDto1BeforeRestart.refreshAssignmentScheduling?.taskId
-        assertNotNull(schedulingTaskIdBeforeRestart)
-        assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
+        val notifierTaskIdBeforeRestart: UUID? = assignmentDto1BeforeRestart.refreshNotifier?.taskId
+        assertNotNull(notifierTaskIdBeforeRestart)
+        assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(notifierTaskIdBeforeRestart))
 
         taskScheduler.shutdown()
         assertEquals(0, taskScheduler.getPeriodicScheduledTasks().size)
@@ -194,9 +194,9 @@ class RecoverAssignmentsTest(
             getResult2.response.contentAsString,
             TopPriceAssignmentDto::class.java
         )
-        assertNull(assignmentDto2BeforeRestart.refreshAssignmentScheduling)
+        assertNull(assignmentDto2BeforeRestart.refreshNotifier)
 
-        val recoveredNotifiers: List<AssignmentScheduling> = refreshNotifyOrchestrator.recoverNotifiers()
+        val recoveredNotifiers: List<AssignmentNotifier> = refreshNotifyOrchestrator.recoverNotifiers()
 
         assertEquals(1, recoveredNotifiers.size)
         assertEquals(
@@ -218,12 +218,12 @@ class RecoverAssignmentsTest(
             getResult1After.response.contentAsString,
             TopPriceAssignmentDto::class.java
         )
-        val assignmentSchedulingAfterRecover: AssignmentSchedulingDto? = assignmentDto1AfterRecover.refreshAssignmentScheduling
-        assertNotNull(assignmentSchedulingAfterRecover)
-        assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
+        val assignmentNotifierAfterRecover: AssignmentNotifierDto? = assignmentDto1AfterRecover.refreshNotifier
+        assertNotNull(assignmentNotifierAfterRecover)
+        assertTrue(notifierTaskIdBeforeRestart != assignmentNotifierAfterRecover!!.taskId)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignmentSchedulingAfterRecover.taskId
+            assignmentNotifierAfterRecover.taskId
         )
 
         val getResult2After: MvcResult = mockMvc.perform(
@@ -237,7 +237,7 @@ class RecoverAssignmentsTest(
             getResult2After.response.contentAsString,
             TopPriceAssignmentDto::class.java
         )
-        assertNull(assignmentDto2AfterRecover.refreshAssignmentScheduling)
+        assertNull(assignmentDto2AfterRecover.refreshNotifier)
         assertEquals(AssignmentState.IN_PROGRESS, assignmentDto2AfterRecover.state)
 
         val getResult3After: MvcResult = mockMvc.perform(
@@ -251,15 +251,15 @@ class RecoverAssignmentsTest(
             getResult3After.response.contentAsString,
             TopPriceAssignmentDto::class.java
         )
-        assertNotNull(assignmentDto3AfterRecover.refreshAssignmentScheduling)
-        assertEquals(SchedulingState.COMPLETED, assignmentDto3AfterRecover.refreshAssignmentScheduling!!.state)
+        assertNotNull(assignmentDto3AfterRecover.refreshNotifier)
+        assertEquals(NotifierState.COMPLETED, assignmentDto3AfterRecover.refreshNotifier!!.state)
     }
 
     @Test
-    fun `recoverAssignments should recover continue scheduling for IN_PROGRESS continuous assignments`() {
+    fun `recoverAssignments should recover continue notifier for IN_PROGRESS continuous assignments`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
 
-        // Create assignment 1: IN_PROGRESS with continue scheduling
+        // Create assignment 1: IN_PROGRESS with continue notifier
         val createResult1: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
@@ -268,7 +268,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"rate\": 0.007, \"continueSchedulingPeriod\": \"PT10M\"}")
+                .content("{\"rate\": 0.007, \"continueNotifyPeriod\": \"PT10M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -276,7 +276,7 @@ class RecoverAssignmentsTest(
         val assignment1Id: String = objectMapper.readTree(createResult1.response.contentAsString)
             .get("id").asText()
 
-        // Create assignment 2: IN_PROGRESS without continue scheduling
+        // Create assignment 2: IN_PROGRESS without continue notifier
         val createResult2: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
@@ -293,7 +293,7 @@ class RecoverAssignmentsTest(
         val assignment2Id: String = objectMapper.readTree(createResult2.response.contentAsString)
             .get("id").asText()
 
-        // Create assignment 3: IN_PROGRESS with continue scheduling, then cancel it
+        // Create assignment 3: IN_PROGRESS with continue notifier, then cancel it
         val createResult3: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
                 .post(
@@ -302,7 +302,7 @@ class RecoverAssignmentsTest(
                     "sell"
                 )
                 .header("X-API-KEY", "test-api-key")
-                .content("{\"rate\": 0.007, \"continueSchedulingPeriod\": \"PT15M\"}")
+                .content("{\"rate\": 0.007, \"continueNotifyPeriod\": \"PT15M\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -332,9 +332,9 @@ class RecoverAssignmentsTest(
         )
         val assignment1BeforeRestart: ContinuousFractionalSpreadAssignment =
             continuousFractionalSpreadAssignmentDao.get(UUID.fromString(assignment1Id))
-        val schedulingTaskIdBeforeRestart: UUID? = assignmentDto1BeforeRestart.continueAssignmentScheduling?.taskId
-        assertNotNull(schedulingTaskIdBeforeRestart)
-        assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
+        val notifierTaskIdBeforeRestart: UUID? = assignmentDto1BeforeRestart.continueNotifier?.taskId
+        assertNotNull(notifierTaskIdBeforeRestart)
+        assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(notifierTaskIdBeforeRestart))
 
         taskScheduler.shutdown()
         assertEquals(0, taskScheduler.getPeriodicScheduledTasks().size)
@@ -350,9 +350,9 @@ class RecoverAssignmentsTest(
             getResult2.response.contentAsString,
             ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        assertNull(assignmentDto2BeforeRestart.continueAssignmentScheduling)
+        assertNull(assignmentDto2BeforeRestart.continueNotifier)
 
-        val recoveredNotifiers: List<AssignmentScheduling> = continueNotifyOrchestrator.recoverNotifiers()
+        val recoveredNotifiers: List<AssignmentNotifier> = continueNotifyOrchestrator.recoverNotifiers()
 
         assertEquals(1, recoveredNotifiers.size)
         assertEquals(
@@ -374,12 +374,12 @@ class RecoverAssignmentsTest(
             getResult1After.response.contentAsString,
             ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        val assignmentSchedulingAfterRecover: AssignmentSchedulingDto? = assignmentDto1AfterRecover.continueAssignmentScheduling
-        assertNotNull(assignmentSchedulingAfterRecover)
-        assertTrue(schedulingTaskIdBeforeRestart != assignmentSchedulingAfterRecover!!.taskId)
+        val assignmentNotifierAfterRecover: AssignmentNotifierDto? = assignmentDto1AfterRecover.continueNotifier
+        assertNotNull(assignmentNotifierAfterRecover)
+        assertTrue(notifierTaskIdBeforeRestart != assignmentNotifierAfterRecover!!.taskId)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignmentSchedulingAfterRecover.taskId
+            assignmentNotifierAfterRecover.taskId
         )
 
         val getResult2After: MvcResult = mockMvc.perform(
@@ -393,7 +393,7 @@ class RecoverAssignmentsTest(
             getResult2After.response.contentAsString,
             ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        assertNull(assignmentDto2AfterRecover.continueAssignmentScheduling)
+        assertNull(assignmentDto2AfterRecover.continueNotifier)
         assertEquals(AssignmentState.IN_PROGRESS, assignmentDto2AfterRecover.state)
 
         val getResult3After: MvcResult = mockMvc.perform(
@@ -407,7 +407,7 @@ class RecoverAssignmentsTest(
             getResult3After.response.contentAsString,
             ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        assertNotNull(assignmentDto3AfterRecover.continueAssignmentScheduling)
-        assertEquals(SchedulingState.COMPLETED, assignmentDto3AfterRecover.continueAssignmentScheduling!!.state)
+        assertNotNull(assignmentDto3AfterRecover.continueNotifier)
+        assertEquals(NotifierState.COMPLETED, assignmentDto3AfterRecover.continueNotifier!!.state)
     }
 }

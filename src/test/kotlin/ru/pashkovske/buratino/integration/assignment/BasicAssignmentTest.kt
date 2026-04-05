@@ -42,7 +42,7 @@ abstract class BasicAssignmentTest(
     @AfterEach
     fun tearDown() {
         assignmentNotifierDaos.forEach { it.deleteAll() }
-        shutdownScheduler()
+        taskScheduler.shutdown()
     }
 
     protected fun assertAllAssignmentsCancelled(
@@ -189,11 +189,5 @@ abstract class BasicAssignmentTest(
             .andExpect(jsonPath("$.iid.id").value(iid.id))
             .andExpect(jsonPath("$.id").isString())
             .andExpect(jsonPath("$.state").value("IN_PROGRESS"))
-    }
-
-    private fun shutdownScheduler() {
-        taskScheduler.getPeriodicScheduledTasks().toList().forEach { taskId ->
-            taskScheduler.stopPeriodic(taskId)
-        }
     }
 }

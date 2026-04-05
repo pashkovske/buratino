@@ -3,7 +3,7 @@ package ru.pashkovske.buratino.assignment.service.core.build
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
 import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
 import java.util.UUID
 
@@ -23,8 +23,8 @@ abstract class BasicAssignmentBuilder<
 
     final override fun build(cmd: Cmd): A {
         val assignment: A = preBuild(cmd)
-        val notifier: AssignmentScheduling? = refreshNotifyOrchestrator.build(
-            properties = cmd.refreshAssignmentSchedulingProperties,
+        val notifier: AssignmentNotifier? = refreshNotifyOrchestrator.build(
+            properties = cmd.refreshNotifierProperties,
             assignmentId = assignment.id
         )
         val notifierId: UUID? = refreshNotifyOrchestrator.register(notifier)

@@ -1,7 +1,7 @@
 package ru.pashkovske.buratino.assignment.dao.notify.postgre.row
 
 import org.springframework.data.relational.core.mapping.Table
-import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
+import ru.pashkovske.buratino.assignment.model.notify.NotifierState
 import java.util.UUID
 
 @Table("notify.periodic_refresh")
@@ -9,7 +9,7 @@ data class PeriodicRefreshNotifierRow(
     override val id: UUID,
     override val assignmentId: UUID,
     override val taskId: UUID?,
-    override val state: SchedulingState,
+    override val state: NotifierState,
     override val periodNanos: Long
 ) : PeriodicNotifierRow(
     id = id,

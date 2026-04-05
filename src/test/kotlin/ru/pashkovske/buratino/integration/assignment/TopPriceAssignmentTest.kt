@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.dao.core.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
@@ -122,7 +122,7 @@ class TopPriceAssignmentTest(
     }
 
     @Test
-    fun `create with refresh schedule and cancel sell share`()  {
+    fun `create with refresh notifier and cancel sell share`()  {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val oneStepOver = true
@@ -132,7 +132,7 @@ class TopPriceAssignmentTest(
             path = "/assignment/top-price/{instrumentId}/start/{direction}",
             iid = iid,
             direction = direction,
-            content = "{\"refreshSchedulingPeriod\": \"PT10M\"}",
+            content = "{\"refreshNotifyPeriod\": \"PT10M\"}",
             params = mapOf("oneStepOver" to oneStepOver.toString())
         ).andReturn()
 
@@ -141,7 +141,7 @@ class TopPriceAssignmentTest(
         val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
         val refreshNotifierId: UUID? = assignment.getRefreshNotifierId()
         assertNotNull(refreshNotifierId)
-        val refreshNotifier: AssignmentScheduling = refreshNotifierDao.get(refreshNotifierId!!)
+        val refreshNotifier: AssignmentNotifier = refreshNotifierDao.get(refreshNotifierId!!)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
             refreshNotifier.taskId

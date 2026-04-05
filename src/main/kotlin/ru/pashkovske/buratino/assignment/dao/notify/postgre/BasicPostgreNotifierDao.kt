@@ -7,9 +7,9 @@ import ru.pashkovske.buratino.assignment.dao.notify.postgre.mapper.PeriodicNotif
 import ru.pashkovske.buratino.assignment.dao.notify.postgre.r2dbc.PeriodicNotifierRepo
 import ru.pashkovske.buratino.assignment.dao.notify.postgre.row.PeriodicNotifierRow
 import ru.pashkovske.buratino.assignment.exception.AssignmentNotifyException
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
+import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentNotifier
+import ru.pashkovske.buratino.assignment.model.notify.NotifierState
 import java.util.UUID
 
 @DependsOn("flywayInitializer")
@@ -19,7 +19,7 @@ abstract class BasicPostgreNotifierDao<Row : PeriodicNotifierRow>(
     private val r2dbcEntityTemplate: R2dbcEntityTemplate
 ) : NotifierDao {
 
-    override fun get(id: UUID): AssignmentScheduling {
+    override fun get(id: UUID): AssignmentNotifier {
         return find(id) ?: throw AssignmentNotifyException(
             message = "Continue notifier not found in PostgreSQL",
             notifierId = id,
@@ -27,37 +27,37 @@ abstract class BasicPostgreNotifierDao<Row : PeriodicNotifierRow>(
         )
     }
 
-    override fun find(id: UUID): AssignmentScheduling? {
+    override fun find(id: UUID): AssignmentNotifier? {
         return repository.findById(id)
             .map(mapper::toNotifier)
             .block()
     }
 
-    override fun findByAssignmentId(assignmentId: UUID): List<AssignmentScheduling> {
+    override fun findByAssignmentId(assignmentId: UUID): List<AssignmentNotifier> {
         return repository.findByAssignmentId(assignmentId)
             .map(mapper::toNotifier)
             .collectList()
             .block() ?: emptyList()
     }
 
-    override fun findByState(state: SchedulingState): List<AssignmentScheduling> {
+    override fun findByState(state: NotifierState): List<AssignmentNotifier> {
         return repository.findByState(state.toString())
             .map(mapper::toNotifier)
             .collectList()
             .block() ?: emptyList()
     }
 
-    override fun create(notifier: AssignmentScheduling) {
+    override fun create(notifier: AssignmentNotifier) {
         when (notifier) {
-            is PeriodicAssignmentScheduling ->
+            is PeriodicAssignmentNotifier ->
                 r2dbcEntityTemplate.insert(mapper.toRow(notifier))
                     .block()
         }
     }
 
-    override fun update(notifier: AssignmentScheduling) {
+    override fun update(notifier: AssignmentNotifier) {
         when (notifier) {
-            is PeriodicAssignmentScheduling ->
+            is PeriodicAssignmentNotifier ->
                 r2dbcEntityTemplate.update(mapper.toRow(notifier))
                     .block()
         }

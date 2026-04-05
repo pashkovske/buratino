@@ -32,7 +32,7 @@ class ContinuousFractionalSpreadAssignmentBuilder(
             iid = cmd.iid,
             direction = cmd.direction,
             rate = cmd.rate,
-            refreshAssignmentSchedulingProperties = null
+            refreshNotifierProperties = null
         )
     }
 

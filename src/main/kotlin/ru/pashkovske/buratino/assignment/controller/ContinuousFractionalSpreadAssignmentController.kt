@@ -15,7 +15,7 @@ import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.cmd.ContinuousFractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicNotifierProperties
 import ru.pashkovske.buratino.assignment.service.facade.ContinuousFractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -58,13 +58,13 @@ class ContinuousFractionalSpreadAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             rate = body.rate,
-            continueAssignmentSchedulingProperties = body.continueSchedulingPeriod?.let {
-                PeriodicAssignmentSchedulingProperties(
+            continueNotifierProperties = body.continueNotifyPeriod?.let {
+                PeriodicNotifierProperties(
                     period = it
                 )
             },
-            refreshAssignmentSchedulingProperties = body.refreshSchedulingPeriod?.let {
-                PeriodicAssignmentSchedulingProperties(
+            refreshNotifierProperties = body.refreshNotifyPeriod?.let {
+                PeriodicNotifierProperties(
                     period = it
                 )
             }

@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.controller.dto
 
-import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentSchedulingDto
+import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentNotifierDto
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ParentAssignment
@@ -15,11 +15,11 @@ abstract class ParentAssignmentDto<
     id: UUID,
     iid: InstrumentId,
     state: AssignmentState,
-    refreshAssignmentScheduling: AssignmentSchedulingDto?,
+    refreshNotifier: AssignmentNotifierDto?,
     val child: ChildDto
 ) : BasicAssignmentDto<ParentA>(
     id = id,
     iid = iid,
     state = state,
-    refreshAssignmentScheduling = refreshAssignmentScheduling
+    refreshNotifier = refreshNotifier
 )

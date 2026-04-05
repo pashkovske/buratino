@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     property = "type"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = PeriodicAssignmentSchedulingPropertiesDto::class, name = "PERIODIC")
+    JsonSubTypes.Type(value = PeriodicNotifierPropertiesDto::class, name = "PERIODIC")
 )
-sealed class AssignmentSchedulingPropertiesDto(
-    val type: AssignmentSchedulingType
+sealed class NotifierPropertiesDto(
+    val type: AssignmentNotifierType
 )

@@ -11,7 +11,7 @@ import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.service.facade.AssignmentExe
 import ru.pashkovske.buratino.assignment.model.core.Assignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
 import java.util.UUID
 
 @Suppress("unused")
@@ -26,7 +26,7 @@ abstract class BasicAssignmentController<
 ) {
     protected abstract fun toDto(assignment: A): Dto
 
-    protected fun getRefreshNotifier(assignment: A): AssignmentScheduling? {
+    protected fun getRefreshNotifier(assignment: A): AssignmentNotifier? {
         val notifierId: UUID = assignment.getRefreshNotifierId() ?: return null
         return refreshNotifierDao.get(notifierId)
     }

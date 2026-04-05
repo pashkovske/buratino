@@ -20,7 +20,7 @@ import ru.pashkovske.buratino.assignment.dao.core.postgre.FractionalSpreadAssign
 import ru.pashkovske.buratino.assignment.dao.notify.ContinueNotifierDao
 import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
@@ -163,7 +163,7 @@ class ContinuousFractionalSpreadAssignmentTest(
     }
 
     @Test
-    fun `create with continue schedule and cancel sell`() {
+    fun `create with continue notifier and cancel sell`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val rate = 0.007
@@ -176,7 +176,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             content = """
                 {
                     "rate": $rate,
-                    "continueSchedulingPeriod": "PT10M"
+                    "continueNotifyPeriod": "PT10M"
                 }
             """.trimIndent(),
             params = null
@@ -187,7 +187,7 @@ class ContinuousFractionalSpreadAssignmentTest(
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
         val continueNotifierId: UUID? = assignment.getContinueNotifierId()
         assertNotNull(continueNotifierId)
-        val continueNotifier: AssignmentScheduling = continueNotifierDao.get(continueNotifierId!!)
+        val continueNotifier: AssignmentNotifier = continueNotifierDao.get(continueNotifierId!!)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
             continueNotifier.taskId
@@ -202,7 +202,7 @@ class ContinuousFractionalSpreadAssignmentTest(
     }
 
     @Test
-    fun `create with refresh schedule and cancel sell`() {
+    fun `create with refresh notifier and cancel sell`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val rate = 0.007
@@ -215,7 +215,7 @@ class ContinuousFractionalSpreadAssignmentTest(
             content = """
                 {
                     "rate": $rate,
-                    "refreshSchedulingPeriod": "PT10M"
+                    "refreshNotifyPeriod": "PT10M"
                 }
             """.trimIndent(),
             params = null
@@ -225,7 +225,7 @@ class ContinuousFractionalSpreadAssignmentTest(
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
         val refreshNotifierId: UUID? = assignment.getRefreshNotifierId()
         assertNotNull(refreshNotifierId)
-        val refreshNotifier: AssignmentScheduling = refreshNotifierDao.get(refreshNotifierId!!)
+        val refreshNotifier: AssignmentNotifier = refreshNotifierDao.get(refreshNotifierId!!)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
             refreshNotifier.taskId

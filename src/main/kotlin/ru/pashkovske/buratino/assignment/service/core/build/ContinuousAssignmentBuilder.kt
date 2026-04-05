@@ -5,7 +5,7 @@ import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.cmd.ContinuousAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ContinuousAssignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
 import ru.pashkovske.buratino.assignment.service.notify.ContinueNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
 import java.util.UUID
@@ -27,8 +27,8 @@ abstract class ContinuousAssignmentBuilder<
 ) {
 
     override fun postBuildParent(assignment: ContinuousA, cmd: ContinuousCmd) {
-        val notifier: AssignmentScheduling? = continueNotifyOrchestrator.build(
-            properties = cmd.continueAssignmentSchedulingProperties,
+        val notifier: AssignmentNotifier? = continueNotifyOrchestrator.build(
+            properties = cmd.continueNotifierProperties,
             assignmentId = assignment.id
         )
         val notifierId: UUID? = continueNotifyOrchestrator.register(notifier)

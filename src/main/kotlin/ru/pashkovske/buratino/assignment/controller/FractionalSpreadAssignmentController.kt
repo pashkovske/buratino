@@ -12,7 +12,7 @@ import ru.pashkovske.buratino.assignment.controller.dto.start.StartFractionalSpr
 import ru.pashkovske.buratino.assignment.controller.mapper.FractionalSpreadAssignmentMapper
 import ru.pashkovske.buratino.assignment.model.cmd.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicNotifierProperties
 import ru.pashkovske.buratino.assignment.service.facade.FractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -50,8 +50,8 @@ class FractionalSpreadAssignmentController(
             iid = InstrumentId(id = instrumentId),
             direction = OrderDirection.fromString(direction),
             rate = body.rate,
-            refreshAssignmentSchedulingProperties = body.refreshSchedulingPeriod?.let {
-                PeriodicAssignmentSchedulingProperties(
+            refreshNotifierProperties = body.refreshNotifyPeriod?.let {
+                PeriodicNotifierProperties(
                     period = it
                 )
             }

@@ -1,18 +1,18 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
 import ru.pashkovske.buratino.assignment.exception.AssignmentNotifyException
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
+import ru.pashkovske.buratino.assignment.model.notify.NotifierState
 
 object AssignmentNotifierStateMachine {
 
-    val initialState: SchedulingState = SchedulingState.QUEUED
+    val initialState: NotifierState = NotifierState.QUEUED
 
-    fun canActive(state: SchedulingState): Boolean {
-        return state == SchedulingState.QUEUED
+    fun canActive(state: NotifierState): Boolean {
+        return state == NotifierState.QUEUED
     }
 
-    fun toActive(notifier: AssignmentScheduling) {
+    fun toActive(notifier: AssignmentNotifier) {
         if (!canActive(notifier.state)) {
             throw AssignmentNotifyException(
                 message = "Cannot transition from ${notifier.state} to ACTIVE",
@@ -20,14 +20,14 @@ object AssignmentNotifierStateMachine {
                 assignmentId = notifier.assignmentId
             )
         }
-        notifier.state = SchedulingState.ACTIVE
+        notifier.state = NotifierState.ACTIVE
     }
 
-    fun canComplete(state: SchedulingState): Boolean {
-        return state == SchedulingState.ACTIVE
+    fun canComplete(state: NotifierState): Boolean {
+        return state == NotifierState.ACTIVE
     }
 
-    fun toComplete(notifier: AssignmentScheduling) {
+    fun toComplete(notifier: AssignmentNotifier) {
         if (!canComplete(notifier.state)) {
             throw AssignmentNotifyException(
                 message = "Cannot transition from ${notifier.state} to COMPLETED",
@@ -35,6 +35,6 @@ object AssignmentNotifierStateMachine {
                 assignmentId = notifier.assignmentId
             )
         }
-        notifier.state = SchedulingState.COMPLETED
+        notifier.state = NotifierState.COMPLETED
     }
 }

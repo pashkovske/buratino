@@ -1,6 +1,6 @@
 package ru.pashkovske.buratino.assignment.controller.dto
 
-import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentSchedulingDto
+import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentNotifierDto
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
@@ -11,9 +11,9 @@ class ContinuousFractionalSpreadAssignmentDto(
     id: UUID,
     iid: InstrumentId,
     state: AssignmentState,
-    refreshAssignmentScheduling: AssignmentSchedulingDto?,
+    refreshNotifier: AssignmentNotifierDto?,
     child: FractionalSpreadAssignmentDto,
-    continueAssignmentScheduling: AssignmentSchedulingDto?
+    continueNotifier: AssignmentNotifierDto?
 ) : ContinuousAssignmentDto<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment,
@@ -22,7 +22,7 @@ class ContinuousFractionalSpreadAssignmentDto(
     id = id,
     iid = iid,
     state = state,
-    refreshAssignmentScheduling = refreshAssignmentScheduling,
+    refreshNotifier = refreshNotifier,
     child = child,
-    continueAssignmentScheduling = continueAssignmentScheduling
+    continueNotifier = continueNotifier
 )

@@ -10,7 +10,7 @@ import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.cmd.ContinuousAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ContinuousAssignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
 import ru.pashkovske.buratino.assignment.service.facade.ContinuousAssignmentExe
 import java.util.UUID
 
@@ -35,7 +35,7 @@ abstract class ContinuousAssignmentController<
     refreshNotifierDao = refreshNotifierDao
 ) {
 
-    protected fun getContinueNotifier(assignment: ContinuousA): AssignmentScheduling? {
+    protected fun getContinueNotifier(assignment: ContinuousA): AssignmentNotifier? {
         val notifierId: UUID = assignment.getContinueNotifierId() ?: return null
         return continueNotifierDao.get(notifierId)
     }

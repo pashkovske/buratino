@@ -1,19 +1,19 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
+import ru.pashkovske.buratino.assignment.model.notify.properties.NotifierProperties
 import java.util.UUID
 
 interface NotifyOrchestrator {
 
-    fun get(id: UUID?): AssignmentScheduling?
+    fun get(id: UUID?): AssignmentNotifier?
 
     fun build(
-        properties: AssignmentSchedulingProperties?,
+        properties: NotifierProperties?,
         assignmentId: UUID
-    ): AssignmentScheduling?
+    ): AssignmentNotifier?
 
-    fun register(notifier: AssignmentScheduling?): UUID?
+    fun register(notifier: AssignmentNotifier?): UUID?
 
     /**
      * If scheduling task registered and not running, starts it.
