@@ -4,9 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
 import ru.pashkovske.buratino.order.model.OrderDirection
-import java.time.Duration
 import java.util.UUID
 
 @Table("assignment.top_price")
@@ -14,10 +12,7 @@ data class TopPriceAssignmentRow(
     @Id override val id: UUID,
     override val instrumentId: String,
     override val state: AssignmentState,
-    override val refreshSchedulingPeriod: Duration?,
-    override val refreshSchedulingTaskId: UUID?,
-    override val refreshSchedulingState: SchedulingState?,
-    override val refreshSchedulingId: UUID?,
+    override val refreshNotifierId: UUID?,
     override val orderDirection: OrderDirection,
     override val orderId: String?,
     val oneStepOver: Boolean
@@ -25,10 +20,7 @@ data class TopPriceAssignmentRow(
     id = id,
     instrumentId = instrumentId,
     state = state,
-    refreshSchedulingPeriod = refreshSchedulingPeriod,
-    refreshSchedulingTaskId = refreshSchedulingTaskId,
-    refreshSchedulingState = refreshSchedulingState,
-    refreshSchedulingId = refreshSchedulingId,
+    refreshNotifierId = refreshNotifierId,
     orderDirection = orderDirection,
     orderId = orderId
 )

@@ -11,30 +11,27 @@ class FractionalSpreadAssignmentMapper : LimitOrderAssignmentToPostgreMapper<
     >() {
 
     override fun map(row: FractionalSpreadAssignmentRow): FractionalSpreadAssignment {
-        val assignment = FractionalSpreadAssignment(
-            id = row.id,
-            iid = mapIid(row.instrumentId),
-            state = row.state,
-            direction = row.orderDirection,
-            info = mapOrderInfo(row),
-            rate = row.rate
-        )
-        assignment.initRefreshNotifierId(row.refreshSchedulingId)
-        return assignment
-    }
-
-    override fun map(assignment: FractionalSpreadAssignment): FractionalSpreadAssignmentRow {
-        return FractionalSpreadAssignmentRow(
-            id = assignment.id,
-            instrumentId = assignment.iid.id,
-            state = assignment.state,
-            orderDirection = assignment.direction,
-            rate = assignment.rate,
-            refreshSchedulingPeriod = null,
-            refreshSchedulingTaskId = null,
-            refreshSchedulingState = null,
-            refreshSchedulingId = assignment.getRefreshNotifierId(),
-            orderId = assignment.info.orderId
-        )
-    }
+            val assignment = FractionalSpreadAssignment(
+                id = row.id,
+                iid = mapIid(row.instrumentId),
+                state = row.state,
+                direction = row.orderDirection,
+                info = mapOrderInfo(row),
+                rate = row.rate
+            )
+            assignment.initRefreshNotifierId(row.refreshNotifierId)
+            return assignment
+        }
+    
+        override fun map(assignment: FractionalSpreadAssignment): FractionalSpreadAssignmentRow {
+            return FractionalSpreadAssignmentRow(
+                id = assignment.id,
+                instrumentId = assignment.iid.id,
+                state = assignment.state,
+                orderDirection = assignment.direction,
+                rate = assignment.rate,
+                refreshNotifierId = assignment.getRefreshNotifierId(),
+                orderId = assignment.info.orderId
+            )
+        }
 }
