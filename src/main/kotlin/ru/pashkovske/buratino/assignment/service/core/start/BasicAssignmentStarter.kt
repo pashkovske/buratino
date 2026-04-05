@@ -3,11 +3,10 @@ package ru.pashkovske.buratino.assignment.service.core.start
 import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
-import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.ExeCtx
+import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.service.core.AssignmentStateMachine
 import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
-import java.util.UUID
 
 abstract class BasicAssignmentStarter<A : Assignment>(
     private val assignmentDao: AssignmentDao<A>,
@@ -48,11 +47,8 @@ abstract class BasicAssignmentStarter<A : Assignment>(
 
     private fun startRefreshNotifier(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
-        val started: List<UUID> = refreshNotifyOrchestrator.startForAssignment(assignment.id)
-        if (started.isNotEmpty()) {
-            assignment.clearRefreshScheduling()
-            assignment.initRefreshScheduling(refreshNotifyOrchestrator.get(started.first())!!)
-            ctx.setMutated()
-        }
+        refreshNotifyOrchestrator.start(
+            id = assignment.getRefreshNotifierId()
+        )
     }
 }

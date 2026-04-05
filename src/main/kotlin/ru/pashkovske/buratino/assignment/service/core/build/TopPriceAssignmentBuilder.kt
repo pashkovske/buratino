@@ -22,7 +22,6 @@ class TopPriceAssignmentBuilder(
         return TopPriceAssignment.newAssignment(
             iid = cmd.iid,
             direction = cmd.direction,
-            refreshAssignmentSchedulingProperties = cmd.refreshAssignmentSchedulingProperties,
             oneStepOver = cmd.oneStepOver
         )
     }

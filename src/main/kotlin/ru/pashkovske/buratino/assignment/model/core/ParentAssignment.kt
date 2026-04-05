@@ -1,7 +1,6 @@
 package ru.pashkovske.buratino.assignment.model.core
 
 import ru.pashkovske.buratino.assignment.model.AssignmentState
-import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
 
@@ -9,11 +8,9 @@ sealed class ParentAssignment<ChildA: Assignment>(
     id: UUID,
     iid: InstrumentId,
     state: AssignmentState,
-    refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?,
     var child: ChildA
 ): Assignment(
     id = id,
     iid = iid,
-    state = state,
-    refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties
+    state = state
 )

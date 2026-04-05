@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.assignment.dao.notify.postgre
 
+import org.springframework.context.annotation.DependsOn
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import ru.pashkovske.buratino.assignment.dao.notify.NotifierDao
 import ru.pashkovske.buratino.assignment.dao.notify.postgre.mapper.PeriodicNotifierMapper
@@ -8,8 +9,10 @@ import ru.pashkovske.buratino.assignment.dao.notify.postgre.row.PeriodicNotifier
 import ru.pashkovske.buratino.assignment.exception.AssignmentNotifyException
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
 import java.util.UUID
 
+@DependsOn("flywayInitializer")
 abstract class BasicPostgreNotifierDao<Row : PeriodicNotifierRow>(
     private val repository: PeriodicNotifierRepo<Row>,
     private val mapper: PeriodicNotifierMapper<Row>,
@@ -32,6 +35,13 @@ abstract class BasicPostgreNotifierDao<Row : PeriodicNotifierRow>(
 
     override fun findByAssignmentId(assignmentId: UUID): List<AssignmentScheduling> {
         return repository.findByAssignmentId(assignmentId)
+            .map(mapper::toNotifier)
+            .collectList()
+            .block() ?: emptyList()
+    }
+
+    override fun findByState(state: SchedulingState): List<AssignmentScheduling> {
+        return repository.findByState(state.toString())
             .map(mapper::toNotifier)
             .collectList()
             .block() ?: emptyList()

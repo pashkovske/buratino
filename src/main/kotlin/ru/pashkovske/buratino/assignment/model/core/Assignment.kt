@@ -1,16 +1,13 @@
 package ru.pashkovske.buratino.assignment.model.core
 
 import ru.pashkovske.buratino.assignment.model.AssignmentState
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
-import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import java.util.UUID
 
 sealed class Assignment(
     val id: UUID,
     val iid: InstrumentId,
-    var state: AssignmentState,
-    val refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties?
+    var state: AssignmentState
 ) {
 
     companion object {
@@ -20,21 +17,19 @@ sealed class Assignment(
         }
     }
 
-    private var refreshAssignmentScheduling: AssignmentScheduling? = null
+    private var refreshNotifierId: UUID? = null
+    private var refreshNotifierInitialized: Boolean = false
 
-    fun initRefreshScheduling(assignmentScheduling: AssignmentScheduling) {
-        if (refreshAssignmentScheduling != null) {
-            throw IllegalStateException("Refresh scheduling info is already initialized")
+    fun getRefreshNotifierId(): UUID? {
+        return refreshNotifierId
+    }
+
+    fun initRefreshNotifierId(refreshNotifierId: UUID?) {
+        if (refreshNotifierInitialized) {
+            throw IllegalStateException("Refresh notifier id is already initialized with ${this.refreshNotifierId}")
         }
-        refreshAssignmentScheduling = assignmentScheduling
-    }
-
-    fun clearRefreshScheduling() {
-        refreshAssignmentScheduling = null
-    }
-
-    fun getRefreshAssignmentScheduling(): AssignmentScheduling? {
-        return refreshAssignmentScheduling
+        this.refreshNotifierId = refreshNotifierId
+        refreshNotifierInitialized = true
     }
 
     override fun toString(): String {

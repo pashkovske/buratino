@@ -25,13 +25,14 @@ abstract class ParentAssignmentBuilder<
 
     protected abstract fun preBuildParent(cmd: ParentCmd, child: ChildA): ParentA
 
-    protected abstract fun postBuildParent(assignment: ParentA)
+    protected open fun postBuildParent(assignment: ParentA, cmd: ParentCmd) {
+    }
 
     final override fun preBuild(cmd: ParentCmd): ParentA {
         val childStartCmd: ChildCmd = buildChildStartCmd(cmd)
         val childAssignment: ChildA = childBuilder.build(childStartCmd)
         val parentAssignment: ParentA = preBuildParent(cmd, childAssignment)
-        postBuildParent(parentAssignment)
+        postBuildParent(parentAssignment, cmd)
         return parentAssignment
     }
 }

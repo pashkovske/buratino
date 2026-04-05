@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import ru.pashkovske.buratino.assignment.controller.dto.BasicAssignmentDto
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
+import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.service.facade.AssignmentExe
 import ru.pashkovske.buratino.assignment.model.core.Assignment
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import java.util.UUID
 
 @Suppress("unused")
@@ -19,9 +21,15 @@ abstract class BasicAssignmentController<
     Cmd : AssignmentStartCmd<A>
     >(
     open val dao: AssignmentDao<A>,
-    open val exe: AssignmentExe<A, Cmd>
+    open val exe: AssignmentExe<A, Cmd>,
+    private val refreshNotifierDao: RefreshNotifierDao
 ) {
     protected abstract fun toDto(assignment: A): Dto
+
+    protected fun getRefreshNotifier(assignment: A): AssignmentScheduling? {
+        val notifierId: UUID = assignment.getRefreshNotifierId() ?: return null
+        return refreshNotifierDao.get(notifierId)
+    }
 
     protected fun doStart(cmd: Cmd): Dto {
         return toDto(exe.start(cmd))

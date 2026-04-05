@@ -9,7 +9,6 @@ interface AssignmentExe<
     Cmd : AssignmentStartCmd<A>
 > {
 
-    fun recoverAssignments(): List<A>
     fun start(cmd: Cmd): A
     fun refresh(id: UUID): A
     fun cancel(id: UUID): A

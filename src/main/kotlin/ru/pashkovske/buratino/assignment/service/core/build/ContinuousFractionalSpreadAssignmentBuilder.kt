@@ -42,9 +42,7 @@ class ContinuousFractionalSpreadAssignmentBuilder(
     ): ContinuousFractionalSpreadAssignment {
         return ContinuousFractionalSpreadAssignment.newAssignment(
             iid = cmd.iid,
-            refreshAssignmentSchedulingProperties = cmd.refreshAssignmentSchedulingProperties,
-            child = child,
-            continueAssignmentSchedulingProperties = cmd.continueAssignmentSchedulingProperties
+            child = child
         )
     }
 }

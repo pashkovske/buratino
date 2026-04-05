@@ -6,7 +6,6 @@ import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ContinuousAssignment
 import ru.pashkovske.buratino.assignment.service.notify.ContinueNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
-import java.util.UUID
 
 abstract class ContinuousAssignmentStarter<
     ContinuousA : ContinuousAssignment<ChildA>,
@@ -27,11 +26,6 @@ abstract class ContinuousAssignmentStarter<
 
     private fun startContinueNotifier(ctx: ExeCtx<ContinuousA>) {
         val assignment: ContinuousA = ctx.assignment
-        val started: List<UUID> = continueNotifyOrchestrator.startForAssignment(assignment.id)
-        if (started.isNotEmpty()) {
-            assignment.clearContinueScheduling()
-            assignment.initContinueScheduling(continueNotifyOrchestrator.get(started.first())!!)
-            ctx.setMutated()
-        }
+        continueNotifyOrchestrator.startForAssignment(assignment.id)
     }
 }

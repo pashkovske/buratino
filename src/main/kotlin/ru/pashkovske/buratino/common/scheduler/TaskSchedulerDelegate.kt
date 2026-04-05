@@ -10,7 +10,7 @@ import java.util.UUID
 @Service
 class TaskSchedulerDelegate(
     private val periodicTaskPool: PeriodicTaskPool
-): TaskScheduler {
+): TaskScheduler, AutoCloseable {
 
     override fun getPeriodicScheduledTasks(): Set<UUID> {
         return periodicTaskPool.getPeriodicTasks()
@@ -37,5 +37,15 @@ class TaskSchedulerDelegate(
 
     override fun stopPeriodic(taskId: UUID) {
         periodicTaskPool.stop(taskId)
+    }
+
+    override fun shutdown() {
+        periodicTaskPool.getPeriodicTasks().forEach { taskId ->
+            periodicTaskPool.stop(taskId)
+        }
+    }
+
+    override fun close() {
+        shutdown()
     }
 }

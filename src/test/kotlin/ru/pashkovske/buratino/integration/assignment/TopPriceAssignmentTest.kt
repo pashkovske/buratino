@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.dao.core.postgre.TopPriceAssignmentDao
+import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
@@ -39,6 +41,8 @@ class TopPriceAssignmentTest(
     private lateinit var topPriceAssignmentDao: TopPriceAssignmentDao
     @Autowired
     private lateinit var orderDao: OrderDao
+    @Autowired
+    private lateinit var refreshNotifierDao: RefreshNotifierDao
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
@@ -135,10 +139,12 @@ class TopPriceAssignmentTest(
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
-        assertNotNull(assignment.getRefreshAssignmentScheduling())
+        val refreshNotifierId: UUID? = assignment.getRefreshNotifierId()
+        assertNotNull(refreshNotifierId)
+        val refreshNotifier: AssignmentScheduling = refreshNotifierDao.get(refreshNotifierId!!)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignment.getRefreshAssignmentScheduling()!!.taskId
+            refreshNotifier.taskId
         )
 
         performAndCheckCancel(

@@ -17,20 +17,25 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import ru.pashkovske.buratino.assignment.controller.dto.ContinuousFractionalSpreadAssignmentDto
+import ru.pashkovske.buratino.assignment.controller.dto.TopPriceAssignmentDto
 import ru.pashkovske.buratino.assignment.controller.dto.notify.AssignmentSchedulingDto
+import ru.pashkovske.buratino.assignment.dao.core.postgre.ContinuousFractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.dao.core.postgre.FractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.dao.core.postgre.TopPriceAssignmentDao
+import ru.pashkovske.buratino.assignment.dao.notify.ContinueNotifierDao
+import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.AssignmentState
-import ru.pashkovske.buratino.common.scheduler.TaskScheduler
+import ru.pashkovske.buratino.assignment.model.cmd.ContinuousFractionalSpreadAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.model.cmd.TopPriceAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
 import ru.pashkovske.buratino.assignment.service.facade.AssignmentExe
-import ru.pashkovske.buratino.assignment.dao.core.postgre.FractionalSpreadAssignmentDao
-import ru.pashkovske.buratino.assignment.controller.dto.TopPriceAssignmentDto
-import ru.pashkovske.buratino.assignment.dao.core.postgre.TopPriceAssignmentDao
-import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.model.cmd.TopPriceAssignmentStartCmd
-import ru.pashkovske.buratino.assignment.controller.dto.ContinuousFractionalSpreadAssignmentDto
-import ru.pashkovske.buratino.assignment.dao.core.postgre.ContinuousFractionalSpreadAssignmentDao
-import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.model.cmd.ContinuousFractionalSpreadAssignmentStartCmd
+import ru.pashkovske.buratino.assignment.service.notify.ContinueNotifyOrchestrator
+import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
+import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
@@ -47,22 +52,42 @@ class RecoverAssignmentsTest(
 
     @Autowired
     private lateinit var assignmentExe: AssignmentExe<TopPriceAssignment, TopPriceAssignmentStartCmd>
+
     @Autowired
     private lateinit var continuousAssignmentExe: AssignmentExe<ContinuousFractionalSpreadAssignment, ContinuousFractionalSpreadAssignmentStartCmd>
+
     @Autowired
     private lateinit var topPriceAssignmentDao: TopPriceAssignmentDao
+
     @Autowired
     private lateinit var continuousFractionalSpreadAssignmentDao: ContinuousFractionalSpreadAssignmentDao
+
     @Autowired
     private lateinit var fractionalSpreadAssignmentDao: FractionalSpreadAssignmentDao
+
     @Autowired
     private lateinit var orderDao: OrderDao
+
     @Autowired
     private lateinit var taskScheduler: TaskScheduler
+
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
+
     @Autowired
     private lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    private lateinit var refreshNotifyOrchestrator: RefreshNotifyOrchestrator
+
+    @Autowired
+    private lateinit var continueNotifyOrchestrator: ContinueNotifyOrchestrator
+
+    @Autowired
+    private lateinit var refreshNotifierDao: RefreshNotifierDao
+
+    @Autowired
+    private lateinit var continueNotifierDao: ContinueNotifierDao
 
     @AfterEach
     fun clean() {
@@ -70,13 +95,9 @@ class RecoverAssignmentsTest(
         topPriceAssignmentDao.deleteAll()
         fractionalSpreadAssignmentDao.deleteAll()
         continuousFractionalSpreadAssignmentDao.deleteAll()
-        shutdownScheduler()
-    }
-
-    private fun shutdownScheduler() {
-        taskScheduler.getPeriodicScheduledTasks().toList().forEach { taskId ->
-            taskScheduler.stopPeriodic(taskId)
-        }
+        taskScheduler.shutdown()
+        refreshNotifierDao.deleteAll()
+        continueNotifierDao.deleteAll()
     }
 
     @Test
@@ -159,9 +180,8 @@ class RecoverAssignmentsTest(
         assertNotNull(schedulingTaskIdBeforeRestart)
         assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
-        shutdownScheduler()
+        taskScheduler.shutdown()
         assertEquals(0, taskScheduler.getPeriodicScheduledTasks().size)
-        assignment1BeforeRestart.clearRefreshScheduling()
         topPriceAssignmentDao.update(assignment1BeforeRestart)
         val getResult2: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -176,13 +196,15 @@ class RecoverAssignmentsTest(
         )
         assertNull(assignmentDto2BeforeRestart.refreshAssignmentScheduling)
 
-        val recoveredAssignments: List<TopPriceAssignment> = assignmentExe.recoverAssignments()
+        val recoveredNotifiers: List<AssignmentScheduling> = refreshNotifyOrchestrator.recoverNotifiers()
 
-        assertEquals(2, recoveredAssignments.size)
-        assertTrue(recoveredAssignments.any { it.id.toString() == assignment1Id })
-        assertTrue(recoveredAssignments.any { it.id.toString() == assignment2Id })
+        assertEquals(1, recoveredNotifiers.size)
+        assertEquals(
+            assignment1Id,
+            recoveredNotifiers[0].assignmentId.toString()
+        )
 
-        val scheduledCountAfter = taskScheduler.getPeriodicScheduledTasks().size
+        val scheduledCountAfter: Int = taskScheduler.getPeriodicScheduledTasks().size
         assertEquals(1, scheduledCountAfter)
 
         val getResult1After: MvcResult = mockMvc.perform(
@@ -308,14 +330,14 @@ class RecoverAssignmentsTest(
             getResult1.response.contentAsString,
             ContinuousFractionalSpreadAssignmentDto::class.java
         )
-        val assignment1BeforeRestart: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(UUID.fromString(assignment1Id))
+        val assignment1BeforeRestart: ContinuousFractionalSpreadAssignment =
+            continuousFractionalSpreadAssignmentDao.get(UUID.fromString(assignment1Id))
         val schedulingTaskIdBeforeRestart: UUID? = assignmentDto1BeforeRestart.continueAssignmentScheduling?.taskId
         assertNotNull(schedulingTaskIdBeforeRestart)
         assertTrue(taskScheduler.getPeriodicScheduledTasks().contains(schedulingTaskIdBeforeRestart))
 
-        shutdownScheduler()
+        taskScheduler.shutdown()
         assertEquals(0, taskScheduler.getPeriodicScheduledTasks().size)
-        assignment1BeforeRestart.clearContinueScheduling()
         continuousFractionalSpreadAssignmentDao.update(assignment1BeforeRestart)
         val getResult2: MvcResult = mockMvc.perform(
             MockMvcRequestBuilders
@@ -330,11 +352,13 @@ class RecoverAssignmentsTest(
         )
         assertNull(assignmentDto2BeforeRestart.continueAssignmentScheduling)
 
-        val recoveredAssignments: List<ContinuousFractionalSpreadAssignment> = continuousAssignmentExe.recoverAssignments()
+        val recoveredNotifiers: List<AssignmentScheduling> = continueNotifyOrchestrator.recoverNotifiers()
 
-        assertEquals(2, recoveredAssignments.size)
-        assertTrue(recoveredAssignments.any { it.id.toString() == assignment1Id })
-        assertTrue(recoveredAssignments.any { it.id.toString() == assignment2Id })
+        assertEquals(1, recoveredNotifiers.size)
+        assertEquals(
+            assignment1Id,
+            recoveredNotifiers[0].assignmentId.toString()
+        )
 
         val scheduledCountAfter: Int = taskScheduler.getPeriodicScheduledTasks().size
         assertEquals(1, scheduledCountAfter)

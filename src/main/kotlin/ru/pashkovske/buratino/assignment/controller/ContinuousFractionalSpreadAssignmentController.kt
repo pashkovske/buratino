@@ -5,15 +5,17 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
+import ru.pashkovske.buratino.assignment.controller.dto.ContinuousFractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.assignment.controller.dto.FractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.assignment.controller.dto.start.StartFractionalSpreadAssignmentDto
+import ru.pashkovske.buratino.assignment.controller.mapper.ContinuousFractionalSpreadAssignmentMapper
+import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
+import ru.pashkovske.buratino.assignment.dao.notify.ContinueNotifierDao
+import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
+import ru.pashkovske.buratino.assignment.model.cmd.ContinuousFractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
-import ru.pashkovske.buratino.assignment.controller.dto.ContinuousFractionalSpreadAssignmentDto
-import ru.pashkovske.buratino.assignment.controller.mapper.ContinuousFractionalSpreadAssignmentMapper
-import ru.pashkovske.buratino.assignment.model.cmd.ContinuousFractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.service.facade.ContinuousFractionalSpreadAssignmentExe
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.order.model.OrderDirection
@@ -23,7 +25,9 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 @RequestMapping("/assignment/continuous/fractional-spread")
 class ContinuousFractionalSpreadAssignmentController(
     dao: AssignmentDao<ContinuousFractionalSpreadAssignment>,
-    exe: ContinuousFractionalSpreadAssignmentExe
+    exe: ContinuousFractionalSpreadAssignmentExe,
+    refreshNotifierDao: RefreshNotifierDao,
+    continueNotifierDao: ContinueNotifierDao
 ) : ContinuousAssignmentController<
     ContinuousFractionalSpreadAssignment,
     FractionalSpreadAssignment,
@@ -32,10 +36,16 @@ class ContinuousFractionalSpreadAssignmentController(
     FractionalSpreadAssignmentDto
     >(
     dao = dao,
-    exe = exe
+    exe = exe,
+    refreshNotifierDao = refreshNotifierDao,
+    continueNotifierDao = continueNotifierDao
 ) {
     override fun toDto(assignment: ContinuousFractionalSpreadAssignment): ContinuousFractionalSpreadAssignmentDto {
-        return ContinuousFractionalSpreadAssignmentMapper.toDto(assignment)
+        return ContinuousFractionalSpreadAssignmentMapper.toDto(
+            assignment = assignment,
+            refreshNotifier = getRefreshNotifier(assignment),
+            continueNotifier = getContinueNotifier(assignment)
+        )
     }
 
     @PostMapping("/{instrumentId}/start/{direction}")

@@ -22,7 +22,6 @@ class FractionalSpreadAssignmentBuilder(
         return FractionalSpreadAssignment.newAssignment(
             iid = cmd.iid,
             direction = cmd.direction,
-            refreshAssignmentSchedulingProperties = cmd.refreshAssignmentSchedulingProperties,
             rate = cmd.rate
         )
     }

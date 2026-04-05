@@ -4,9 +4,6 @@ import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.dao.core.postgre.row.ContinuousFractionalSpreadAssignmentRow
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
-import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
-import java.time.Duration
 
 @Service
 class ContinuousFractionalSpreadAssignmentMapper : ContinuousAssignmentToPostgreMapper<
@@ -19,48 +16,34 @@ class ContinuousFractionalSpreadAssignmentMapper : ContinuousAssignmentToPostgre
         parentRow: ContinuousFractionalSpreadAssignmentRow,
         childAssignment: FractionalSpreadAssignment
     ): ContinuousFractionalSpreadAssignment {
-        val refreshAssignmentSchedulingProperties: AssignmentSchedulingProperties? = mapRefreshSchedulingProperties(parentRow)
-        val continueAssignmentSchedulingProperties: AssignmentSchedulingProperties? = mapContinueSchedulingProperties(parentRow)
-
         val assignment = ContinuousFractionalSpreadAssignment(
             id = parentRow.id,
             iid = mapIid(parentRow.instrumentId),
             state = parentRow.state,
-            refreshAssignmentSchedulingProperties = refreshAssignmentSchedulingProperties,
-            child = childAssignment,
-            continueAssignmentSchedulingProperties = continueAssignmentSchedulingProperties
+            child = childAssignment
         )
-
-        initRefreshSchedulingInfo(parentRow, assignment, refreshAssignmentSchedulingProperties)
-        initContinueSchedulingInfo(parentRow, assignment, continueAssignmentSchedulingProperties)
+        assignment.initRefreshNotifierId(parentRow.refreshSchedulingId)
+        assignment.initContinueNotifierId(parentRow.continueSchedulingId)
 
         return assignment
     }
 
     override fun map(assignment: ContinuousFractionalSpreadAssignment): ContinuousFractionalSpreadAssignmentRow {
         val child = assignment.child
-        val refreshPeriod: Duration? = when (assignment.refreshAssignmentSchedulingProperties) {
-            null -> null
-            is PeriodicAssignmentSchedulingProperties -> assignment.refreshAssignmentSchedulingProperties.period
-        }
-        val continuePeriod: Duration? = when (assignment.continueAssignmentSchedulingProperties) {
-            null -> null
-            is PeriodicAssignmentSchedulingProperties -> assignment.continueAssignmentSchedulingProperties.period
-        }
 
         return ContinuousFractionalSpreadAssignmentRow(
             id = assignment.id,
             instrumentId = assignment.iid.id,
             state = assignment.state,
-            refreshSchedulingPeriod = refreshPeriod,
-            refreshSchedulingTaskId = assignment.getRefreshAssignmentScheduling()?.taskId,
-            refreshSchedulingState = assignment.getRefreshAssignmentScheduling()?.state,
-            refreshSchedulingId = assignment.getRefreshAssignmentScheduling()?.id,
+            refreshSchedulingPeriod = null,
+            refreshSchedulingTaskId = null,
+            refreshSchedulingState = null,
+            refreshSchedulingId = assignment.getRefreshNotifierId(),
             childAssignmentId = child.id,
-            continueSchedulingPeriod = continuePeriod,
-            continueSchedulingTaskId = assignment.getContinueAssignmentScheduling()?.taskId,
-            continueSchedulingState = assignment.getContinueAssignmentScheduling()?.state,
-            continueSchedulingId = assignment.getContinueAssignmentScheduling()?.id
+            continueSchedulingPeriod = null,
+            continueSchedulingTaskId = null,
+            continueSchedulingState = null,
+            continueSchedulingId = assignment.getContinueNotifierId()
         )
     }
 }

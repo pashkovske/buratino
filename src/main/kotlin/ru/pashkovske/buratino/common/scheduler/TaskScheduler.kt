@@ -14,4 +14,5 @@ interface TaskScheduler {
     )
     fun startNewPeriodic(period: Duration) : UUID
     fun stopPeriodic(taskId: UUID)
+    fun shutdown()
 }

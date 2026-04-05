@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
+import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.controller.dto.FractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.assignment.controller.dto.start.StartFractionalSpreadAssignmentDto
 import ru.pashkovske.buratino.assignment.controller.mapper.FractionalSpreadAssignmentMapper
@@ -21,17 +22,22 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 @RequestMapping("/assignment/fractional-spread")
 class FractionalSpreadAssignmentController(
     dao: AssignmentDao<FractionalSpreadAssignment>,
-    exe: FractionalSpreadAssignmentExe
+    exe: FractionalSpreadAssignmentExe,
+    refreshNotifierDao: RefreshNotifierDao
 ): BasicAssignmentController<
     FractionalSpreadAssignment,
     FractionalSpreadAssignmentDto,
     FractionalSpreadAssignmentStartCmd
     >(
     dao = dao,
-    exe = exe
+    exe = exe,
+    refreshNotifierDao = refreshNotifierDao
 ) {
     override fun toDto(assignment: FractionalSpreadAssignment): FractionalSpreadAssignmentDto {
-        return FractionalSpreadAssignmentMapper.toDto(assignment)
+        return FractionalSpreadAssignmentMapper.toDto(
+            assignment = assignment,
+            refreshNotifier = getRefreshNotifier(assignment)
+        )
     }
 
     @PostMapping("/{instrumentId}/start/{direction}")

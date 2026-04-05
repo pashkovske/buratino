@@ -1,12 +1,16 @@
 package ru.pashkovske.buratino.assignment.service.notify
 
+import jakarta.annotation.PostConstruct
 import ru.pashkovske.buratino.assignment.dao.notify.NotifierDao
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentSchedulingSubscriber
 import ru.pashkovske.buratino.assignment.model.notify.PeriodicAssignmentScheduling
+import ru.pashkovske.buratino.assignment.model.notify.SchedulingState
 import ru.pashkovske.buratino.assignment.model.notify.properties.AssignmentSchedulingProperties
 import ru.pashkovske.buratino.assignment.model.notify.properties.PeriodicAssignmentSchedulingProperties
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
+import ru.pashkovske.buratino.common.scheduler.base.model.Tick
+import java.time.Instant
 import java.util.UUID
 
 abstract class BasicNotifyOrchestrator(
@@ -15,6 +19,27 @@ abstract class BasicNotifyOrchestrator(
 ) : NotifyOrchestrator {
 
     private val stateMachine: AssignmentNotifierStateMachine = AssignmentNotifierStateMachine
+
+    @PostConstruct
+    fun recoverNotifiers(): List<AssignmentScheduling> {
+        val recoveredNotifiers: List<AssignmentScheduling> = notifierDao.findByState(SchedulingState.ACTIVE)
+        recoveredNotifiers
+            .forEach { notifier: AssignmentScheduling ->
+                val subscriber: AssignmentSchedulingSubscriber = getSubscriber(notifier.assignmentId)
+                val taskId: UUID = when (notifier) {
+                    is PeriodicAssignmentScheduling -> startPeriodic(notifier, subscriber)
+                }
+                notifier.taskId = taskId
+                notifierDao.update(notifier)
+                subscriber.onNext(
+                    Tick(
+                        id = UUID.randomUUID(),
+                        time = Instant.now()
+                    )
+                )
+            }
+        return recoveredNotifiers
+    }
 
     override fun get(id: UUID?): AssignmentScheduling? {
         if (id == null) return null

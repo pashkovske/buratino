@@ -15,33 +15,45 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import ru.pashkovske.buratino.assignment.dao.core.postgre.FractionalSpreadAssignmentDao
-import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.dao.core.postgre.ContinuousFractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.dao.core.postgre.FractionalSpreadAssignmentDao
+import ru.pashkovske.buratino.assignment.dao.notify.ContinueNotifierDao
+import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
+import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.model.notify.AssignmentScheduling
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
+import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 
 class ContinuousFractionalSpreadAssignmentTest(
     @Autowired mockMvc: MockMvc
-): BasicAssignmentTest(
+) : BasicAssignmentTest(
     mockMvc = mockMvc
 ) {
 
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
+
     @Autowired
     private lateinit var continuousFractionalSpreadAssignmentDao: ContinuousFractionalSpreadAssignmentDao
+
     @Autowired
     private lateinit var fractionalSpreadAssignmentDao: FractionalSpreadAssignmentDao
+
     @Autowired
     private lateinit var orderDao: OrderDao
+
+    @Autowired
+    private lateinit var refreshNotifierDao: RefreshNotifierDao
+
+    @Autowired
+    private lateinit var continueNotifierDao: ContinueNotifierDao
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
@@ -173,10 +185,12 @@ class ContinuousFractionalSpreadAssignmentTest(
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
-        assertNotNull(assignment.getContinueAssignmentScheduling())
+        val continueNotifierId: UUID? = assignment.getContinueNotifierId()
+        assertNotNull(continueNotifierId)
+        val continueNotifier: AssignmentScheduling = continueNotifierDao.get(continueNotifierId!!)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignment.getContinueAssignmentScheduling()!!.taskId
+            continueNotifier.taskId
         )
 
         performAndCheckCancel(
@@ -188,7 +202,7 @@ class ContinuousFractionalSpreadAssignmentTest(
     }
 
     @Test
-    fun `create with refresh schedule and cancel sell`()  {
+    fun `create with refresh schedule and cancel sell`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val rate = 0.007
@@ -209,10 +223,12 @@ class ContinuousFractionalSpreadAssignmentTest(
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
-        assertNotNull(assignment.getRefreshAssignmentScheduling())
+        val refreshNotifierId: UUID? = assignment.getRefreshNotifierId()
+        assertNotNull(refreshNotifierId)
+        val refreshNotifier: AssignmentScheduling = refreshNotifierDao.get(refreshNotifierId!!)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
-            assignment.getRefreshAssignmentScheduling()!!.taskId
+            refreshNotifier.taskId
         )
 
         performAndCheckCancel(

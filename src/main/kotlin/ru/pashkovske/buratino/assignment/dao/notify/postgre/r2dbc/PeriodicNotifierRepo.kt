@@ -11,4 +11,7 @@ interface PeriodicNotifierRepo<Row: PeriodicNotifierRow> : R2dbcRepository<Row, 
 
     @Query("SELECT * FROM #{#tableName} WHERE assignment_id = :assignmentId")
     fun findByAssignmentId(@Param("assignmentId") assignmentId: UUID): Flux<Row>
+
+    @Query("SELECT * FROM #{#tableName} WHERE state = :state")
+    fun findByState(@Param("state") state: String): Flux<Row>
 }

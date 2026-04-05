@@ -56,11 +56,8 @@ abstract class BasicAssignmentCanceller<A : Assignment>(
 
     private fun stopRefreshNotifier(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
-        val stopped: List<UUID> = refreshNotifyOrchestrator.stopForAssignment(assignment.id)
-        if (stopped.isNotEmpty()) {
-            assignment.clearRefreshScheduling()
-            assignment.initRefreshScheduling(refreshNotifyOrchestrator.get(stopped.first())!!)
-            ctx.setMutated()
-        }
+        refreshNotifyOrchestrator.stop(
+            id = assignment.getRefreshNotifierId()
+        )
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.pashkovske.buratino.assignment.controller.dto.BasicStartAssignmentDto
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
+import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.controller.dto.TopPriceAssignmentDto
 import ru.pashkovske.buratino.assignment.controller.mapper.TopPriceAssignmentMapper
 import ru.pashkovske.buratino.assignment.service.facade.TopPriceAssignmentExe
@@ -22,13 +23,18 @@ import ru.pashkovske.buratino.order.model.OrderDirection
 @RequestMapping("/assignment/top-price")
 class TopPriceAssignmentController(
     dao: AssignmentDao<TopPriceAssignment>,
-    exe: TopPriceAssignmentExe
+    exe: TopPriceAssignmentExe,
+    refreshNotifierDao: RefreshNotifierDao
 ): BasicAssignmentController<TopPriceAssignment, TopPriceAssignmentDto, TopPriceAssignmentStartCmd>(
     dao = dao,
-    exe = exe
+    exe = exe,
+    refreshNotifierDao = refreshNotifierDao
 ) {
     override fun toDto(assignment: TopPriceAssignment): TopPriceAssignmentDto {
-        return TopPriceAssignmentMapper.toDto(assignment)
+        return TopPriceAssignmentMapper.toDto(
+            assignment = assignment,
+            refreshNotifier = getRefreshNotifier(assignment)
+        )
     }
 
     @PostMapping("/{instrumentId}/start/{direction}")

@@ -7,7 +7,6 @@ import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ParentAssignment
 import ru.pashkovske.buratino.assignment.service.core.build.ParentAssignmentBuilder
 import ru.pashkovske.buratino.assignment.service.core.cancel.AssignmentCanceller
-import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.service.core.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.service.core.start.AssignmentStarter
 
@@ -18,7 +17,6 @@ abstract class ParentAssignmentExe<
     ChildCmd : AssignmentStartCmd<ChildA>
     >(
     assignmentDao: AssignmentDao<ParentA>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<ParentA>,
     assignmentCanceller: AssignmentCanceller<ParentA>,
     assignmentStarter: AssignmentStarter<ParentA>,
@@ -26,7 +24,6 @@ abstract class ParentAssignmentExe<
     protected val childAssignmentDao: AssignmentDao<ChildA>
 ) : BasicAssignmentExe<ParentA, ParentStartCmd>(
     assignmentDao = assignmentDao,
-    refreshNotifyOrchestrator = refreshNotifyOrchestrator,
     assignmentRefresher = assignmentRefresher,
     assignmentCanceller = assignmentCanceller,
     assignmentStarter = assignmentStarter,

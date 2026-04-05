@@ -6,14 +6,12 @@ import ru.pashkovske.buratino.assignment.model.cmd.FractionalSpreadAssignmentSta
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.service.core.build.AssignmentBuilder
 import ru.pashkovske.buratino.assignment.service.core.cancel.AssignmentCanceller
-import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
 import ru.pashkovske.buratino.assignment.service.core.refresh.AssignmentRefresher
 import ru.pashkovske.buratino.assignment.service.core.start.AssignmentStarter
 
 @Service
 final class FractionalSpreadAssignmentExe(
     assignmentDao: AssignmentDao<FractionalSpreadAssignment>,
-    refreshNotifyOrchestrator: RefreshNotifyOrchestrator,
     assignmentRefresher: AssignmentRefresher<FractionalSpreadAssignment>,
     assignmentCanceller: AssignmentCanceller<FractionalSpreadAssignment>,
     assignmentStarter: AssignmentStarter<FractionalSpreadAssignment>,
@@ -23,7 +21,6 @@ final class FractionalSpreadAssignmentExe(
     FractionalSpreadAssignmentStartCmd
     >(
     assignmentDao = assignmentDao,
-    refreshNotifyOrchestrator = refreshNotifyOrchestrator,
     assignmentRefresher = assignmentRefresher,
     assignmentCanceller = assignmentCanceller,
     assignmentStarter = assignmentStarter,
