@@ -102,9 +102,9 @@ class ContinuousFractionalSpreadAssignmentTest(
             idempotencyToken = null,
             price = expectedPrice
         )
-        expectOrderOnLimitedRequest(
+        expectOrder(
             orderId = createdOrderId,
-            expectedLimitedRequest = expectedOrderRequest
+            expected = expectedOrderRequest
         )
 
         // Refresh

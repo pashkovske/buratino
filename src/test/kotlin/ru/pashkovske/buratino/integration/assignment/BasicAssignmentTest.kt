@@ -1,5 +1,6 @@
 package ru.pashkovske.buratino.integration.assignment
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
@@ -35,6 +36,9 @@ abstract class BasicAssignmentTest(
 
     @Autowired
     protected lateinit var taskScheduler: TaskScheduler
+
+    @Autowired
+    protected lateinit var objectMapper: ObjectMapper
 
     @Autowired
     private lateinit var assignmentNotifierDaos: List<NotifierDao>
@@ -82,9 +86,9 @@ abstract class BasicAssignmentTest(
             )
     }
 
-    protected fun expectOrderOnLimitedRequest(
+    protected fun expectOrder(
         orderId: String,
-        expectedLimitedRequest: LimitOrderRequest
+        expected: LimitOrderRequest
     ) {
         mockMvc.perform(
             MockMvcRequestBuilders
@@ -96,13 +100,13 @@ abstract class BasicAssignmentTest(
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(jsonPath("$.iid.id").value(expectedLimitedRequest.iid.id))
-            .andExpect(jsonPath("$.request.direction").value(expectedLimitedRequest.direction.toString()))
-            .andExpect(jsonPath("$.request.lots").value(expectedLimitedRequest.lots))
-            .andExpect(jsonPath("$.currentInfo.remainingLots").value(expectedLimitedRequest.lots))
-            .andExpect(jsonPath("$.request.price.unit").value(expectedLimitedRequest.price.unit))
-            .andExpect(jsonPath("$.request.price.nano").value(expectedLimitedRequest.price.nano))
-            .andExpect(jsonPath("$.request.price.currency").value(expectedLimitedRequest.price.currency.toString()))
+            .andExpect(jsonPath("$.iid.id").value(expected.iid.id))
+            .andExpect(jsonPath("$.request.direction").value(expected.direction.toString()))
+            .andExpect(jsonPath("$.request.lots").value(expected.lots))
+            .andExpect(jsonPath("$.currentInfo.remainingLots").value(expected.lots))
+            .andExpect(jsonPath("$.request.price.unit").value(expected.price.unit))
+            .andExpect(jsonPath("$.request.price.nano").value(expected.price.nano))
+            .andExpect(jsonPath("$.request.price.currency").value(expected.price.currency.toString()))
     }
 
     protected fun performAndCheckCreate(

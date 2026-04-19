@@ -5,5 +5,32 @@
 
 ## Структура
 
-Тесты повторяют структуру самих Assignments, но на месте абстрактных классов могут быть только классы с вспомогательными
-protected методами. Кроме того следует писать 1 класс на кейсы каждой проверяемой операции над поручениями.
+Тесты повторяют структуру самих Assignments.
+На месте абстрактных классов могут быть только классы с вспомогательными protected методами, отвечающими за операции над
+поручениями.
+Все тесты наследуются от [BasicAssignmentTest](BasicAssignmentTest.kt).
+1 класс для кейсов каждой проверяемой операции над поручениями:
+
+- `create`
+- `refresh`
+- `cancel`
+- `coninue`
+
+```mermaid
+classDiagram
+    class BasicAssignmentTest {
+        <<abstract>>
+        # assertAllAssignmentsCancelled(path: String, expectedCount: Int)
+        # assertAllOrdersCancelled(expectedCount: Int)
+        # expectOrder(orderId: String, expected: LimitOrderRequest)
+    }
+    class TopPericeTest {
+        <<abstract>>
+        Basic for all top price assignment operation tests
+        # create(...): MvcResult
+        # refresh(assignmentId: UUID): MvcResult
+        # cancel(assignmentId: UUID): MvcResult
+    }
+
+    BasicAssignmentTest <|-- TopPericeTest
+```

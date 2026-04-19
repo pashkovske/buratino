@@ -80,9 +80,9 @@ class FractionalSpreadAssignmentTest(
             idempotencyToken = null,
             price = expectedPrice
         )
-        expectOrderOnLimitedRequest(
+        expectOrder(
             orderId = orderId,
-            expectedLimitedRequest = expectedOrderRequest
+            expected = expectedOrderRequest
         )
 
         // Refresh

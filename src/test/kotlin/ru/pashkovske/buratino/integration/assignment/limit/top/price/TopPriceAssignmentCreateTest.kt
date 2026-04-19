@@ -1,36 +1,33 @@
-package ru.pashkovske.buratino.integration.assignment
+package ru.pashkovske.buratino.integration.assignment.limit.top.price
 
 import com.jayway.jsonpath.JsonPath
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.dao.core.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
+import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
+import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import ru.pashkovske.buratino.order.dao.OrderDao
 import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
-class TopPriceAssignmentTest(
+class TopPriceAssignmentCreateTest(
     @Autowired mockMvc: MockMvc
-): BasicAssignmentTest(
+): TopPericeTest(
     mockMvc = mockMvc
 ) {
 
@@ -47,32 +44,25 @@ class TopPriceAssignmentTest(
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
 
     @AfterEach
-    fun setup() {
+    fun cleanUp() {
         orderDao.deleteAll()
         topPriceAssignmentDao.deleteAll()
     }
 
     @Test
-    fun `create, skip refresh and cancel sell share`() {
+    fun `create sell share with one step over`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val oneStepOver = true
 
-        val result: MvcResult = performAndCheckCreate(
-            path = "/assignment/top-price/{instrumentId}/start/{direction}",
+        val result: MvcResult = create(
             iid = iid,
             direction = direction,
-            content = "{}",
-            params = mapOf("oneStepOver" to oneStepOver.toString())
+            oneStepOver = oneStepOver,
         )
-            .andExpect(jsonPath("$.direction").value(direction.toString()))
-            .andExpect(jsonPath("$.oneStepOver").value(oneStepOver))
-            .andExpect(jsonPath("$.info.orderId").isString())
-            .andReturn()
 
-        verify(extOrderServiceAdapter).createOrder(any())
+        Mockito.verify(extOrderServiceAdapter).createOrder(any())
 
-        val assignmentId: UUID = UUID.fromString(JsonPath.parse(result.response.contentAsString).read("$.id"))
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
         val expectedPrice = Price(
@@ -91,65 +81,30 @@ class TopPriceAssignmentTest(
             orderId = orderId,
             expected = expectedOrderRequest
         )
-
-        // Refresh
-        performAndCheckRefresh(
-            path = "/assignment/top-price/{assignmentId}/refresh",
-            assignmentId = assignmentId,
-            iid = iid
-        )
-            .andExpect(jsonPath("$.info.orderId").isString())
-
-        verify(extOrderServiceAdapter, never()).replaceOrder(any(), any())
-
-        // Cancel
-        performAndCheckCancel(
-            path = "/assignment/top-price/{assignmentId}",
-            assignmentId = assignmentId,
-            iid = iid
-        )
-            .andExpect(jsonPath("$.info.orderId").isString())
-
-        verify(extOrderServiceAdapter).cancelOrder(orderId)
-
-        assertAllAssignmentsCancelled(
-            path = "/assignment/top-price/",
-            expectedCount = 1
-        )
-        assertAllOrdersCancelled(1)
     }
 
     @Test
-    fun `create with refresh notifier and cancel sell share`()  {
+    fun `create with refresh notifier`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val oneStepOver = true
 
-        // Create
-        val createResult: MvcResult = performAndCheckCreate(
-            path = "/assignment/top-price/{instrumentId}/start/{direction}",
+        val createResult: MvcResult = create(
             iid = iid,
             direction = direction,
-            content = "{\"refreshNotifyPeriod\": \"PT10M\"}",
-            params = mapOf("oneStepOver" to oneStepOver.toString())
-        ).andReturn()
+            oneStepOver = oneStepOver,
+            refreshPeriod = "PT10M"
+        )
 
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
         val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
         val refreshNotifierId: UUID? = assignment.getRefreshNotifierId()
         assertNotNull(refreshNotifierId)
-        val refreshNotifier: AssignmentNotifier = refreshNotifierDao.get(refreshNotifierId!!)
+        val refreshNotifier: AssignmentNotifier = refreshNotifierDao.get(refreshNotifierId)
         assertEquals(
             taskScheduler.getPeriodicScheduledTasks().first(),
             refreshNotifier.taskId
         )
-
-        performAndCheckCancel(
-            path = "/assignment/top-price/{assignmentId}",
-            assignmentId = assignmentId,
-            iid = iid
-        )
-        assertTrue(taskScheduler.getPeriodicScheduledTasks().isEmpty())
     }
 }

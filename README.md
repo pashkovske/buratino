@@ -21,7 +21,7 @@
 
 1. Запустить базу данных PostgreSQL:
 ```bash
-docker-compose up -d
+docker-compose -f ./docker/docker-compose.yml up -d
 ```
 
 2. Установить переменную окружения для токена API Тинькофф:
