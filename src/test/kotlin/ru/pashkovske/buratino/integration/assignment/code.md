@@ -23,6 +23,7 @@ classDiagram
         # assertAllAssignmentsCancelled(path: String, expectedCount: Int)
         # assertAllOrdersCancelled(expectedCount: Int)
         # expectOrder(orderId: String, expected: LimitOrderRequest)
+        # performAndCheckCancel(path: String, assignmentId: UUID) // to simulate external cancel from broker
     }
     class TopPericeTest {
         <<abstract>>

@@ -53,7 +53,6 @@ class ContinuousFractionalSpreadAssignmentContinueTest(
         val direction = OrderDirection.BUY
         val rate = 0.007
 
-        // Create continuous assignment
         val createResult: MvcResult = create(
             iid = iid,
             direction = direction,
@@ -67,18 +66,15 @@ class ContinuousFractionalSpreadAssignmentContinueTest(
         // Cancel child to simulate completion
         performAndCheckCancel(
             path = "/assignment/fractional-spread/{assignmentId}",
-            assignmentId = childAssignmentId,
-            iid = iid
+            assignmentId = childAssignmentId
         )
 
         Mockito.verify(extOrderServiceAdapter).cancelOrder(createdOrderId)
 
-        // Continue parent assignment
         val continueResult: MvcResult = continueAssignment(assignmentId)
         
         val continuedOrderId: String = JsonPath.parse(continueResult.response.contentAsString).read("$.child.info.orderId")
-        
-        // Verify new order was created with opposite direction
+
         assertNotEquals(continuedOrderId, createdOrderId)
         Mockito.verify(extOrderServiceAdapter, Mockito.times(2)).createOrder(any())
     }

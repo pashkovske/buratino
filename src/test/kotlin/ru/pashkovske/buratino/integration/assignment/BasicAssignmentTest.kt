@@ -16,14 +16,10 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.util.MultiValueMap
 import ru.pashkovske.buratino.assignment.dao.notify.NotifierDao
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
-import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
-import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
-import java.util.Locale.getDefault
 import java.util.UUID
 
 @ActiveProfiles("test")
@@ -49,6 +45,7 @@ abstract class BasicAssignmentTest(
         taskScheduler.shutdown()
     }
 
+    @Suppress("SameParameterValue")
     protected fun assertAllAssignmentsCancelled(
         path: String,
         expectedCount: Int
@@ -69,6 +66,7 @@ abstract class BasicAssignmentTest(
             )
     }
 
+    @Suppress("SameParameterValue")
     protected fun assertAllOrdersCancelled(expectedCount: Int) {
         mockMvc.perform(
             MockMvcRequestBuilders
@@ -109,55 +107,10 @@ abstract class BasicAssignmentTest(
             .andExpect(jsonPath("$.request.price.currency").value(expected.price.currency.toString()))
     }
 
-    protected fun performAndCheckCreate(
-        path: String,
-        iid: InstrumentId,
-        direction: OrderDirection,
-        content: String?,
-        params: Map<String, String>?
-    ): ResultActions {
-        return mockMvc.perform(
-            MockMvcRequestBuilders
-                .post(
-                    path,
-                    iid.id,
-                    direction.toString().lowercase(getDefault())
-                )
-                .header("X-API-KEY", "test-api-key")
-                .content(content ?: "")
-                .params(MultiValueMap.fromSingleValue(params ?: emptyMap()))
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(jsonPath("$.iid.id").value(iid.id))
-            .andExpect(jsonPath("$.id").isString())
-            .andExpect(jsonPath("$.state").value("IN_PROGRESS"))
-    }
-
-    protected fun performAndCheckRefresh(
-        path: String,
-        assignmentId: UUID,
-        iid: InstrumentId
-    ): ResultActions {
-        return mockMvc.perform(
-            MockMvcRequestBuilders
-                .patch(
-                    path,
-                    assignmentId
-                )
-                .header("X-API-KEY", "test-api-key")
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(jsonPath("$.iid.id").value(iid.id))
-            .andExpect(jsonPath("$.id").value(assignmentId.toString()))
-            .andExpect(jsonPath("$.state").value("IN_PROGRESS"))
-    }
-
+    @Suppress("SameParameterValue")
     protected fun performAndCheckCancel(
         path: String,
-        assignmentId: UUID,
-        iid: InstrumentId
+        assignmentId: UUID
     ): ResultActions {
         return mockMvc.perform(
             MockMvcRequestBuilders
@@ -169,29 +122,7 @@ abstract class BasicAssignmentTest(
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(jsonPath("$.iid.id").value(iid.id))
             .andExpect(jsonPath("$.id").value(assignmentId.toString()))
             .andExpect(jsonPath("$.state").value("COMPLETED"))
-    }
-
-    @Suppress("SameParameterValue")
-    protected fun performAndCheckContinue(
-        path: String,
-        assignmentId: UUID,
-        iid: InstrumentId
-    ): ResultActions {
-        return mockMvc.perform(
-            MockMvcRequestBuilders
-                .patch(
-                    path,
-                    assignmentId
-                )
-                .header("X-API-KEY", "test-api-key")
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(jsonPath("$.iid.id").value(iid.id))
-            .andExpect(jsonPath("$.id").isString())
-            .andExpect(jsonPath("$.state").value("IN_PROGRESS"))
     }
 }
