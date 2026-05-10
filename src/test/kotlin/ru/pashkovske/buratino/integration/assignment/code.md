@@ -14,7 +14,7 @@
 - `create`
 - `refresh`
 - `cancel`
-- `coninue`
+- `continue`
 
 ```mermaid
 classDiagram
@@ -38,7 +38,16 @@ classDiagram
         # refresh(assignmentId: UUID): MvcResult
         # cancel(assignmentId: UUID): MvcResult
     }
+    class ContinuousFractionalSpreadTest {
+        <<abstract>>
+        Basic for all continuous fractional spread assignment operation tests
+        # create(...): MvcResult
+        # refresh(assignmentId: UUID): MvcResult
+        # cancel(assignmentId: UUID): MvcResult
+        # continueAssignment(assignmentId: UUID): MvcResult
+    }
 
     BasicAssignmentTest <|-- TopPericeTest
     BasicAssignmentTest <|-- FractionalSpreadTest
+    BasicAssignmentTest <|-- ContinuousFractionalSpreadTest
 ```
