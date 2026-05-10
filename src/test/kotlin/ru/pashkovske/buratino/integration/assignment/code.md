@@ -31,6 +31,14 @@ classDiagram
         # refresh(assignmentId: UUID): MvcResult
         # cancel(assignmentId: UUID): MvcResult
     }
+    class FractionalSpreadTest {
+        <<abstract>>
+        Basic for all fractional spread assignment operation tests
+        # create(...): MvcResult
+        # refresh(assignmentId: UUID): MvcResult
+        # cancel(assignmentId: UUID): MvcResult
+    }
 
     BasicAssignmentTest <|-- TopPericeTest
+    BasicAssignmentTest <|-- FractionalSpreadTest
 ```
