@@ -5,14 +5,16 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeast
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import ru.pashkovske.buratino.assignment.dao.core.postgre.TopPriceAssignmentDao
 import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
-import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
+import ru.pashkovske.buratino.assignment.service.core.refresh.TopPriceAssignmentRefresher
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
@@ -23,22 +25,27 @@ import ru.pashkovske.buratino.price.model.Currency
 import ru.pashkovske.buratino.price.model.Price
 import java.util.UUID
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 class TopPriceAssignmentCreateTest(
     @Autowired mockMvc: MockMvc
-): TopPericeTest(
+) : TopPericeTest(
     mockMvc = mockMvc
 ) {
 
     @Autowired
     private lateinit var bootstrapper: AssignmentTestBootstrapper
+
     @Autowired
     private lateinit var topPriceAssignmentDao: TopPriceAssignmentDao
+
     @Autowired
     private lateinit var orderDao: OrderDao
+
     @Autowired
     private lateinit var refreshNotifierDao: RefreshNotifierDao
+
+    @MockitoSpyBean
+    private lateinit var refresher: TopPriceAssignmentRefresher
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
@@ -84,7 +91,7 @@ class TopPriceAssignmentCreateTest(
     }
 
     @Test
-    fun `create with refresh notifier`() {
+    fun `create with refresh notifier triggers refresh periodically`() {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
         val direction = OrderDirection.SELL
         val oneStepOver = true
@@ -93,18 +100,12 @@ class TopPriceAssignmentCreateTest(
             iid = iid,
             direction = direction,
             oneStepOver = oneStepOver,
-            refreshPeriod = "PT10M"
+            refreshPeriod = "PT0.1S"
         )
 
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
+        Thread.sleep(290)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
-        val assignment: TopPriceAssignment = topPriceAssignmentDao.get(assignmentId)
-        val refreshNotifierId: UUID? = assignment.getRefreshNotifierId()
-        assertNotNull(refreshNotifierId)
-        val refreshNotifier: AssignmentNotifier = refreshNotifierDao.get(refreshNotifierId)
-        assertEquals(
-            taskScheduler.getPeriodicScheduledTasks().first(),
-            refreshNotifier.taskId
-        )
+        verify(refresher, atLeast(2)).refresh(eq(assignmentId))
     }
 }

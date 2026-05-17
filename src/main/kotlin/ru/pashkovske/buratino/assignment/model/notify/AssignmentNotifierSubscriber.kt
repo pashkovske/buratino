@@ -19,6 +19,7 @@ class AssignmentNotifierSubscriber(
 
     override fun onSubscribe(s: Subscription) {
         this.subscription = s
+        s.request(1)
     }
 
     override fun onNext(t: Tick) {
@@ -26,6 +27,8 @@ class AssignmentNotifierSubscriber(
             action.accept(assignmentId)
         } catch (e: Exception) {
             log.error(e) { "Assignment $assignmentId notifier task failed" }
+        } finally {
+            subscription!!.request(1)
         }
     }
 
