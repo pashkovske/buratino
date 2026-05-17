@@ -1,6 +1,7 @@
 package ru.pashkovske.buratino.common.scheduler.periodic.model
 
 import reactor.core.publisher.Flux
+import reactor.core.scheduler.Schedulers
 import ru.pashkovske.buratino.common.scheduler.base.exception.SchedulingException
 import ru.pashkovske.buratino.common.scheduler.base.model.DisposableSubscriber
 import ru.pashkovske.buratino.common.scheduler.base.model.SchedulingState
@@ -11,7 +12,7 @@ import java.util.UUID
 
 class PeriodicTask(
     val id: UUID,
-    val period: Duration,
+    val period: Duration
 ) : AutoCloseable {
 
     private val ticker: Flux<Tick>
@@ -27,6 +28,7 @@ class PeriodicTask(
                     time = Instant.now()
                 )
             }
+            .publishOn(Schedulers.boundedElastic(), 1)
     }
 
     fun subscribe(subscriber: DisposableSubscriber<Tick>) {

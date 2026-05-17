@@ -40,7 +40,7 @@ class OrderServiceImpl(
     }
 
     override fun createOrder(orderRequest: LimitOrderRequest): Order {
-        log.info("Creating order $orderRequest")
+        log.info("Creating order with request\n$orderRequest")
         val order = extOrderService.createOrder(orderRequest)
         orderDao.create(order)
         return order
@@ -50,7 +50,7 @@ class OrderServiceImpl(
         orderId: String,
         newOrderRequest: LimitOrderRequest
     ): Order {
-        log.info("Replacing order $orderId with $newOrderRequest")
+        log.info("Replacing order $orderId with request\n$newOrderRequest")
         val order = orderDao.get(orderId)
         if (order.request == newOrderRequest) {
             log.info("Skipping replacing order $orderId - new order is identical")

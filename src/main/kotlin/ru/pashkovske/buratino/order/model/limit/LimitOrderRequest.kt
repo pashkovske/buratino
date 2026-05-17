@@ -30,4 +30,16 @@ class LimitOrderRequest(
         result = 31 * result + price.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return """
+            {
+                "iid": "$iid",
+                "direction": "$direction",
+                "lots": $lots,
+                "idempotencyToken": "$idempotencyToken",
+                "price": $price
+            }
+        """.trimIndent()
+    }
 }

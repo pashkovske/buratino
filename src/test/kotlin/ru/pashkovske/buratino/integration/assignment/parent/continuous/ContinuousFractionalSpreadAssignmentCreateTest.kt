@@ -5,6 +5,9 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeast
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
@@ -15,6 +18,7 @@ import ru.pashkovske.buratino.assignment.dao.notify.ContinueNotifierDao
 import ru.pashkovske.buratino.assignment.dao.notify.RefreshNotifierDao
 import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
+import ru.pashkovske.buratino.assignment.service.core.refresh.ContinuousFractionalSpreadAssignmentRefresher
 import ru.pashkovske.buratino.instrument.model.InstrumentId
 import ru.pashkovske.buratino.integration.mock.bootstrapper.AssignmentTestBootstrapper
 import ru.pashkovske.buratino.order.adapter.ExtOrderServiceAdapter
@@ -53,6 +57,9 @@ class ContinuousFractionalSpreadAssignmentCreateTest(
 
     @MockitoSpyBean
     private lateinit var extOrderServiceAdapter: ExtOrderServiceAdapter
+
+    @MockitoSpyBean
+    private lateinit var refresher: ContinuousFractionalSpreadAssignmentRefresher
 
     @AfterEach
     fun cleanUp() {
@@ -130,18 +137,12 @@ class ContinuousFractionalSpreadAssignmentCreateTest(
             iid = iid,
             direction = direction,
             rate = rate,
-            refreshPeriod = "PT10M"
+            refreshPeriod = "PT0.1S"
         )
 
         assertEquals(1, taskScheduler.getPeriodicScheduledTasks().size)
         val assignmentId: UUID = UUID.fromString(JsonPath.parse(createResult.response.contentAsString).read("$.id"))
-        val assignment: ContinuousFractionalSpreadAssignment = continuousFractionalSpreadAssignmentDao.get(assignmentId)
-        val refreshNotifierId: UUID? = assignment.getRefreshNotifierId()
-        assertNotNull(refreshNotifierId)
-        val refreshNotifier: AssignmentNotifier = refreshNotifierDao.get(refreshNotifierId)
-        assertEquals(
-            taskScheduler.getPeriodicScheduledTasks().first(),
-            refreshNotifier.taskId
-        )
+        Thread.sleep(290)
+        verify(refresher, atLeast(2)).refresh(eq(assignmentId))
     }
 }
