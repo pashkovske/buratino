@@ -5,6 +5,7 @@ import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.params.provider.Arguments
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,8 +20,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import ru.pashkovske.buratino.assignment.dao.notify.NotifierDao
 import ru.pashkovske.buratino.common.scheduler.TaskScheduler
 import ru.pashkovske.buratino.integration.configuration.IntegrationStubsConfiguration
+import ru.pashkovske.buratino.order.model.OrderDirection
 import ru.pashkovske.buratino.order.model.limit.LimitOrderRequest
 import java.util.UUID
+import java.util.stream.Stream
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -29,6 +32,18 @@ import java.util.UUID
 abstract class BasicAssignmentTest(
     protected val mockMvc: MockMvc
 ) {
+
+    companion object {
+        @JvmStatic
+        fun orderDirectionAndStepOver(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(OrderDirection.BUY, true),
+                Arguments.of(OrderDirection.SELL, true),
+                Arguments.of(OrderDirection.BUY, false),
+                Arguments.of(OrderDirection.SELL, false)
+            )
+        }
+    }
 
     @Autowired
     protected lateinit var taskScheduler: TaskScheduler

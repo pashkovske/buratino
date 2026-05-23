@@ -3,6 +3,8 @@ package ru.pashkovske.buratino.integration.assignment.limit.top.price
 import com.jayway.jsonpath.JsonPath
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeast
@@ -56,15 +58,17 @@ class TopPriceAssignmentCreateTest(
         topPriceAssignmentDao.deleteAll()
     }
 
-    @Test
-    fun `create sell share with one step over`() {
+    @ParameterizedTest
+    @MethodSource("orderDirectionAndStepOver")
+    fun `create share with one step over`(
+        orderDirection: OrderDirection,
+        oneStepOver: Boolean
+    ) {
         val iid: InstrumentId = bootstrapper.getIid("kzos")
-        val direction = OrderDirection.SELL
-        val oneStepOver = true
 
         val result: MvcResult = create(
             iid = iid,
-            direction = direction,
+            direction = orderDirection,
             oneStepOver = oneStepOver,
         )
 
@@ -72,14 +76,35 @@ class TopPriceAssignmentCreateTest(
 
         val orderId: String = JsonPath.parse(result.response.contentAsString).read("$.info.orderId")
 
-        val expectedPrice = Price(
-            unit = 66,
-            nano = 100_000_000,
-            currency = Currency.RUB
-        )
+        val priceStep = if (oneStepOver) {
+            Price(
+                unit = 0,
+                nano = 100_000_000,
+                currency = Currency.RUB
+            )
+        } else {
+            Price(
+                unit = 0,
+                nano = 0,
+                currency = Currency.RUB
+            )
+        }
+        val expectedPrice = when (orderDirection) {
+            OrderDirection.SELL -> Price(
+                unit = 66,
+                nano = 200_000_000,
+                currency = Currency.RUB
+            ) - priceStep
+
+            OrderDirection.BUY -> Price(
+                unit = 65,
+                nano = 500_000_000,
+                currency = Currency.RUB
+            ) + priceStep
+        }
         val expectedOrderRequest = LimitOrderRequest(
             iid = iid,
-            direction = direction,
+            direction = orderDirection,
             lots = 1,
             idempotencyToken = null,
             price = expectedPrice
