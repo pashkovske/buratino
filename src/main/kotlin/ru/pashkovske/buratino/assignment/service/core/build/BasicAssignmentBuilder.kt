@@ -4,7 +4,7 @@ import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.notify.AssignmentNotifier
-import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
+import ru.pashkovske.buratino.assignment.service.notify.core.RefreshNotifyOrchestrator
 import java.util.UUID
 
 abstract class BasicAssignmentBuilder<

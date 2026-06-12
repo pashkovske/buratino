@@ -32,7 +32,9 @@ abstract class BasicAssignmentController<
     }
 
     protected fun doStart(cmd: Cmd): Dto {
-        return toDto(exe.start(cmd))
+        var assignment: A = exe.build(cmd)
+        assignment = exe.start(assignment.id)
+        return toDto(assignment)
     }
 
     @PatchMapping("/{id}/refresh")

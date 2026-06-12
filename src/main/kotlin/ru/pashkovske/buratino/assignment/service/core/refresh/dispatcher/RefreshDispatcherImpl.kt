@@ -1,24 +1,28 @@
 package ru.pashkovske.buratino.assignment.service.core.refresh.dispatcher
 
+import jakarta.annotation.PostConstruct
+import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.core.Assignment
-import ru.pashkovske.buratino.assignment.model.core.ContinuousFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
+import ru.pashkovske.buratino.assignment.model.core.RepeatableFractionalSpreadAssignment
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
 import ru.pashkovske.buratino.assignment.service.core.refresh.AssignmentRefresher
-import ru.pashkovske.buratino.assignment.service.core.refresh.ContinuousFractionalSpreadAssignmentRefresher
-import ru.pashkovske.buratino.assignment.service.core.refresh.FractionalSpreadAssignmentRefresher
-import ru.pashkovske.buratino.assignment.service.core.refresh.TopPriceAssignmentRefresher
 import java.util.UUID
 
 @Service
 class RefreshDispatcherImpl(
-    private val continuousFractionalSpreadAssignmentRefresher: ContinuousFractionalSpreadAssignmentRefresher,
-    private val topPriceAssignmentRefresher: TopPriceAssignmentRefresher,
-    private val fractionalSpreadAssignmentRefresher: FractionalSpreadAssignmentRefresher,
+    private val applicationContext: ApplicationContext,
     private val daos: List<AssignmentDao<out Assignment>>
 ) : RefreshDispatcher {
+
+    lateinit var refreshers: Map<String, AssignmentRefresher<out Assignment>>
+
+    @PostConstruct
+    private fun registerRefreshers() {
+        refreshers = applicationContext.getBeansOfType(AssignmentRefresher::class.java)
+    }
 
     fun findAssignment(id: UUID): Assignment {
         for (dao: AssignmentDao<out Assignment> in daos) {
@@ -35,11 +39,14 @@ class RefreshDispatcherImpl(
     }
 
     private fun getRefresher(assignment: Assignment): AssignmentRefresher<out Assignment> {
-        return when (assignment) {
-            is ContinuousFractionalSpreadAssignment -> continuousFractionalSpreadAssignmentRefresher
-            is TopPriceAssignment -> topPriceAssignmentRefresher
-            is FractionalSpreadAssignment -> fractionalSpreadAssignmentRefresher
+        val refresherBeanName: String = when (assignment) {
+            is RepeatableFractionalSpreadAssignment -> "repeatableFractionalSpreadAssignmentRefresher"
+            is TopPriceAssignment -> "topPriceAssignmentRefresher"
+            is FractionalSpreadAssignment -> "fractionalSpreadAssignmentRefresher"
         }
+        return refreshers[refresherBeanName] ?: throw IllegalArgumentException(
+            "Refresher for assignment of type ${assignment.javaClass.simpleName} not found"
+        )
     }
 
     override fun getRefresher(assignmentId: UUID): AssignmentRefresher<out Assignment> {

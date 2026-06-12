@@ -8,6 +8,10 @@ import ru.pashkovske.buratino.common.scheduler.base.model.Tick
 import java.util.UUID
 import java.util.function.Consumer
 
+/**
+ * @param action action on assignment
+ * @param assignmentId argument will be provided to action
+ */
 class AssignmentNotifierSubscriber(
     private val action: Consumer<UUID>,
     private val assignmentId: UUID

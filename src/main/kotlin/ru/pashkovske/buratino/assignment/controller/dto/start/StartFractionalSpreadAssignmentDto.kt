@@ -5,7 +5,6 @@ import java.time.Duration
 
 class StartFractionalSpreadAssignmentDto(
     val rate: Double,
-    val continueNotifyPeriod: Duration?,
     refreshNotifyPeriod: Duration?
 ) : BasicStartAssignmentDto(
     refreshNotifyPeriod = refreshNotifyPeriod

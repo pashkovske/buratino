@@ -3,17 +3,20 @@ package ru.pashkovske.buratino.assignment.service.core.refresh
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.model.ExeCtx
+import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ParentAssignment
+import ru.pashkovske.buratino.assignment.service.facade.AssignmentExe
 import java.util.UUID
 
 abstract class ParentAssignmentRefresher<
     ChildA : Assignment,
+    ChildCmd: AssignmentStartCmd<ChildA>,
     ParentA : ParentAssignment<ChildA>
     >(
     assignmentDao: AssignmentDao<ParentA>,
     protected val childAssignmentDao: AssignmentDao<ChildA>,
-    protected val childAssignmentRefresher: AssignmentRefresher<ChildA>
+    protected val childExe: AssignmentExe<ChildA, ChildCmd>
 ) : BasicAssignmentRefresher<ParentA>(
     assignmentDao = assignmentDao
 ) {
@@ -34,7 +37,7 @@ abstract class ParentAssignmentRefresher<
 
     protected fun refreshChild(ctx: ExeCtx<ParentA>) {
         val assignment: ParentA = ctx.assignment
-        assignment.child = childAssignmentRefresher.refresh(assignment.child.id)
+        assignment.child = childExe.refresh(assignment.child.id)
         ctx.setMutated()
     }
 }

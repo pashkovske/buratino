@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.FractionalSpreadAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.FractionalSpreadAssignment
-import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
+import ru.pashkovske.buratino.assignment.service.notify.core.RefreshNotifyOrchestrator
 
 @Component
 class FractionalSpreadAssignmentBuilder(

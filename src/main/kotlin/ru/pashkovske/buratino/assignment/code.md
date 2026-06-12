@@ -16,15 +16,15 @@ classDiagram
         child: Assignment
     }
     note for ParentAssignment "Controls child lifecycle"
-    class ContinuousAssignment~Assignment~ {
+    class RepeatableAssignment~Assignment~ {
         <<abstract>>
         child: Assignment
     }
-    note for ContinuousAssignment "Can replace child, when previous is completed"
-    class ContinuousFractionalSpreadAssignment {
+    note for RepeatableAssignment "Can replace child when previous is completed"
+    class RepeatableFractionalSpreadAssignment {
         child: FractionalSpreadAssignment
     }
-    note for ContinuousFractionalSpreadAssignment "Replace child with opposite one when previous is completed"
+    note for RepeatableFractionalSpreadAssignment "Replace child with opposite one when previous is completed"
     class LimitOrderAssignment {
         <<abstract>>
     }
@@ -37,12 +37,12 @@ classDiagram
     note for TopPriceAssignment "Makes top price order"
 
     Assignment <|-- ParentAssignment
-    ParentAssignment <|-- ContinuousAssignment
-    ContinuousAssignment <|-- ContinuousFractionalSpreadAssignment
+    ParentAssignment <|-- RepeatableAssignment
+    RepeatableAssignment <|-- RepeatableFractionalSpreadAssignment
     Assignment <|-- LimitOrderAssignment
     LimitOrderAssignment <|-- FractionalSpreadAssignment
     LimitOrderAssignment <|-- TopPriceAssignment
-    ContinuousFractionalSpreadAssignment *-- FractionalSpreadAssignment
+    RepeatableFractionalSpreadAssignment *-- FractionalSpreadAssignment
 ```
 
 Все стереотипные классы в модуле являются дженериками от [Assignment](./model/core/Assignment.kt) и повторяют их
@@ -66,7 +66,7 @@ starter от одного типа [Assignment](./model/core/Assignment.kt) не
 Подробное описание конкретных поручений:
 - [TopPriceAssignment.md](./doc/core/TopPriceAssignment.md)
 - [FractionalSpreadAssignment.md](./doc/core/FractionalSpreadAssignment.md)
-- [ContinuousFractionalSpreadAssignment.md](./doc/core/ContinuousFractionalSpreadAssignment.md)
+- [RepeatableFractionalSpreadAssignment.md](./doc/core/RepeatableFractionalSpreadAssignment.md)
 
 ## Действия над поручениями
 
@@ -79,9 +79,6 @@ starter от одного типа [Assignment](./model/core/Assignment.kt) не
 - `refresh` выполняет [refresher](./service/core/refresh) - обновить поручение. Т.е. привести его в состояние как если
   бы оно было только что создано
 - `cancel` выполняет [canceller](./service/core/cancel) - отменить поручение
-- `continue` выполняет [continuer](./service/core/continuation) (только для
-  [ContinuousAssignment](./model/core/ContinuousAssignment.kt)) - продолжить родительское
-  поручение, если дочернее завершилось
 
 Действия, кроме `build` предполагают действия у брокера: выставление / изменение / отмену заявок или локальные действия
 по подписке на разные события, меняя состояние поручения.
@@ -90,11 +87,13 @@ starter от одного типа [Assignment](./model/core/Assignment.kt) не
 
 ## Notifications
 
-Для автоматических `refresh` и `contunue` есть механизм периодических нотификаций. Для этого в команде задаётся период,
+Для автоматических `refresh` есть механизм периодических нотификаций. Для этого в команде задаётся период,
 c помощью [TaskScheduler](../common/scheduler/TaskScheduler.kt) заводится Publisher, который шлёт периодические
 [Tick](../common/scheduler/base/model/Tick.kt)-и в свои Subscribers. После этого на него подписывается соответствующий
 [AssignmentNotifierSubscriber](./model/notify/AssignmentNotifierSubscriber.kt), который исполняет нужное действие
 по [Tick](../common/scheduler/base/model/Tick.kt)-у
+
+Заводит подписку 
 
 ## Persistency
 
@@ -105,4 +104,4 @@ c помощью [TaskScheduler](../common/scheduler/TaskScheduler.kt) заво�
 Конкурентность обновления одного поручения пока не реализована из-за ненадобности, поскольку приложение развёрнутов в
 1-м экземпляре.
 
-Notifications тоже персистентны, за это отвечает [NotifyOrchestrator](./service/notify/NotifyOrchestrator.kt)
+Notifications тоже персистентны, за это отвечает [NotifyOrchestrator](service/notify/core/NotifyOrchestrator.kt)

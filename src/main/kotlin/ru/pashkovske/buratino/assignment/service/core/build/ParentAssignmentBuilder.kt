@@ -5,7 +5,8 @@ import ru.pashkovske.buratino.assignment.model.cmd.AssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.cmd.ParentAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.core.ParentAssignment
-import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
+import ru.pashkovske.buratino.assignment.service.facade.AssignmentExe
+import ru.pashkovske.buratino.assignment.service.notify.core.RefreshNotifyOrchestrator
 
 abstract class ParentAssignmentBuilder<
     ParentA : ParentAssignment<ChildA>,
@@ -13,7 +14,7 @@ abstract class ParentAssignmentBuilder<
     ParentCmd : ParentAssignmentStartCmd<ParentA, ChildA>,
     ChildCmd : AssignmentStartCmd<ChildA>
     >(
-    protected val childBuilder: AssignmentBuilder<ChildA, ChildCmd>,
+    protected val childExe: AssignmentExe<ChildA, ChildCmd>,
     assignmentDao: AssignmentDao<ParentA>,
     refreshNotifyOrchestrator: RefreshNotifyOrchestrator
 ) : BasicAssignmentBuilder<ParentA, ParentCmd>(
@@ -30,7 +31,7 @@ abstract class ParentAssignmentBuilder<
 
     final override fun preBuild(cmd: ParentCmd): ParentA {
         val childStartCmd: ChildCmd = buildChildStartCmd(cmd)
-        val childAssignment: ChildA = childBuilder.build(childStartCmd)
+        val childAssignment: ChildA = childExe.build(childStartCmd)
         val parentAssignment: ParentA = preBuildParent(cmd, childAssignment)
         postBuildParent(parentAssignment, cmd)
         return parentAssignment

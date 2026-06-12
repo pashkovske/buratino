@@ -13,7 +13,6 @@ Assignment (поручение) - это торговая стратегия н�
 - `start`
 - `cancel`
 - `refresh`
-- `continue`
 
 Жизненный цикл поручения:
 
@@ -21,7 +20,7 @@ Assignment (поручение) - это торговая стратегия н�
 stateDiagram-v2
     [*] --> QUEUED
     QUEUED --> IN_PROGRESS: start
-    IN_PROGRESS --> IN_PROGRESS: refresh | continue
+    IN_PROGRESS --> IN_PROGRESS: refresh
     IN_PROGRESS --> COMPLETED: cancel | refresh
     COMPLETED --> [*]
 ```
@@ -31,7 +30,7 @@ stateDiagram-v2
 - [TopPriceAssignment](./TopPriceAssignment.md) - продажа 1 лота по лучшей цене
 - [FractionalSpreadAssignment](./FractionalSpreadAssignment.md) - продажа 1 лота по лучшей цене с указанием минимального
   спреда
-- [ContinuousFractionalSpreadAssignment](./ContinuousFractionalSpreadAssignment.md) - цикл из покупок и продаж по
+- [RepeatableFractionalSpreadAssignment](./RepeatableFractionalSpreadAssignment.md) - цикл из покупок и продаж по
   стратегии FractionalSpreadAssignment
 
 ### Start

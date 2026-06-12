@@ -9,7 +9,8 @@ interface AssignmentExe<
     Cmd : AssignmentStartCmd<A>
 > {
 
-    fun start(cmd: Cmd): A
+    fun build(cmd: Cmd): A
+    fun start(id: UUID): A
     fun refresh(id: UUID): A
     fun cancel(id: UUID): A
 }

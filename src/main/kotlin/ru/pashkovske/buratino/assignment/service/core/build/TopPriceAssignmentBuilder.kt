@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
 import ru.pashkovske.buratino.assignment.model.cmd.TopPriceAssignmentStartCmd
 import ru.pashkovske.buratino.assignment.model.core.TopPriceAssignment
-import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
+import ru.pashkovske.buratino.assignment.service.notify.core.RefreshNotifyOrchestrator
 
 @Component
 class TopPriceAssignmentBuilder(

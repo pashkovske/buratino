@@ -3,16 +3,14 @@ package ru.pashkovske.buratino.assignment.service.core.cancel
 import mu.KLogger
 import mu.KotlinLogging
 import ru.pashkovske.buratino.assignment.dao.core.AssignmentDao
-import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.model.AssignmentState
 import ru.pashkovske.buratino.assignment.model.ExeCtx
+import ru.pashkovske.buratino.assignment.model.core.Assignment
 import ru.pashkovske.buratino.assignment.service.core.AssignmentStateMachine
-import ru.pashkovske.buratino.assignment.service.notify.RefreshNotifyOrchestrator
 import java.util.UUID
 
 abstract class BasicAssignmentCanceller<A : Assignment>(
-    private val assignmentDao: AssignmentDao<A>,
-    private val refreshNotifyOrchestrator: RefreshNotifyOrchestrator
+    private val assignmentDao: AssignmentDao<A>
 ) : AssignmentCanceller<A> {
 
     private val log: KLogger = KotlinLogging.logger {}
@@ -38,7 +36,6 @@ abstract class BasicAssignmentCanceller<A : Assignment>(
     protected abstract fun doCancel(ctx: ExeCtx<A>)
     protected open fun postCancel(ctx: ExeCtx<A>) {
         val assignment: A = ctx.assignment
-        stopRefreshNotifier(ctx)
         toCompleted(ctx)
         if (ctx.isMutated()) {
             assignmentDao.update(assignment)
@@ -52,12 +49,5 @@ abstract class BasicAssignmentCanceller<A : Assignment>(
     }
     protected fun isCompleted(ctx: ExeCtx<A>): Boolean {
         return ctx.assignment.state == AssignmentState.COMPLETED
-    }
-
-    private fun stopRefreshNotifier(ctx: ExeCtx<A>) {
-        val assignment: A = ctx.assignment
-        refreshNotifyOrchestrator.stop(
-            id = assignment.getRefreshNotifierId()
-        )
     }
 }
