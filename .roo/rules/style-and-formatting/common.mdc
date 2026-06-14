@@ -1,0 +1,24 @@
+---
+description: Rules of code formatting
+alwaysApply: true
+---
+
+## JSON
+
+Applicable for any json: technical file multiline string in code and examples in documentation.
+
+For any object property or list element use separate line. Never Write object in one line.
+Example:
+
+```json
+{
+  "object_key": {
+    "number_key": 1,
+    "string_key": "string_value"
+  },
+  "list_key": [
+    "element1",
+    "element2"
+  ]
+}
+```

@@ -1,0 +1,47 @@
+---
+description: Kotlin specific code formatting
+globs:
+  - "*.kt"
+  - "*.kts"
+alwaysApply: true
+---
+
+## Kotlin code style
+
+- Always specify type of variables except explicit constructor use:
+
+```kotlin
+val someObject: SomeObject /* class specification is required */ = getSomeObject(someArg)
+var someNewObject /* class specification is not required, constructor used */ = SomeObject()
+```
+
+- If more than one argument is used, each argument should be on a separate line:
+
+```kotlin
+fun getSomeObject(
+    someArg1: String,
+    someArg2: Int
+): SomeObject
+ ```
+
+- Always specify argument names when calling functions:
+
+```kotlin
+val someObject: SomeObject = getSomeObject(
+    someArg1 = "someValue1",
+    someArg2 = 1
+)
+```
+
+- Always make 1 separate line after class definition;
+- Use comments (including Javadoc comments) only if it realy needed:
+
+```kotlin
+interface SomeObjectRepository {
+
+    fun get(id: UUID): SomeObject
+    fun save(someObject: SomeObject)
+    fun delete(id: UUID)
+}
+```
+\- does not need any comments since naming is obvious
