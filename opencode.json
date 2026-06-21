@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "eliza-mini-max": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Eliza Mini Max",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/mini-max-m2-7/v1"
+      },
+      "models": {
+        "mini-max-m2-7": {
+          "name": "mini-max-m2-7",
+          "limit": {
+            "context": 200000,
+            "output": 131072
+          }
+        }
+      }
+    }
+  }
+}
