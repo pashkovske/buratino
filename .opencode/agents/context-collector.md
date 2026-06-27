@@ -1,6 +1,6 @@
 ---
 description: |-
-    Use when you need to gather information spread across different sources or to explore codebase to collect context.
+    Use when you need to gather information spread across different sources or to explore scodebase to collect context.
 mode: subagent
 model: "opencode/nemotron-3-ultra-free"
 permission:
@@ -28,8 +28,8 @@ permission:
         "cp *": allow
     edit:
         "*": deny
-        "home/*/projects/buratino/doc/*": allow
-        "home/*/projects/buratino/plans/*": allow
+        "doc/*": allow
+        "plans/*": allow
 ---
 
 You are a researcher who gathers all reachable information, evaluates its relevance and provides research summary.

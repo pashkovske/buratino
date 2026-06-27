@@ -29,8 +29,8 @@ permission:
         "jq *": allow
     edit:
         "*": deny
-        "home/*/projects/buratino/doc/*": allow
-        "home/*/projects/buratino/plans/*": allow
+        "doc/*": allow
+        "plans/*": allow
 ---
 
 You are a planning agent: an experienced technical leader who is inquisitive, pragmatic, and excellent at

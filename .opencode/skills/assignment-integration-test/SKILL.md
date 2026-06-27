@@ -1,6 +1,8 @@
 ---
 name: assignment-integration-test
-description: How to write an integration test on any assignment functionality
+description: |-
+  How to write an integration test on assignment.
+ This type of test must be used if testing is needed for any assignment functionality on default, if there is no explicit reason to write other type of tests/   
 ---
 
 See [assignment doc](/doc/assignments/overview.md) to get context of what assignment is.
@@ -28,7 +30,7 @@ Means that all app is tested except external services. External services are cov
 interaction with them. Adapters are mocked, other Spring components are not. Adapters and axillary mock methods are
 [located here](/src/test/kotlin/ru/pashkovske/buratino/integration/mock)
 
-Use only MvcMock to call tested functionality, never calls it directly.
+Use only `MvcMock` to call tested functionality, never calls it directly.
 
 Do not use:
 

@@ -26,10 +26,10 @@
             "disable": true
         },
         "title": {
-            "model": "deepseek-v4-flash-free"
+            "model": "opencode/deepseek-v4-flash-free"
         },
         "summary": {
-            "model": "deepseek-v4-flash-free"
+            "model": "opencode/deepseek-v4-flash-free"
         }
     }
 }
