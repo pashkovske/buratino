@@ -13,7 +13,7 @@ class ExeCtx<A : Assignment>(
     }
 
     private var shouldSkip: Boolean = false
-    fun shouldSkip(): Boolean = isMutated
+    fun shouldSkip(): Boolean = shouldSkip
     fun setShouldSkip() {
         shouldSkip = true
     }
