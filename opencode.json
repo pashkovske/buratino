@@ -1,21 +1,35 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "eliza-mini-max": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Eliza Mini Max",
-      "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/mini-max-m2-7/v1"
-      },
-      "models": {
-        "mini-max-m2-7": {
-          "name": "mini-max-m2-7",
-          "limit": {
-            "context": 200000,
-            "output": 131072
-          }
+    "$schema": "https://opencode.ai/config.json",
+    "model": "opencode/nemotron-3-ultra-free",
+    "small_model": "opencode/deepseek-v4-flash-free",
+    "instructions": [
+        ".opencode/rules/**/*.mdc",
+        ".opencode/rules/**/*.md"
+    ],
+    "permission": {
+        "external_directory": {}
+    },
+    "agent": {
+        "plan": {
+            "disable": true
+        },
+        "build": {
+            "disable": true
+        },
+        "scout": {
+            "disable": true
+        },
+        "general": {
+            "disable": true
+        },
+        "explore": {
+            "disable": true
+        },
+        "title": {
+            "model": "deepseek-v4-flash-free"
+        },
+        "summary": {
+            "model": "deepseek-v4-flash-free"
         }
-      }
     }
-  }
 }
