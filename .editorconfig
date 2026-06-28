@@ -1,0 +1,10 @@
+root = true
+
+[*.{yml,yaml}]
+indent_size = 4
+
+[*.md]
+indent_size = 4
+
+[*.json]
+indent_size = 4
