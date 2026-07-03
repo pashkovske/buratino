@@ -23,6 +23,12 @@ permission:
         "jq *": allow
         "sed *": allow
         "cp *": allow
+        "continue": allow
+        "sort": allow
+        "sort *": allow
+        "uniq": allow
+        "uniq *": allow
+        "realpath *": allow
     edit:
         "*": allow
 ---

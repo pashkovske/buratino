@@ -19,6 +19,7 @@ permission:
         "ls *": allow
         "find *": allow
         "wc *": allow
+        "sed *": deny
         "sed --sandbox *": allow
         "sed --sandbox -i *": deny
         "sed --sandbox * -i *": deny
@@ -26,6 +27,13 @@ permission:
         "sed --sandbox *--in-place*": deny
         "cp *": allow
         "mkdir *": allow
+        "which *": allow
+        "continue": allow
+        "sort": allow
+        "sort *": allow
+        "uniq": allow
+        "uniq *": allow
+        "realpath *": allow
     edit:
         "*": ask
         "doc/*": allow

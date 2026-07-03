@@ -23,11 +23,19 @@ permission:
         "yq *": allow
         "rm *": deny
         "cp *": allow
+        "sed *": deny
         "sed --sandbox *": allow
         "sed --sandbox -i *": deny
         "sed --sandbox * -i *": deny
         "sed --sandbox * -i": deny
         "sed --sandbox *--in-place*": deny
+        "which *": allow
+        "continue": allow
+        "sort": allow
+        "sort *": allow
+        "uniq": allow
+        "uniq *": allow
+        "realpath *": allow
         "git mv *": deny
         "git rm *": deny
         "git commit *": deny
@@ -60,8 +68,8 @@ Your main goal is to find the information and write it to `plans/<task-name>/con
 
 ### 2. Fetch external resources
 
-If it is needed, fetch external resources and add links to the `plans/<task-name>/context-<name>.md` file with info that
-you found there.
+If it is needed, fetch external resources and add links to the `plans/<task-name>/context-<name>.md` file with info
+  that you found there.
 
 ### 3. Evaluate only relevance
 
@@ -92,3 +100,4 @@ you found there.
     - instead of `sed 's/foo/bar/' input.txt` use `sed --sandbox 's/foo/bar/' input.txt` because writing with sed is
       prohibited
     - instead of `echo "something" > context.md` use `write` tool
+    

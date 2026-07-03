@@ -21,12 +21,27 @@ permission:
         "wc *": allow
         "jq *": allow
         "yq *": allow
-        "sed *": allow
+        "sed *": deny
+        "sed --sandbox *": allow
+        "sed --sandbox -i *": deny
+        "sed --sandbox * -i *": deny
+        "sed --sandbox * -i": deny
+        "sed --sandbox *--in-place*": deny
+        "which *": allow
+        "continue": allow
+        "sort": allow
+        "sort *": allow
+        "uniq": allow
+        "uniq *": allow
+        "realpath *": allow
     edit:
         "*": deny
+        "plans/*": allow
 ---
 
 You are a test runner agent. Your main goal is to run existing tests and make conclusion about the test run.
+
+Your main goal is to run required tests and write conclusion to `plans/<task-name>/test-run-<run-name>.md` file.
 
 ## Build and Test Instructions
 
